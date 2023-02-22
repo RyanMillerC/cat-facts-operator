@@ -29,7 +29,7 @@ type CatFactSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of CatFact. Edit catfact_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	Fact string `json:"fact,omitempty"`
 }
 
 // CatFactStatus defines the observed state of CatFact

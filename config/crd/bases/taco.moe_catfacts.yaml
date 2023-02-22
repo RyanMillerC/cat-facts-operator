@@ -35,7 +35,7 @@ spec:
           spec:
             description: CatFactSpec defines the desired state of CatFact
             properties:
-              foo:
+              fact:
                 description: Foo is an example field of CatFact. Edit catfact_types.go
                   to remove/update
                 type: string
