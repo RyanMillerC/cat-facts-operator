@@ -3,8 +3,8 @@
     "type": "console.page/route",
     "properties": {
       "exact": true,
-      "path": "/example",
-      "component": { "$codeRef": "ExamplePage" }
+      "path": "/cat-facts-catalog",
+      "component": { "$codeRef": "CatFactsCatalog" }
     }
   },
   {
@@ -12,7 +12,7 @@
     "properties": {
       "id": "cat-facts-page",
       "name": "Cat Fact Catalog",
-      "href": "/example",
+      "href": "/cat-facts-catalog",
       "perspective": "admin",
       "section": "cat-facts-section"
     }
