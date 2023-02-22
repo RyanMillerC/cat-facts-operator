@@ -1,0 +1,27 @@
+# permissions for end users to view catfacts.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: catfact-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: cat-facts-operator
+    app.kubernetes.io/part-of: cat-facts-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: catfact-viewer-role
+rules:
+- apiGroups:
+  - taco.moe
+  resources:
+  - catfacts
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - taco.moe
+  resources:
+  - catfacts/status
+  verbs:
+  - get

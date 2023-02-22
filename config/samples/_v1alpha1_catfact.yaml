@@ -1,0 +1,12 @@
+apiVersion: taco.moe/v1alpha1
+kind: CatFact
+metadata:
+  labels:
+    app.kubernetes.io/name: catfact
+    app.kubernetes.io/instance: catfact-sample
+    app.kubernetes.io/part-of: cat-facts-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: cat-facts-operator
+  name: catfact-sample
+spec:
+  # TODO(user): Add fields here
