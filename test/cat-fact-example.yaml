@@ -1,0 +1,6 @@
+apiVersion: taco.moe/v1alpha1
+kind: CatFact
+metadata:
+  name: example
+spec:
+  fact: "Cats are cool!"
