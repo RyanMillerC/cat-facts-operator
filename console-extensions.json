@@ -10,11 +10,20 @@
   {
     "type": "console.navigation/href",
     "properties": {
-      "id": "example",
-      "name": "Plugin Example",
+      "id": "cat-facts-page",
+      "name": "Cat Fact Catalog",
       "href": "/example",
       "perspective": "admin",
-      "section": "home"
+      "section": "cat-facts-section"
+    }
+  },
+  {
+    "type": "console.navigation/section",
+    "properties": {
+      "id": "cat-facts-section",
+      "insertAfter": "home",
+      "perspective": "admin",
+      "name": "Cat Facts"
     }
   }
 ]
