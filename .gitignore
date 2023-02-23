@@ -5,3 +5,4 @@ integration-tests/videos
 integration-tests/screenshots
 integration-tests/.DS_Store
 .DS_Store
+yarn-error.log
