@@ -1,0 +1,49 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: '[]'
+    capabilities: Basic Install
+  name: cat-facts-operator.v0.0.0
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: CatFact is the Schema for the catfacts API
+      displayName: Cat Fact
+      kind: CatFact
+      name: catfacts.taco.moe
+      version: v1alpha1
+  description: An operator for all you cool cats and kittens
+  displayName: Cat Facts
+  icon:
+  - base64data: ""
+    mediatype: ""
+  install:
+    spec:
+      deployments: null
+    strategy: ""
+  installModes:
+  - supported: false
+    type: OwnNamespace
+  - supported: false
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - Cats
+  - Cool
+  links:
+  - name: Cat Facts Operator
+    url: https://cat-facts-operator.domain
+  maintainers:
+  - email: miller@redhat.com
+    name: Ryan Miller
+  maturity: alpha
+  provider:
+    name: Ryan Miller
+    url: https://github.com/RyanMillerC/cat-facts-operator
+  version: 0.0.0
