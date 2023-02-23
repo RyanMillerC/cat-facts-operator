@@ -60,7 +60,7 @@
   },
   "config": {
     "containerBuildTool": "podman",
-    "image": "quay.io/rymiller/cat-facts-console-plugin:latest",
+    "image": "quay.io/rymiller/cat-facts-console-plugin:latest"
   },
   "consolePlugin": {
     "name": "cat-facts-console-plugin",
