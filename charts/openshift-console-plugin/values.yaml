@@ -1,9 +1,9 @@
 ---
 plugin:
-  name: ""
-  description: ""
-  image: ""
-  imagePullPolicy: IfNotPresent
+  name: "cat-facts-console-plugin"
+  description: "OpenShift console plugin for all you cool cats and kittens"
+  image: "quay.io/rymiller/cat-facts-console-plugin:latest"
+  imagePullPolicy: Always # Might set this back to IfNotPresent one day
   replicas: 2
   port: 9443
   securityContext:
