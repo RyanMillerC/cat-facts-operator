@@ -1,10 +1,7 @@
-FROM quay.io/cajieh0/nodejs:16 AS build
-
-ADD . /usr/src/app
-WORKDIR /usr/src/app
-RUN yarn install && yarn build
+# Run `yarn build` before building this container image
 
 FROM quay.io/cajieh0/nginx:stable
 
-RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
-COPY --from=build /usr/src/app/dist /usr/share/nginx/html
+COPY ./dist /usr/share/nginx/html
+
+RUN chmod g+rwx /var/cache/nginx /var/log/nginx /var/run
