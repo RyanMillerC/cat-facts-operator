@@ -21,7 +21,8 @@ metadata:
         }
       ]
     capabilities: Basic Install
-    operators.operatorframework.io/builder: operator-sdk-v1.25.1
+    createdAt: "2023-02-25T01:41:59Z"
+    operators.operatorframework.io/builder: operator-sdk-v1.26.1
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v4-alpha
   name: cat-facts-operator.v0.0.1
   namespace: placeholder
@@ -151,7 +152,7 @@ spec:
                 - --leader-elect
                 command:
                 - /manager
-                image: controller:latest
+                image: quay.io/rymiller/cat-facts-operator:v0.0.1
                 livenessProbe:
                   httpGet:
                     path: /healthz
