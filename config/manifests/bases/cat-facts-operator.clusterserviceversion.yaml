@@ -4,6 +4,12 @@ metadata:
   annotations:
     alm-examples: '[]'
     capabilities: Basic Install
+    categories: Fun
+    certified: "false"
+    containerImage: quay.io/rymiller/cat-facts-operator
+    description: An operator for all you cool cats and kittens.
+    repository: https://github.com/RyanMillerC/cat-facts-operator
+    support: None
   name: cat-facts-operator.v0.0.1
   namespace: placeholder
 spec:
