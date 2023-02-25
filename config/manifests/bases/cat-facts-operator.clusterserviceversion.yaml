@@ -10,7 +10,7 @@ spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
-    - description: "CatFact is a Kubernetes model of a fact about cats 🐱"
+    - description: "CatFact is a Kubernetes model of a fact about cats \U0001F431"
       displayName: Cat Fact
       kind: CatFact
       name: catfacts.taco.moe

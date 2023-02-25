@@ -41,7 +41,7 @@ type CatFactStatus struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
-// CatFact is the Schema for the catfacts API
+// CatFact is a Kubernetes model of a fact about cats 🐱
 type CatFact struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

@@ -18,7 +18,7 @@ spec:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: CatFact is the Schema for the catfacts API
+        description: "CatFact is a Kubernetes model of a fact about cats \U0001F431"
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
