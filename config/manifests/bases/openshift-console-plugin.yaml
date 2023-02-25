@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: cat-facts-console-plugin
+  name: cat-facts-operator
 ---
 # Source: openshift-console-plugin/templates/patcher-serviceaccount.yaml
 apiVersion: v1
@@ -34,7 +34,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: cat-facts-console-plugin
-  namespace: cat-facts-console-plugin
+  namespace: cat-facts-operator
   labels:
     helm.sh/chart: openshift-console-plugin-0.1.0
     app: cat-facts-console-plugin
@@ -64,7 +64,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: cat-facts-console-plugin-patcher
-  namespace: cat-facts-console-plugin
+  namespace: cat-facts-operator
   labels:
     helm.sh/chart: openshift-console-plugin-0.1.0
     app: cat-facts-console-plugin
@@ -82,7 +82,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: cat-facts-console-plugin-patcher
-  namespace: cat-facts-console-plugin
+  namespace: cat-facts-operator
   labels:
     helm.sh/chart: openshift-console-plugin-0.1.0
     app: cat-facts-console-plugin
@@ -97,7 +97,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: cat-facts-console-plugin-patcher
-    namespace: cat-facts-console-plugin
+    namespace: cat-facts-operator
 ---
 # Source: openshift-console-plugin/templates/service.yaml
 apiVersion: v1
@@ -106,7 +106,7 @@ metadata:
   annotations:
     service.alpha.openshift.io/serving-cert-secret-name: cat-facts-console-plugin-cert
   name: cat-facts-console-plugin
-  namespace: cat-facts-console-plugin
+  namespace: cat-facts-operator
   labels:
     helm.sh/chart: openshift-console-plugin-0.1.0
     app: cat-facts-console-plugin
@@ -133,7 +133,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cat-facts-console-plugin
-  namespace: cat-facts-console-plugin
+  namespace: cat-facts-operator
   labels:
     helm.sh/chart: openshift-console-plugin-0.1.0
     app: cat-facts-console-plugin
@@ -141,7 +141,7 @@ metadata:
     app.kubernetes.io/instance: release-name
     app.kubernetes.io/part-of: cat-facts-console-plugin
     app.kubernetes.io/managed-by: Helm
-    app.openshift.io/runtime-namespace: cat-facts-console-plugin
+    app.openshift.io/runtime-namespace: cat-facts-operator
 spec:
   replicas: 2
   selector:
@@ -210,7 +210,7 @@ apiVersion: console.openshift.io/v1alpha1
 kind: ConsolePlugin
 metadata:
   name: cat-facts-console-plugin
-  namespace: cat-facts-console-plugin
+  namespace: cat-facts-operator
   labels:
     helm.sh/chart: openshift-console-plugin-0.1.0
     app: cat-facts-console-plugin
@@ -222,7 +222,7 @@ spec:
   displayName: OpenShift console plugin for all you cool cats and kittens
   service:
     name: cat-facts-console-plugin
-    namespace: cat-facts-console-plugin
+    namespace: cat-facts-operator
     port: 9443
     basePath: /
 ---
@@ -231,7 +231,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: cat-facts-console-plugin-patcher
-  namespace: cat-facts-console-plugin
+  namespace: cat-facts-operator
   labels:
     helm.sh/chart: openshift-console-plugin-0.1.0
     app: cat-facts-console-plugin

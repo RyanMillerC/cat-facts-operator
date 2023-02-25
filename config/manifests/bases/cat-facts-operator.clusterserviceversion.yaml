@@ -8,6 +8,7 @@ metadata:
     certified: "false"
     containerImage: quay.io/rymiller/cat-facts-operator
     description: An operator for all you cool cats and kittens.
+    operatorframework.io/suggested-namespace: cat-facts-operator
     repository: https://github.com/RyanMillerC/cat-facts-operator
     support: None
   name: cat-facts-operator.v0.0.1
@@ -49,13 +50,13 @@ spec:
       deployments: null
     strategy: ""
   installModes:
-  - supported: false
+  - supported: true
     type: OwnNamespace
   - supported: false
     type: SingleNamespace
   - supported: false
     type: MultiNamespace
-  - supported: true
+  - supported: false
     type: AllNamespaces
   keywords:
   - Cats
