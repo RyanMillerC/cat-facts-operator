@@ -17,4 +17,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: cat-facts-console-plugin-patcher
-  namespace: cat-facts-console-plugin
+  namespace: cat-facts-operator

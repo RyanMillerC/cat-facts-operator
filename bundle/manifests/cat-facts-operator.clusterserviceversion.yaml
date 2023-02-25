@@ -7,8 +7,9 @@ metadata:
     categories: Fun
     certified: "false"
     containerImage: quay.io/rymiller/cat-facts-operator
-    createdAt: "2023-02-25T03:56:22Z"
+    createdAt: "2023-02-25T04:10:44Z"
     description: An operator for all you cool cats and kittens.
+    operatorframework.io/suggested-namespace: cat-facts-operator
     operators.operatorframework.io/builder: operator-sdk-v1.26.1
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v4-alpha
     repository: https://github.com/RyanMillerC/cat-facts-operator
@@ -91,77 +92,6 @@ spec:
           - create
         serviceAccountName: cat-facts-operator-controller-manager
       deployments:
-      - label:
-          app: cat-facts-console-plugin
-          app.kubernetes.io/instance: release-name
-          app.kubernetes.io/managed-by: Helm
-          app.kubernetes.io/name: cat-facts-console-plugin
-          app.kubernetes.io/part-of: cat-facts-console-plugin
-          app.openshift.io/runtime-namespace: cat-facts-console-plugin
-          helm.sh/chart: openshift-console-plugin-0.1.0
-        name: cat-facts-console-plugin
-        spec:
-          replicas: 2
-          selector:
-            matchLabels:
-              app: cat-facts-console-plugin
-              app.kubernetes.io/instance: release-name
-              app.kubernetes.io/name: cat-facts-console-plugin
-              app.kubernetes.io/part-of: cat-facts-console-plugin
-          strategy:
-            rollingUpdate:
-              maxSurge: 25%
-              maxUnavailable: 25%
-            type: RollingUpdate
-          template:
-            metadata:
-              labels:
-                app: cat-facts-console-plugin
-                app.kubernetes.io/instance: release-name
-                app.kubernetes.io/managed-by: Helm
-                app.kubernetes.io/name: cat-facts-console-plugin
-                app.kubernetes.io/part-of: cat-facts-console-plugin
-                helm.sh/chart: openshift-console-plugin-0.1.0
-            spec:
-              containers:
-              - image: quay.io/rymiller/cat-facts-console-plugin:latest
-                imagePullPolicy: Always
-                name: cat-facts-console-plugin
-                ports:
-                - containerPort: 9443
-                  protocol: TCP
-                resources:
-                  requests:
-                    cpu: 10m
-                    memory: 50Mi
-                securityContext:
-                  allowPrivilegeEscalation: false
-                  capabilities:
-                    drop:
-                    - ALL
-                volumeMounts:
-                - mountPath: /var/cert
-                  name: cat-facts-console-plugin-cert
-                  readOnly: true
-                - mountPath: /etc/nginx/nginx.conf
-                  name: nginx-conf
-                  readOnly: true
-                  subPath: nginx.conf
-              dnsPolicy: ClusterFirst
-              restartPolicy: Always
-              securityContext:
-                runAsNonRoot: true
-                seccompProfile:
-                  type: RuntimeDefault
-              volumes:
-              - name: cat-facts-console-plugin-cert
-                secret:
-                  defaultMode: 420
-                  secretName: cat-facts-console-plugin-cert
-              - configMap:
-                  defaultMode: 420
-                  name: cat-facts-console-plugin
-                name: nginx-conf
       - label:
           app.kubernetes.io/component: manager
           app.kubernetes.io/created-by: cat-facts-operator
@@ -260,6 +190,77 @@ spec:
                 runAsNonRoot: true
               serviceAccountName: cat-facts-operator-controller-manager
               terminationGracePeriodSeconds: 10
+      - label:
+          app: cat-facts-console-plugin
+          app.kubernetes.io/instance: release-name
+          app.kubernetes.io/managed-by: Helm
+          app.kubernetes.io/name: cat-facts-console-plugin
+          app.kubernetes.io/part-of: cat-facts-console-plugin
+          app.openshift.io/runtime-namespace: cat-facts-operator
+          helm.sh/chart: openshift-console-plugin-0.1.0
+        name: cat-facts-console-plugin
+        spec:
+          replicas: 2
+          selector:
+            matchLabels:
+              app: cat-facts-console-plugin
+              app.kubernetes.io/instance: release-name
+              app.kubernetes.io/name: cat-facts-console-plugin
+              app.kubernetes.io/part-of: cat-facts-console-plugin
+          strategy:
+            rollingUpdate:
+              maxSurge: 25%
+              maxUnavailable: 25%
+            type: RollingUpdate
+          template:
+            metadata:
+              labels:
+                app: cat-facts-console-plugin
+                app.kubernetes.io/instance: release-name
+                app.kubernetes.io/managed-by: Helm
+                app.kubernetes.io/name: cat-facts-console-plugin
+                app.kubernetes.io/part-of: cat-facts-console-plugin
+                helm.sh/chart: openshift-console-plugin-0.1.0
+            spec:
+              containers:
+              - image: quay.io/rymiller/cat-facts-console-plugin:latest
+                imagePullPolicy: Always
+                name: cat-facts-console-plugin
+                ports:
+                - containerPort: 9443
+                  protocol: TCP
+                resources:
+                  requests:
+                    cpu: 10m
+                    memory: 50Mi
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  capabilities:
+                    drop:
+                    - ALL
+                volumeMounts:
+                - mountPath: /var/cert
+                  name: cat-facts-console-plugin-cert
+                  readOnly: true
+                - mountPath: /etc/nginx/nginx.conf
+                  name: nginx-conf
+                  readOnly: true
+                  subPath: nginx.conf
+              dnsPolicy: ClusterFirst
+              restartPolicy: Always
+              securityContext:
+                runAsNonRoot: true
+                seccompProfile:
+                  type: RuntimeDefault
+              volumes:
+              - name: cat-facts-console-plugin-cert
+                secret:
+                  defaultMode: 420
+                  secretName: cat-facts-console-plugin-cert
+              - configMap:
+                  defaultMode: 420
+                  name: cat-facts-console-plugin
+                name: nginx-conf
       permissions:
       - rules:
         - apiGroups:
@@ -296,13 +297,13 @@ spec:
         serviceAccountName: cat-facts-operator-controller-manager
     strategy: deployment
   installModes:
-  - supported: false
+  - supported: true
     type: OwnNamespace
   - supported: false
     type: SingleNamespace
   - supported: false
     type: MultiNamespace
-  - supported: true
+  - supported: false
     type: AllNamespaces
   keywords:
   - Cats
