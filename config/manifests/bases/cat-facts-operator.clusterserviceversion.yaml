@@ -4,22 +4,40 @@ metadata:
   annotations:
     alm-examples: '[]'
     capabilities: Basic Install
-  name: cat-facts-operator.v0.0.0
+  name: cat-facts-operator.v0.0.1
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
-    - description: CatFact is the Schema for the catfacts API
+    - description: "CatFact is a Kubernetes model of a fact about cats 🐱"
       displayName: Cat Fact
       kind: CatFact
       name: catfacts.taco.moe
       version: v1alpha1
-  description: An operator for all you cool cats and kittens
+  description: |
+    # Cat Facts Operator
+
+    An operator for all you cool cats and kittens
+
+    ## What does it do?
+
+    This operator creates a custom resource definition, CatFact. When a new
+    CatFact is created, the Cat Facts Operator prints the fact to it's pod log.
+
+    (Yes, I know this is lame... I'll add more to it)
+
+    ## Acknowledgments
+
+    Cat emoji used for catalog icon was created by Emily Jäger, licensed under
+    [CC BY-SA 4.0] and is [available here][cat-emoji].
+
+    [CC BY-SA 4.0]: https://creativecommons.org/licenses/by-sa/4.0
+    [cat-emoji]: https://openmoji.org/library/emoji-1F638
   displayName: Cat Facts
   icon:
-  - base64data: ""
-    mediatype: ""
+  - base64data: PHN2ZyBpZD0iZW1vamkiIHZpZXdCb3g9IjAgMCA3MiA3MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZyBpZD0iY29sb3IiPgogICAgPHBhdGggZmlsbD0iI0Y0QUE0MSIgZD0iTTU4LjY2NTUsNDguODMyMWMtMy41OTc3LDkuMTE2OS0xMi42MzEzLDE1LjE1NDctMjMuMjA3MiwxNS4xNTQ3Yy05LjExNzMsMC0xOS4yNTYtNS44NDc2LTIyLjg1MzctMTQuOTY0NSBsLTAuMTI2Mi0wLjMxMjdjLTEuMTQxNS0yLjg1OTctMS45NTczLTYuMzU5OS0xLjk1NzMtOS42MzI0TDE0LjE4OCw1LjcwNTlsMTEuMjI4MiwxMS4wNzk5IGMyLjkyMjYtMS4yNDc3LDYuMTM3LTEuOTM4OCw5LjUxMDMtMS45Mzg4SDM1Ljk5YzMuMzczNCwwLDYuNTg3NywwLjY5MTEsOS41MTAzLDEuOTM4OEw1Ni43Mjg1LDUuNzA1OWwzLjcyMjMsMzMuODc1OCBjMCwzLjI3MjUtMC42MjgzLDYuMzk2OS0xLjc3MDcsOS4yNTY2Ii8
+    mediatype: image/svg+xml
   install:
     spec:
       deployments: null
@@ -37,8 +55,8 @@ spec:
   - Cats
   - Cool
   links:
-  - name: Cat Facts Operator
-    url: https://cat-facts-operator.domain
+  - name: Cat Facts Operator Source Code
+    url: https://github.com/RyanMillerC/cat-facts-operator
   maintainers:
   - email: miller@redhat.com
     name: Ryan Miller
@@ -46,4 +64,4 @@ spec:
   provider:
     name: Ryan Miller
     url: https://github.com/RyanMillerC/cat-facts-operator
-  version: 0.0.0
+  version: 0.0.1
