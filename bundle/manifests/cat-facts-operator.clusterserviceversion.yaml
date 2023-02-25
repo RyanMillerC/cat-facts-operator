@@ -21,9 +21,15 @@ metadata:
         }
       ]
     capabilities: Basic Install
-    createdAt: "2023-02-25T02:39:33Z"
+    categories: Fun
+    certified: "false"
+    containerImage: quay.io/rymiller/cat-facts-operator
+    createdAt: "2023-02-25T03:21:15Z"
+    description: An operator for all you cool cats and kittens.
     operators.operatorframework.io/builder: operator-sdk-v1.26.1
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v4-alpha
+    repository: https://github.com/RyanMillerC/cat-facts-operator
+    support: None
   name: cat-facts-operator.v0.0.1
   namespace: placeholder
 spec:
