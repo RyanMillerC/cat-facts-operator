@@ -1,0 +1,27 @@
+apiVersion: v1
+data:
+  nginx.conf: |
+    error_log /dev/stdout info;
+    events {}
+    http {
+      access_log         /dev/stdout;
+      include            /etc/nginx/mime.types;
+      default_type       application/octet-stream;
+      keepalive_timeout  65;
+      server {
+        listen              9443 ssl;
+        ssl_certificate     /var/cert/tls.crt;
+        ssl_certificate_key /var/cert/tls.key;
+        root                /usr/share/nginx/html;
+      }
+    }
+kind: ConfigMap
+metadata:
+  labels:
+    app: cat-facts-console-plugin
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: cat-facts-console-plugin
+    app.kubernetes.io/part-of: cat-facts-console-plugin
+    helm.sh/chart: openshift-console-plugin-0.1.0
+  name: cat-facts-console-plugin

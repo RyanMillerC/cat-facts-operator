@@ -2,9 +2,10 @@
 # used to generate the 'manifests/' directory in a bundle.
 resources:
 - bases/cat-facts-operator.clusterserviceversion.yaml
+- bases/openshift-console-plugin.yaml
 - ../default
-- ../samples
-- ../scorecard
+# - ../samples
+# - ../scorecard
 
 # [WEBHOOK] To enable webhooks, uncomment all the sections with [WEBHOOK] prefix.
 # Do NOT uncomment sections with prefix [CERTMANAGER], as OLM does not support cert-manager.

@@ -1,0 +1,20 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  creationTimestamp: null
+  labels:
+    app: cat-facts-console-plugin
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: cat-facts-console-plugin
+    app.kubernetes.io/part-of: cat-facts-console-plugin
+    helm.sh/chart: openshift-console-plugin-0.1.0
+  name: cat-facts-console-plugin-patcher
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cat-facts-console-plugin-patcher
+subjects:
+- kind: ServiceAccount
+  name: cat-facts-console-plugin-patcher
+  namespace: cat-facts-console-plugin
