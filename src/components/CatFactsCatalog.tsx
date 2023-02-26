@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Helmet from 'react-helmet';
 import {
+  Button,
   Page,
   PageSection,
   //Text,
@@ -8,9 +9,11 @@ import {
   Title,
 } from '@patternfly/react-core';
 import { CatalogTile } from '@patternfly/react-catalog-view-extension';
+//import { CatFact, catFactKind, CatFactModel } from './data/model';
 import { CatFact, catFactKind } from './data/model';
 import { useK8sWatchResource } from '@openshift-console/dynamic-plugin-sdk';
 import './example.css';
+// import { k8sCreateResource } from '@openshift/dynamic-plugin-sdk-utils';
 
 // export type CatFact = {
 //   id: string;
@@ -19,6 +22,27 @@ import './example.css';
 
 export default function ExamplePage() {
   // https://www.patternfly.org/v4/extensions/catalog-view/catalog-tile
+
+  function createCatFact() {
+    // const data: CatFact = {
+    //   metadata: {
+    //     generateName: 'cat-fact-',
+    //     namespace: 'cat-facts-catalog',
+    //   },
+    //   spec: {
+    //     fact: 'This is a fact!',
+    //   },
+    // };
+
+    // const options = {
+    //   model: CatFactModel,
+    //   data: data,
+    // };
+
+    // k8sCreateResource(options);
+    alert('Buttoned!');
+  }
+
   return (
     <>
       <Helmet>
@@ -27,6 +51,9 @@ export default function ExamplePage() {
       <Page>
         <PageSection variant="light">
           <Title headingLevel="h1">Cat Facts!</Title>
+        </PageSection>
+        <PageSection variant="light">
+          <Button onClick={createCatFact}>Create CatFact</Button>
         </PageSection>
         <CatFactCatalog />
       </Page>
