@@ -10,7 +10,23 @@ import {
 import { CatalogTile } from '@patternfly/react-catalog-view-extension';
 import './example.css';
 
+export type CatFact = {
+  id: string;
+  fact: string;
+};
+
 export default function ExamplePage() {
+  const catFactsList: CatFact[] = [
+    {
+      id: 'my-cat-fact',
+      fact: 'Cats are cool!',
+    },
+    {
+      id: 'second-cat-fact',
+      fact: 'Cats are the coolest!!!',
+    },
+  ];
+
   // https://www.patternfly.org/v4/extensions/catalog-view/catalog-tile
   return (
     <>
@@ -22,15 +38,20 @@ export default function ExamplePage() {
           <Title headingLevel="h1">Cat Facts!</Title>
         </PageSection>
         <PageSection variant="light">
-          <CatalogTile
-            id="my-cat-fact"
-            // iconImg={pfLogo2}
-            iconAlt="PatternFly logo"
-            badges={['Badge']}
-            title="Cat Fact"
-            vendor="powered by Cat Facts Operator"
-            description="Cats are cool!"
-          />
+          {catFactsList.map((item, index) => {
+            return (
+              <CatalogTile
+                key={index}
+                id={item.id}
+                // iconImg={pfLogo2}
+                iconAlt="PatternFly logo"
+                badges={['Badge']}
+                title="Cat Fact"
+                vendor="powered by Cat Facts Operator"
+                description={item.fact}
+              />
+            );
+          })}
         </PageSection>
       </Page>
     </>
