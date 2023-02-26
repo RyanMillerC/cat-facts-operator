@@ -81,16 +81,18 @@ function CatFactCatalog() {
     <>
       <PageSection variant="light">
         {catFacts.map((item, index) => {
-          <CatalogTile
-            key={index}
-            id={item.metadata.name}
-            // iconImg={pfLogo2}
-            iconAlt="PatternFly logo"
-            badges={['Badge']}
-            title="Cat Fact"
-            vendor="powered by Cat Facts Operator"
-            description={item.spec.fact}
-          />;
+          return (
+            <CatalogTile
+              key={index}
+              id={item.metadata.name}
+              // iconImg={pfLogo2}
+              iconAlt="PatternFly logo"
+              badges={['Badge']}
+              title="Cat Fact"
+              vendor="powered by Cat Facts Operator"
+              description={item.spec.fact}
+            />
+          );
         })}
       </PageSection>
     </>
