@@ -3,13 +3,15 @@ import Helmet from 'react-helmet';
 import {
   Page,
   PageSection,
-  Text,
-  TextContent,
+  //Text,
+  //TextContent,
   Title,
 } from '@patternfly/react-core';
+import { CatalogTile } from '@patternfly/react-catalog-view-extension';
 import './example.css';
 
 export default function ExamplePage() {
+  // https://www.patternfly.org/v4/extensions/catalog-view/catalog-tile
   return (
     <>
       <Helmet>
@@ -17,29 +19,18 @@ export default function ExamplePage() {
       </Helmet>
       <Page>
         <PageSection variant="light">
-          <Title headingLevel="h1">Hello, Plugin!</Title>
+          <Title headingLevel="h1">Cat Facts!</Title>
         </PageSection>
         <PageSection variant="light">
-          <TextContent>
-            <Text component="p">
-              <span className="console-plugin-template__nice">Nice!</span> Your
-              plugin is working.
-            </Text>
-            <Text component="p">
-              This is a custom page contributed by the console plugin template.
-              The extension that adds the page is declared in
-              console-extensions.json in the project root along with the
-              corresponding nav item. Update console-extensions.json to change
-              or add extensions. Code references in console-extensions.json must
-              have a corresonding property <code>exposedModules</code> in
-              package.json mapping the reference to the module.
-            </Text>
-            <Text component="p">
-              After cloning this project, replace references to{' '}
-              <code>console-template-plugin</code> and other plugin metadata in
-              package.json with values for your plugin.
-            </Text>
-          </TextContent>
+          <CatalogTile
+            id="my-cat-fact"
+            // iconImg={pfLogo2}
+            iconAlt="PatternFly logo"
+            badges={['Badge']}
+            title="Cat Fact"
+            vendor="powered by Cat Facts Operator"
+            description="Cats are cool!"
+          />
         </PageSection>
       </Page>
     </>
