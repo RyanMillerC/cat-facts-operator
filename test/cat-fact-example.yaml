@@ -1,6 +1,7 @@
 apiVersion: taco.moe/v1alpha1
 kind: CatFact
 metadata:
-  name: example
+  name: my-cat-fact
+  namespace: cat-facts-operator
 spec:
   fact: "Cats are cool!"
