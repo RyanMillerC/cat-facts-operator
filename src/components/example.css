@@ -5,3 +5,15 @@
    * https://patternfly-react-main.surge.sh/developer-resources/global-css-variables */
   color: var(--pf-global--palette--blue-400);
 }
+
+.cat-facts-console-plugin__cards {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+.cat-facts-console-plugin__card {
+  flex: 0 0 250px;
+  height: 250px;
+  margin: 10px;
+  width: 250px;
+}

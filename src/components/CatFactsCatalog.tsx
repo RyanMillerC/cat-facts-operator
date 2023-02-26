@@ -79,10 +79,11 @@ function CatFactCatalog() {
   // This renders a blank page after loading with no errors
   return (
     <>
-      <PageSection variant="light">
+      <PageSection className="cat-facts-console-plugin__cards" variant="light">
         {catFacts.map((item, index) => {
           return (
             <CatalogTile
+              className="cat-facts-console-plugin__card"
               key={index}
               id={item.metadata.name}
               // iconImg={pfLogo2}
