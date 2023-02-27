@@ -63,13 +63,12 @@ func (r *CatFactReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 	logger.Info("Processing", "Name", instance.Name)
 
 	// Make a copy of the original instance we can compare to at the end.
-	orgInstance := &instance
+	orgInstance := instance.DeepCopy()
 
 	if len(instance.Spec.Fact) == 0 {
 		generateFact(instance)
 	}
 
-	// TODO: I don't think that this evaluation is correct. It seems like it's always true.
 	if !reflect.DeepEqual(instance, orgInstance) {
 		logger.Info("Updating", "Name", instance.Name)
 		r.Update(ctx, instance)
