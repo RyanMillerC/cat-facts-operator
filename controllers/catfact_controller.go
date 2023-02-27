@@ -67,7 +67,10 @@ func (r *CatFactReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 	orgInstance := instance.DeepCopy()
 
 	if len(instance.Spec.Fact) == 0 {
-		core.GenerateFact(instance)
+		err = core.GenerateFact(instance)
+		if err != nil {
+			logger.Error(err, "Error processing", "Name", instance.Name)
+		}
 	}
 
 	if !reflect.DeepEqual(instance, orgInstance) {

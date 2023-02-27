@@ -17,11 +17,38 @@ limitations under the License.
 package core
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+
 	tacomoev1alpha1 "github.com/ryanmillerc/cat-facts-operator/api/v1alpha1"
 )
 
+type CatFactNinjaAPIResponse struct {
+	Fact   string `json:"fact"`
+	Length int    `json:"length"`
+}
+
 func GenerateFact(instance *tacomoev1alpha1.CatFact) error {
-	newFact := "Cats are cool!"
-	instance.Spec.Fact = newFact
+	requestURL := "https://catfact.ninja/fact"
+	res, err := http.Get(requestURL)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body) // response body is []byte
+	if err != nil {
+		return err
+	}
+	fmt.Println(string(body)) // convert to string before print
+
+	var apiResponse CatFactNinjaAPIResponse
+	if err := json.Unmarshal(body, &apiResponse); err != nil {
+		return err
+	}
+
+	instance.Spec.Fact = apiResponse.Fact
 	return nil
 }
