@@ -83,9 +83,3 @@ func (r *CatFactReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&tacomoev1alpha1.CatFact{}).
 		Complete(r)
 }
-
-func generateFact(instance *tacomoev1alpha1.CatFact) error {
-	newFact := "Cats are cool!"
-	instance.Spec.Fact = newFact
-	return nil
-}
