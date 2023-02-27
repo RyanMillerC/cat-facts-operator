@@ -14,13 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package controllers
+package core
 
 import (
 	tacomoev1alpha1 "github.com/ryanmillerc/cat-facts-operator/api/v1alpha1"
 )
 
-func generateFact(instance *tacomoev1alpha1.CatFact) error {
+func GenerateFact(instance *tacomoev1alpha1.CatFact) error {
 	newFact := "Cats are cool!"
 	instance.Spec.Fact = newFact
 	return nil

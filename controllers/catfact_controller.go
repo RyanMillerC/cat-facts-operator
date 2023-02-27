@@ -27,6 +27,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	tacomoev1alpha1 "github.com/ryanmillerc/cat-facts-operator/api/v1alpha1"
+	"github.com/ryanmillerc/cat-facts-operator/core"
 )
 
 // CatFactReconciler reconciles a CatFact object
@@ -66,7 +67,7 @@ func (r *CatFactReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 	orgInstance := instance.DeepCopy()
 
 	if len(instance.Spec.Fact) == 0 {
-		generateFact(instance)
+		core.GenerateFact(instance)
 	}
 
 	if !reflect.DeepEqual(instance, orgInstance) {
