@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"reflect"
 
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -49,7 +50,6 @@ type CatFactReconciler struct {
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.13.0/pkg/reconcile
 func (r *CatFactReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	logger := log.FromContext(ctx)
-
 	instance := &tacomoev1alpha1.CatFact{}
 	err := r.Get(context.TODO(), req.NamespacedName, instance)
 	if err != nil {
@@ -60,7 +60,20 @@ func (r *CatFactReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		return ctrl.Result{}, err
 	}
 
-	logger.Info(instance.Spec.Fact)
+	logger.Info("Processing", "Name", instance.Name)
+
+	// Make a copy of the original instance we can compare to at the end.
+	orgInstance := &instance
+
+	if len(instance.Spec.Fact) == 0 {
+		generateFact(instance)
+	}
+
+	// TODO: I don't think that this evaluation is correct. It seems like it's always true.
+	if !reflect.DeepEqual(instance, orgInstance) {
+		logger.Info("Updating", "Name", instance.Name)
+		r.Update(ctx, instance)
+	}
 
 	return ctrl.Result{}, nil
 }
@@ -70,4 +83,10 @@ func (r *CatFactReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&tacomoev1alpha1.CatFact{}).
 		Complete(r)
+}
+
+func generateFact(instance *tacomoev1alpha1.CatFact) error {
+	newFact := "Cats are cool!"
+	instance.Spec.Fact = newFact
+	return nil
 }

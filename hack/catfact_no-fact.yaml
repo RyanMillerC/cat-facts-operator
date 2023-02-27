@@ -1,0 +1,8 @@
+# This CatFact object intentionally doesn't have a spec.fact. The controller
+# should generate that property for us when this manifest is applied.
+apiVersion: taco.moe/v1alpha1
+kind: CatFact
+metadata:
+  name: catfact-no-fact
+  namespace: cat-facts-operator
+spec: {}
