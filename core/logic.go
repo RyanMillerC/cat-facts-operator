@@ -30,25 +30,34 @@ type CatFactNinjaAPIResponse struct {
 	Length int    `json:"length"`
 }
 
-func GenerateFact(instance *tacomoev1alpha1.CatFact) error {
-	requestURL := "https://catfact.ninja/fact"
+func getFactFromURL(requestURL string) (string, error) {
 	res, err := http.Get(requestURL)
 	if err != nil {
-		return err
+		return "", err
 	}
-	defer res.Body.Close()
+	defer res.Body.Close() // Wait for API response
 
 	body, err := io.ReadAll(res.Body) // response body is []byte
 	if err != nil {
-		return err
+		return "", err
 	}
 	fmt.Println(string(body)) // convert to string before print
 
 	var apiResponse CatFactNinjaAPIResponse
 	if err := json.Unmarshal(body, &apiResponse); err != nil {
-		return err
+		return "", err
 	}
+	return apiResponse.Fact, err
+}
 
-	instance.Spec.Fact = apiResponse.Fact
+func GenerateFact(instance *tacomoev1alpha1.CatFact) error {
+	requestURL := "https://catfact.ninja/fact"
+	fact, err := getFactFromURL(requestURL)
+	if err != nil {
+		// If there's an error getting a fact from catfacts.ninja, use this placeholder fact.
+		// TODO: Should also log here
+		fact = "Cats are cool!"
+	}
+	instance.Spec.Fact = fact
 	return nil
 }
