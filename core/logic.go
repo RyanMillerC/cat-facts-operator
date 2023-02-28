@@ -18,7 +18,6 @@ package core
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -30,6 +29,7 @@ type CatFactNinjaAPIResponse struct {
 	Length int    `json:"length"`
 }
 
+var GetFactFromURL = getFactFromURL // Set function as variable for easier testing
 func getFactFromURL(requestURL string) (string, error) {
 	res, err := http.Get(requestURL)
 	if err != nil {
@@ -41,7 +41,6 @@ func getFactFromURL(requestURL string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	fmt.Println(string(body)) // convert to string before print
 
 	var apiResponse CatFactNinjaAPIResponse
 	if err := json.Unmarshal(body, &apiResponse); err != nil {
@@ -52,7 +51,7 @@ func getFactFromURL(requestURL string) (string, error) {
 
 func GenerateFact(instance *tacomoev1alpha1.CatFact) error {
 	requestURL := "https://catfact.ninja/fact"
-	fact, err := getFactFromURL(requestURL)
+	fact, err := GetFactFromURL(requestURL)
 	if err != nil {
 		// If there's an error getting a fact from catfacts.ninja, use this placeholder fact.
 		// TODO: Should also log here

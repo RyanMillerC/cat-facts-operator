@@ -4,15 +4,21 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	tacomoev1alpha1 "github.com/ryanmillerc/cat-facts-operator/api/v1alpha1"
 )
 
-// func TestGenerateFact(t *testing.T) {
-// 	instance := &tacomoev1alpha1.CatFact{}
-// 	GenerateFact(instance)
-// 	if instance.Spec.Fact != "Cats are cool!" {
-// 		t.Fatalf(`instance.Spec.Fact is "%s", want match for "Cats are cool!"`, instance.Spec.Fact)
-// 	}
-// }
+func TestGenerateFact(t *testing.T) {
+	// Monkey patch GetFactFromURL
+	GetFactFromURL = func(string) (string, error) {
+		return "Cats are cool!", nil
+	}
+	instance := &tacomoev1alpha1.CatFact{}
+	GenerateFact(instance)
+	if instance.Spec.Fact != "Cats are cool!" {
+		t.Fatalf(`instance.Spec.Fact is "%s", want match for "Cats are cool!"`, instance.Spec.Fact)
+	}
+}
 
 func TestGetFactFromURL(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
