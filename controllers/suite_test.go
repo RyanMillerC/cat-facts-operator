@@ -20,6 +20,7 @@ import (
 	"context"
 	"path/filepath"
 	"testing"
+	"time"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -40,8 +41,11 @@ import (
 // http://onsi.github.io/ginkgo/ to learn more about Ginkgo.
 
 var cfg *rest.Config
+var ctx context.Context
+var cancel context.CancelFunc
 var k8sClient client.Client
 var testEnv *envtest.Environment
+var timeout time.Duration
 
 func TestAPIs(t *testing.T) {
 	RegisterFailHandler(Fail)
@@ -84,15 +88,26 @@ var _ = BeforeSuite(func() {
 	}).SetupWithManager(k8sManager)
 	Expect(err).ToNot(HaveOccurred())
 
+	ctx, cancel = context.WithCancel(ctrl.SetupSignalHandler())
+
 	go func() {
 		defer GinkgoRecover()
-		err = k8sManager.Start(context.TODO())
+		err = k8sManager.Start(ctx)
 		Expect(err).ToNot(HaveOccurred(), "failed to run manager")
 	}()
 })
 
 var _ = AfterSuite(func() {
+	// Original AfterSuite function was failing to correctly stop the API server
+	// before timing out. Setting a context with cancel and calling cancel works.
+	//
+	// References:
+	// - https://github.com/kubernetes-sigs/controller-runtime/issues/1571
+	// - https://github.com/SchSeba/sriov-network-operator/commit/1778d4456064ff4ebd1d1eeca22cea6bac3067a1#diff-522ed98795d88bff1df848662d1eee2a296ed9a37b852695f82583865d198092
 	By("tearing down the test environment")
-	err := testEnv.Stop()
-	Expect(err).NotTo(HaveOccurred())
+	cancel()
+	timeout = time.Second * 10
+	Eventually(func() error {
+		return testEnv.Stop()
+	}, timeout, time.Second).ShouldNot(HaveOccurred())
 })
