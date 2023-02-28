@@ -49,10 +49,7 @@ var _ = Describe("CatFact controller", func() {
 			// We'll need to retry getting this newly created CronJob, given that creation may not immediately happen.
 			Eventually(func() bool {
 				err := k8sClient.Get(ctx, catFactLookupKey, createdCatFact)
-				if err != nil {
-					return false
-				}
-				return true
+				return err == nil
 			}, timeout, interval).Should(BeTrue())
 			// Let's make sure a fact was set on the object
 			Expect(createdCatFact.Spec.Fact).Should(Equal(""))
