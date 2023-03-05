@@ -7,6 +7,9 @@ import {
   //Text,
   //TextContent,
   Title,
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateBody,
 } from '@patternfly/react-core';
 import { CatalogTile } from '@patternfly/react-catalog-view-extension';
 import { CatFact, catFactKind, CatFactModel } from './data/model';
@@ -14,6 +17,7 @@ import { CatFact, catFactKind, CatFactModel } from './data/model';
 import { useK8sWatchResource } from '@openshift-console/dynamic-plugin-sdk';
 import './example.css';
 import { k8sCreate } from '@openshift-console/dynamic-plugin-sdk';
+import CubesIcon from '@patternfly/react-icons/dist/esm/icons/cubes-icon';
 
 // export type CatFact = {
 //   id: string;
@@ -96,7 +100,16 @@ function CatFactCatalog() {
     return (
       <>
         <PageSection variant="light">
-          No CatFacts found in cat-facts-operator namespace!
+          <EmptyState>
+            <EmptyStateIcon icon={CubesIcon} />
+            <Title headingLevel="h4" size="lg">
+              No CatFacts found
+            </Title>
+            <EmptyStateBody>
+              No CatFacts exist in the <code>cat-facts-operator</code>{' '}
+              namespace. Click <i>Create CatFact</i> above to get started.
+            </EmptyStateBody>
+          </EmptyState>
         </PageSection>
       </>
     );
