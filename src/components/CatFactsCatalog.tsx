@@ -115,10 +115,6 @@ function CatFactCatalog() {
     );
   }
 
-  // This logs fine
-  console.log(catFacts[0].metadata.name);
-  console.log(catFacts[0].spec.fact);
-
   // This renders a blank page after loading with no errors
   return (
     <>
