@@ -9,11 +9,11 @@ import {
   Title,
 } from '@patternfly/react-core';
 import { CatalogTile } from '@patternfly/react-catalog-view-extension';
-//import { CatFact, catFactKind, CatFactModel } from './data/model';
-import { CatFact, catFactKind } from './data/model';
+import { CatFact, catFactKind, CatFactModel } from './data/model';
+//import { CatFact, catFactKind } from './data/model';
 import { useK8sWatchResource } from '@openshift-console/dynamic-plugin-sdk';
 import './example.css';
-// import { k8sCreateResource } from '@openshift/dynamic-plugin-sdk-utils';
+import { k8sCreate } from '@openshift-console/dynamic-plugin-sdk';
 
 // export type CatFact = {
 //   id: string;
@@ -23,24 +23,27 @@ import './example.css';
 export default function ExamplePage() {
   // https://www.patternfly.org/v4/extensions/catalog-view/catalog-tile
 
-  function createCatFact() {
-    // const data: CatFact = {
-    //   metadata: {
-    //     generateName: 'cat-fact-',
-    //     namespace: 'cat-facts-catalog',
-    //   },
-    //   spec: {
-    //     fact: 'This is a fact!',
-    //   },
-    // };
+  async function createCatFact() {
+    const data: CatFact = {
+      // I have no idea why it can't pull apiVersion and Kind from the model I'm
+      // passing but I'm too frustrated to argue with a machine tonight. Here
+      // you go OpenShift, have some extra strings. You've broken me. - RM
+      apiVersion: 'taco.moe/v1alpha1',
+      kind: 'CatFact',
+      metadata: {
+        generateName: 'cat-fact-',
+      },
+      spec: {}, // Cat Facts operator will generate a fact if we don't provide one
+    };
 
-    // const options = {
-    //   model: CatFactModel,
-    //   data: data,
-    // };
+    const options = {
+      model: CatFactModel,
+      data: data,
+      ns: 'cat-facts-operator',
+    };
 
-    // k8sCreateResource(options);
-    alert('Buttoned!');
+    //console.log(CatFactModel);
+    await k8sCreate(options);
   }
 
   return (

@@ -11,6 +11,7 @@
   flex-wrap: wrap;
   align-items: stretch;
 }
+
 .cat-facts-console-plugin__card {
   flex: 0 0 250px;
   height: 250px;
