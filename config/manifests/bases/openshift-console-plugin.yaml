@@ -1,119 +1,12 @@
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: cat-facts-operator
----
-# Source: openshift-console-plugin/templates/patcher-serviceaccount.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: cat-facts-console-plugin-patcher
-  labels:
-    helm.sh/chart: openshift-console-plugin-0.1.0
-    app: cat-facts-console-plugin
-    app.kubernetes.io/name: cat-facts-console-plugin
-    app.kubernetes.io/instance: release-name
-    app.kubernetes.io/part-of: cat-facts-console-plugin
-    app.kubernetes.io/managed-by: Helm
----
-# Source: openshift-console-plugin/templates/serviceaccount.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: cat-facts-console-plugin
-  labels:
-    helm.sh/chart: openshift-console-plugin-0.1.0
-    app: cat-facts-console-plugin
-    app.kubernetes.io/name: cat-facts-console-plugin
-    app.kubernetes.io/instance: release-name
-    app.kubernetes.io/part-of: cat-facts-console-plugin
-    app.kubernetes.io/managed-by: Helm
----
-# Source: openshift-console-plugin/templates/configmap.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: cat-facts-console-plugin
-  namespace: cat-facts-operator
-  labels:
-    helm.sh/chart: openshift-console-plugin-0.1.0
-    app: cat-facts-console-plugin
-    app.kubernetes.io/name: cat-facts-console-plugin
-    app.kubernetes.io/instance: release-name
-    app.kubernetes.io/part-of: cat-facts-console-plugin
-    app.kubernetes.io/managed-by: Helm
-data:
-  nginx.conf: |
-    error_log /dev/stdout info;
-    events {}
-    http {
-      access_log         /dev/stdout;
-      include            /etc/nginx/mime.types;
-      default_type       application/octet-stream;
-      keepalive_timeout  65;
-      server {
-        listen              9443 ssl;
-        ssl_certificate     /var/cert/tls.crt;
-        ssl_certificate_key /var/cert/tls.key;
-        root                /usr/share/nginx/html;
-      }
-    }
----
-# Source: openshift-console-plugin/templates/patcher-clusterrole.yaml
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: cat-facts-console-plugin-patcher
-  namespace: cat-facts-operator
-  labels:
-    helm.sh/chart: openshift-console-plugin-0.1.0
-    app: cat-facts-console-plugin
-    app.kubernetes.io/name: cat-facts-console-plugin
-    app.kubernetes.io/instance: release-name
-    app.kubernetes.io/part-of: cat-facts-console-plugin
-    app.kubernetes.io/managed-by: Helm
-rules:
-  - apiGroups: ["operator.openshift.io"]
-    resources: ["consoles"]
-    verbs: ["get","list","patch", "update"]
----
-# Source: openshift-console-plugin/templates/patcher-clusterrolebinding.yaml
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: cat-facts-console-plugin-patcher
-  namespace: cat-facts-operator
-  labels:
-    helm.sh/chart: openshift-console-plugin-0.1.0
-    app: cat-facts-console-plugin
-    app.kubernetes.io/name: cat-facts-console-plugin
-    app.kubernetes.io/instance: release-name
-    app.kubernetes.io/part-of: cat-facts-console-plugin
-    app.kubernetes.io/managed-by: Helm
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cat-facts-console-plugin-patcher
-subjects:
-  - kind: ServiceAccount
-    name: cat-facts-console-plugin-patcher
-    namespace: cat-facts-operator
----
-# Source: openshift-console-plugin/templates/service.yaml
-apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    service.alpha.openshift.io/serving-cert-secret-name: cat-facts-console-plugin-cert
+    service.beta.openshift.io/serving-cert-secret-name: cat-facts-console-plugin-cert
   name: cat-facts-console-plugin
   namespace: cat-facts-operator
   labels:
-    helm.sh/chart: openshift-console-plugin-0.1.0
     app: cat-facts-console-plugin
-    app.kubernetes.io/name: cat-facts-console-plugin
-    app.kubernetes.io/instance: release-name
-    app.kubernetes.io/part-of: cat-facts-console-plugin
-    app.kubernetes.io/managed-by: Helm
 spec:
   ports:
     - name: 9443-tcp
@@ -122,43 +15,25 @@ spec:
       targetPort: 9443
   selector:
     app: cat-facts-console-plugin
-    app.kubernetes.io/name: cat-facts-console-plugin
-    app.kubernetes.io/instance: release-name
-    app.kubernetes.io/part-of: cat-facts-console-plugin
   type: ClusterIP
   sessionAffinity: None
 ---
-# Source: openshift-console-plugin/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cat-facts-console-plugin
   namespace: cat-facts-operator
   labels:
-    helm.sh/chart: openshift-console-plugin-0.1.0
     app: cat-facts-console-plugin
-    app.kubernetes.io/name: cat-facts-console-plugin
-    app.kubernetes.io/instance: release-name
-    app.kubernetes.io/part-of: cat-facts-console-plugin
-    app.kubernetes.io/managed-by: Helm
-    app.openshift.io/runtime-namespace: cat-facts-operator
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: cat-facts-console-plugin
-      app.kubernetes.io/name: cat-facts-console-plugin
-      app.kubernetes.io/instance: release-name
-      app.kubernetes.io/part-of: cat-facts-console-plugin
   template:
     metadata:
       labels:
-        helm.sh/chart: openshift-console-plugin-0.1.0
         app: cat-facts-console-plugin
-        app.kubernetes.io/name: cat-facts-console-plugin
-        app.kubernetes.io/instance: release-name
-        app.kubernetes.io/part-of: cat-facts-console-plugin
-        app.kubernetes.io/managed-by: Helm
     spec:
       containers:
         - name: cat-facts-console-plugin
@@ -167,7 +42,7 @@ spec:
             - containerPort: 9443
               protocol: TCP
           imagePullPolicy: Always
-          securityContext: 
+          securityContext:
             allowPrivilegeEscalation: false
             capabilities:
               drop:
@@ -180,22 +55,14 @@ spec:
             - name: cat-facts-console-plugin-cert
               readOnly: true
               mountPath: /var/cert
-            - name: nginx-conf
-              readOnly: true
-              mountPath: /etc/nginx/nginx.conf
-              subPath: nginx.conf
       volumes:
         - name: cat-facts-console-plugin-cert
           secret:
             secretName: cat-facts-console-plugin-cert
             defaultMode: 420
-        - name: nginx-conf
-          configMap:
-            name: cat-facts-console-plugin
-            defaultMode: 420
       restartPolicy: Always
       dnsPolicy: ClusterFirst
-      securityContext: 
+      securityContext:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
@@ -204,81 +71,18 @@ spec:
     rollingUpdate:
       maxUnavailable: 25%
       maxSurge: 25%
----
-# Source: openshift-console-plugin/templates/consoleplugin.yaml
-apiVersion: console.openshift.io/v1alpha1
-kind: ConsolePlugin
-metadata:
-  name: cat-facts-console-plugin
-  namespace: cat-facts-operator
-  labels:
-    helm.sh/chart: openshift-console-plugin-0.1.0
-    app: cat-facts-console-plugin
-    app.kubernetes.io/name: cat-facts-console-plugin
-    app.kubernetes.io/instance: release-name
-    app.kubernetes.io/part-of: cat-facts-console-plugin
-    app.kubernetes.io/managed-by: Helm
-spec:
-  displayName: OpenShift console plugin for all you cool cats and kittens
-  service:
-    name: cat-facts-console-plugin
-    namespace: cat-facts-operator
-    port: 9443
-    basePath: /
----
-# Source: openshift-console-plugin/templates/patch-consoles-job.yaml
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: cat-facts-console-plugin-patcher
-  namespace: cat-facts-operator
-  labels:
-    helm.sh/chart: openshift-console-plugin-0.1.0
-    app: cat-facts-console-plugin
-    app.kubernetes.io/name: cat-facts-console-plugin
-    app.kubernetes.io/instance: release-name
-    app.kubernetes.io/part-of: cat-facts-console-plugin
-    app.kubernetes.io/managed-by: Helm
-  annotations:
-    helm.sh/hook: post-install,post-upgrade
-    helm.sh/hook-delete-policy: before-hook-creation
-spec:
-  parallelism: 1
-  template:
-    metadata:
-      labels:
-        helm.sh/chart: openshift-console-plugin-0.1.0
-        app: cat-facts-console-plugin
-        app.kubernetes.io/name: cat-facts-console-plugin
-        app.kubernetes.io/instance: release-name
-        app.kubernetes.io/part-of: cat-facts-console-plugin
-        app.kubernetes.io/managed-by: Helm
-    spec:
-      restartPolicy: OnFailure
-      serviceAccountName: cat-facts-console-plugin-patcher
-      securityContext: 
-        runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
-      terminationGracePeriodSeconds: 400
-      dnsPolicy: ClusterFirst
-      containers:
-        - name: cat-facts-console-plugin-patcher
-          image: registry.redhat.io/openshift4/ose-tools-rhel8@sha256:e44074f21e0cca6464e50cb6ff934747e0bd11162ea01d522433a1a1ae116103
-          securityContext: 
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-              - ALL
-          resources:
-            requests:
-              cpu: 10m
-              memory: 50Mi
-          command:
-            - /bin/bash
-            - -c
-            - |
-                existingPlugins=$(oc get consoles.operator.openshift.io cluster -o json | jq -c '.spec.plugins // []')
-                mergedPlugins=$(jq --argjson existingPlugins "${existingPlugins}" --argjson consolePlugin '["cat-facts-console-plugin"]' -c  -n '$existingPlugins + $consolePlugin | unique')
-                patchedPlugins=$(jq --argjson mergedPlugins $mergedPlugins -n -c  '{ "spec": { "plugins": $mergedPlugins } }')
-                oc patch consoles.operator.openshift.io cluster --patch $patchedPlugins  --type=merge
+# ---
+# apiVersion: console.openshift.io/v1alpha1
+# kind: ConsolePlugin
+# metadata:
+#   name: cat-facts-console-plugin
+#   namespace: cat-facts-operator
+#   labels:
+#     app: cat-facts-console-plugin
+# spec:
+#   displayName: OpenShift console plugin for all you cool cats and kittens
+#   service:
+#     name: cat-facts-console-plugin
+#     namespace: cat-facts-operator
+#     port: 9443
+#     basePath: /
