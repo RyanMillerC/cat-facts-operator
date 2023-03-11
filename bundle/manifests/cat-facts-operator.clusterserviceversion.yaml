@@ -7,14 +7,13 @@ metadata:
     categories: Fun
     certified: "false"
     containerImage: quay.io/rymiller/cat-facts-operator
-    createdAt: "2023-02-28T04:27:38Z"
     description: An operator for all you cool cats and kittens.
     operatorframework.io/suggested-namespace: cat-facts-operator
-    operators.operatorframework.io/builder: operator-sdk-v1.26.1
+    operators.operatorframework.io/builder: operator-sdk-v1.25.1
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v4-alpha
     repository: https://github.com/RyanMillerC/cat-facts-operator
     support: None
-  name: cat-facts-operator.v0.0.2
+  name: cat-facts-operator.v0.0.3
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -160,7 +159,7 @@ spec:
                 - --leader-elect
                 command:
                 - /manager
-                image: quay.io/rymiller/cat-facts-operator:v0.0.2
+                image: quay.io/rymiller/cat-facts-operator:v0.0.3
                 livenessProbe:
                   httpGet:
                     path: /healthz
@@ -192,21 +191,12 @@ spec:
               terminationGracePeriodSeconds: 10
       - label:
           app: cat-facts-console-plugin
-          app.kubernetes.io/instance: release-name
-          app.kubernetes.io/managed-by: Helm
-          app.kubernetes.io/name: cat-facts-console-plugin
-          app.kubernetes.io/part-of: cat-facts-console-plugin
-          app.openshift.io/runtime-namespace: cat-facts-operator
-          helm.sh/chart: openshift-console-plugin-0.1.0
         name: cat-facts-console-plugin
         spec:
           replicas: 2
           selector:
             matchLabels:
               app: cat-facts-console-plugin
-              app.kubernetes.io/instance: release-name
-              app.kubernetes.io/name: cat-facts-console-plugin
-              app.kubernetes.io/part-of: cat-facts-console-plugin
           strategy:
             rollingUpdate:
               maxSurge: 25%
@@ -216,11 +206,6 @@ spec:
             metadata:
               labels:
                 app: cat-facts-console-plugin
-                app.kubernetes.io/instance: release-name
-                app.kubernetes.io/managed-by: Helm
-                app.kubernetes.io/name: cat-facts-console-plugin
-                app.kubernetes.io/part-of: cat-facts-console-plugin
-                helm.sh/chart: openshift-console-plugin-0.1.0
             spec:
               containers:
               - image: quay.io/rymiller/cat-facts-console-plugin:latest
@@ -242,10 +227,6 @@ spec:
                 - mountPath: /var/cert
                   name: cat-facts-console-plugin-cert
                   readOnly: true
-                - mountPath: /etc/nginx/nginx.conf
-                  name: nginx-conf
-                  readOnly: true
-                  subPath: nginx.conf
               dnsPolicy: ClusterFirst
               restartPolicy: Always
               securityContext:
@@ -257,10 +238,6 @@ spec:
                 secret:
                   defaultMode: 420
                   secretName: cat-facts-console-plugin-cert
-              - configMap:
-                  defaultMode: 420
-                  name: cat-facts-console-plugin
-                name: nginx-conf
       permissions:
       - rules:
         - apiGroups:
@@ -318,4 +295,4 @@ spec:
   provider:
     name: Ryan Miller
     url: https://github.com/RyanMillerC/cat-facts-operator
-  version: 0.0.2
+  version: 0.0.3
