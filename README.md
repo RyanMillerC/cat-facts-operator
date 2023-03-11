@@ -8,6 +8,10 @@
 You’ll need a Kubernetes cluster to run against. You can use [KIND](https://sigs.k8s.io/kind) to get a local cluster for testing, or run against a remote cluster.
 **Note:** Your controller will automatically use the current context in your kubeconfig file (i.e. whatever cluster `kubectl cluster-info` shows).
 
+## OLM Deployment
+
+### **Run `make all` on Linux when you're ready to deploy. Do not use your Mac!**
+
 ### Running on the cluster
 1. Install Instances of Custom Resources:
 
