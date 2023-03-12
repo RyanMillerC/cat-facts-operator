@@ -71,18 +71,18 @@ spec:
     rollingUpdate:
       maxUnavailable: 25%
       maxSurge: 25%
-# ---
-# apiVersion: console.openshift.io/v1alpha1
-# kind: ConsolePlugin
-# metadata:
-#   name: cat-facts-console-plugin
-#   namespace: cat-facts-operator
-#   labels:
-#     app: cat-facts-console-plugin
-# spec:
-#   displayName: OpenShift console plugin for all you cool cats and kittens
-#   service:
-#     name: cat-facts-console-plugin
-#     namespace: cat-facts-operator
-#     port: 9443
-#     basePath: /
+---
+apiVersion: console.openshift.io/v1alpha1
+kind: ConsolePlugin
+metadata:
+  name: cat-facts-console-plugin
+  namespace: cat-facts-operator
+  labels:
+    app: cat-facts-console-plugin
+spec:
+  displayName: OpenShift console plugin for all you cool cats and kittens
+  service:
+    name: cat-facts-console-plugin
+    namespace: cat-facts-operator
+    port: 9443
+    basePath: /
