@@ -6,6 +6,7 @@ metadata:
     capabilities: Basic Install
     categories: Fun
     certified: "false"
+    console.openshift.io/plugins: '["cat-facts-console-plugin"]'
     containerImage: quay.io/rymiller/cat-facts-operator
     description: An operator for all you cool cats and kittens.
     operatorframework.io/suggested-namespace: cat-facts-operator
