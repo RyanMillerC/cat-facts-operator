@@ -35,8 +35,8 @@ spec:
             description: CatFactSpec defines the desired state of CatFact
             properties:
               fact:
-                description: Foo is an example field of CatFact. Edit catfact_types.go
-                  to remove/update
+                description: A fact about cats. If this field is omitted, a fact will
+                  be generated from https://catfact.ninja/fact
                 type: string
             type: object
           status:

@@ -28,7 +28,7 @@ type CatFactSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of CatFact. Edit catfact_types.go to remove/update
+	// A fact about cats. If this field is omitted, a fact will be generated from https://catfact.ninja/fact
 	Fact string `json:"fact,omitempty"`
 }
 
