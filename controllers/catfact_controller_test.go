@@ -38,7 +38,8 @@ var _ = Describe("CatFact controller", func() {
 					Namespace: CatFactNamespace,
 				},
 				Spec: tacomoev1alpha1.CatFactSpec{
-					Fact: "",
+					Fact:     "",
+					IconName: "Joy",
 				},
 			}
 			Expect(k8sClient.Create(ctx, catFact)).Should(Succeed())
@@ -46,13 +47,65 @@ var _ = Describe("CatFact controller", func() {
 			catFactLookupKey := types.NamespacedName{Name: CatFactName, Namespace: CatFactNamespace}
 			createdCatFact := &tacomoev1alpha1.CatFact{}
 
+			// TODO: Fix this. The eventually block isn't working right. It's
+			// returning either too fast or returning cached data. Sleeping for
+			// a few seconds makes the test complete successfully.
+			time.Sleep(time.Second * 2)
+
 			// We'll need to retry getting this newly created CronJob, given that creation may not immediately happen.
 			Eventually(func() bool {
 				err := k8sClient.Get(ctx, catFactLookupKey, createdCatFact)
 				return err == nil
 			}, timeout, interval).Should(BeTrue())
+
 			// Let's make sure a fact was set on the object
-			Expect(createdCatFact.Spec.Fact).Should(Equal(""))
+			Expect(createdCatFact.Spec.Fact).ShouldNot(Equal(""))
+
+			// Delete the CatFact so it doesn't conflict with other tests
+			k8sClient.Delete(ctx, createdCatFact)
+		})
+
+		It("Should generate an iconName if an iconName isn't provided", func() {
+			By("Magic")
+			ctx := context.Background()
+			catFact := &tacomoev1alpha1.CatFact{
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: "taco.moe/v1alpha1",
+					Kind:       "CatFact",
+				},
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      CatFactName,
+					Namespace: CatFactNamespace,
+				},
+				Spec: tacomoev1alpha1.CatFactSpec{
+					Fact:     "Cats are cool!",
+					IconName: "",
+				},
+			}
+			Expect(k8sClient.Create(ctx, catFact)).Should(Succeed())
+
+			catFactLookupKey := types.NamespacedName{Name: CatFactName, Namespace: CatFactNamespace}
+			createdCatFact := &tacomoev1alpha1.CatFact{}
+
+			// TODO: Fix this. The eventually block isn't working right. It's
+			// returning either too fast or returning cached data. Sleeping for
+			// a few seconds makes the test complete successfully.
+			time.Sleep(time.Second * 2)
+
+			// We'll need to retry getting this newly created CatFact, given
+			// that creation may not immediately happen.
+			Eventually(func() bool {
+				err := k8sClient.Get(ctx, catFactLookupKey, createdCatFact)
+				return err == nil
+			}, timeout, interval).Should(BeTrue())
+
+			Expect(createdCatFact.Name).Should(Equal("my-cat-fact"))
+
+			// Let's make sure a fact was set on the object
+			Expect(createdCatFact.Spec.IconName).ShouldNot(Equal(""))
+
+			// Delete the CatFact so it doesn't conflict with other tests
+			k8sClient.Delete(ctx, createdCatFact)
 		})
 	})
 })
