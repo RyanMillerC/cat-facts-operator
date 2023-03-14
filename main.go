@@ -33,6 +33,7 @@ import (
 
 	tacomoev1alpha1 "github.com/ryanmillerc/cat-facts-operator/api/v1alpha1"
 	"github.com/ryanmillerc/cat-facts-operator/controllers"
+	"github.com/ryanmillerc/cat-facts-operator/core"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -105,6 +106,20 @@ func main() {
 	if err := mgr.AddReadyzCheck("readyz", healthz.Ping); err != nil {
 		setupLog.Error(err, "unable to set up ready check")
 		os.Exit(1)
+	}
+
+	// This will be used to create the ConsolePlugin but for now it's just
+	// listing Deployments in the cat-facts-operator namespace. Once that's
+	// worked out I'll switch to list ConsolePlugins, determine if one matches,
+	// if it does bail. If it doesn't, create one.
+	setupLog.Info("Checking for deployments")
+	deploymentList, err := core.DeployConsolePlugin(mgr.GetClient())
+	if err != nil {
+		setupLog.Error(err, "unable to deploy ConsolePlugin")
+		os.Exit(1)
+	}
+	for _, deployment := range deploymentList.Items {
+		setupLog.Info("Found deployment", deployment.Name)
 	}
 
 	setupLog.Info("starting manager")
