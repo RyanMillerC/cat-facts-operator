@@ -13,6 +13,7 @@ export const catFactKind: K8sGroupVersionKind = {
 export type CatFact = {
   spec: {
     fact?: string;
+    iconName?: string;
   };
 } & K8sResourceCommon;
 

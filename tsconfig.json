@@ -9,5 +9,5 @@
     "strict": false,
     "noUnusedLocals": true
   },
-  "include": ["src"]
+  "include": ["./src", "./custom.d.ts"]
 }

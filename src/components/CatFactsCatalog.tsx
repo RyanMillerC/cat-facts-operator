@@ -18,6 +18,7 @@ import { useK8sWatchResource } from '@openshift-console/dynamic-plugin-sdk';
 import './example.css';
 import { k8sCreate } from '@openshift-console/dynamic-plugin-sdk';
 import CubesIcon from '@patternfly/react-icons/dist/esm/icons/cubes-icon';
+import getCatIcon from './CatIcon';
 
 // export type CatFact = {
 //   id: string;
@@ -125,7 +126,7 @@ function CatFactCatalog() {
               className="cat-facts-console-plugin__card"
               key={index}
               id={item.metadata.name}
-              // iconImg={pfLogo2}
+              iconImg={getCatIcon(item.spec.iconName)}
               iconAlt="PatternFly logo"
               badges={['Badge']}
               title="Cat Fact"
