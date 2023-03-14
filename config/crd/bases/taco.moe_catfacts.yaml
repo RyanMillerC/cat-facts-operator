@@ -36,8 +36,13 @@ spec:
             description: CatFactSpec defines the desired state of CatFact
             properties:
               fact:
-                description: A fact about cats. If this field is omitted, a fact will
-                  be generated from https://catfact.ninja/fact
+                description: A fact about cats. If this field is omitted, a random
+                  fact will be generated from https://catfact.ninja/fact.
+                type: string
+              iconName:
+                description: Icon to use when displayed in the OpenShift UI. See https://github.com/RyanMillerC/cat-facts-operator/README.md
+                  for available icon names. If this field is omitted, a random iconName
+                  will be applied.
                 type: string
             type: object
           status:

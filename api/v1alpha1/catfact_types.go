@@ -28,8 +28,14 @@ type CatFactSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// A fact about cats. If this field is omitted, a fact will be generated from https://catfact.ninja/fact
+	// A fact about cats. If this field is omitted, a random fact will be
+	// generated from https://catfact.ninja/fact.
 	Fact string `json:"fact,omitempty"`
+
+	// Icon to use when displayed in the OpenShift UI. See
+	// https://github.com/RyanMillerC/cat-facts-operator/README.md for available
+	// icon names. If this field is omitted, a random iconName will be applied.
+	IconName string `json:"iconName,omitempty"`
 }
 
 // CatFactStatus defines the observed state of CatFact
