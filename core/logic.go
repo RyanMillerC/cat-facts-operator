@@ -18,11 +18,33 @@ package core
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 
 	tacomoev1alpha1 "github.com/ryanmillerc/cat-facts-operator/api/v1alpha1"
 )
+
+func ProcessCatFact(instance *tacomoev1alpha1.CatFact) error {
+	if len(instance.Spec.Fact) == 0 {
+		err := GenerateFact(instance)
+		if err != nil {
+			return err
+		}
+	}
+
+	if len(instance.Spec.IconName) == 0 {
+		err := GenerateIconName(instance)
+		if err != nil {
+			return err
+		}
+	} else if !isValidIconName(instance.Spec.IconName) {
+		return fmt.Errorf("not a valid iconName %s", instance.Spec.IconName)
+	}
+
+	return nil
+}
 
 type CatFactNinjaAPIResponse struct {
 	Fact   string `json:"fact"`
@@ -59,4 +81,40 @@ func GenerateFact(instance *tacomoev1alpha1.CatFact) error {
 	}
 	instance.Spec.Fact = fact
 	return nil
+}
+
+// Return a random IconName
+func GenerateIconName(instance *tacomoev1alpha1.CatFact) error {
+	rint := randInt(1, len(getValidIconNames()))
+	instance.Spec.IconName = getValidIconNames()[rint]
+	return nil
+}
+
+func getValidIconNames() []string {
+	return []string{
+		"Grinning",
+		"Smiling",
+		"Joy",
+		"Hearts",
+		"Evil",
+		"Kissing",
+		"Weary",
+		"Crying",
+		"Pouting",
+	}
+}
+
+// Return a random int between two numbers
+func randInt(min int, max int) int {
+	return min + rand.Intn(max-min)
+}
+
+// Validate that a given IconName is valid
+func isValidIconName(iconName string) bool {
+	for _, name := range getValidIconNames() {
+		if iconName == name {
+			return true
+		}
+	}
+	return false
 }

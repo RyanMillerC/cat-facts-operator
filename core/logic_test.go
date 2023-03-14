@@ -35,3 +35,37 @@ func TestGetFactFromURL(t *testing.T) {
 		t.Errorf("Expected 'Cats are cool!', got %s", value)
 	}
 }
+
+func TestGenerateIconName(t *testing.T) {
+	validIconNames := []string{
+		"Grinning",
+		"Smiling",
+		"Joy",
+		"Hearts",
+		"Evil",
+		"Kissing",
+		"Weary",
+		"Crying",
+		"Pouting",
+	}
+	instance := &tacomoev1alpha1.CatFact{}
+	GenerateIconName(instance)
+	testPassed := false
+	for _, name := range validIconNames {
+		if name == instance.Spec.IconName {
+			testPassed = true
+		}
+	}
+	if !testPassed {
+		t.Errorf("Expected %s to be a valid IconName", instance.Spec.IconName)
+	}
+}
+
+func TestIsValidIconName(t *testing.T) {
+	if isValidIconName("Invalid") {
+		t.Errorf("Expected isValidIconName to return false for 'Invalid'")
+	}
+	if !isValidIconName("Joy") {
+		t.Errorf("Expected isValidIconName to return true for 'Joy'")
+	}
+}

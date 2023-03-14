@@ -66,11 +66,9 @@ func (r *CatFactReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 	// Make a copy of the original instance we can compare to at the end.
 	orgInstance := instance.DeepCopy()
 
-	if len(instance.Spec.Fact) == 0 {
-		err = core.GenerateFact(instance)
-		if err != nil {
-			logger.Error(err, "Error processing", "Name", instance.Name)
-		}
+	err = core.ProcessCatFact(instance)
+	if err != nil {
+		logger.Error(err, "Error processing", "Name", instance.Name)
 	}
 
 	if !reflect.DeepEqual(instance, orgInstance) {
