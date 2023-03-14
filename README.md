@@ -17,6 +17,8 @@ to build and run the example. To run OpenShift console in a container, either
 [Docker](https://www.docker.com) or [podman 3.2.0+](https://podman.io) and
 [oc](https://console.redhat.com/openshift/downloads) are required.
 
+[Cat Icons](https://openmoji.org/library/#group=smileys-emotion%2Fcat-face)
+
 ## Getting started
 
 After cloning this repo, you should update the plugin metadata such as the

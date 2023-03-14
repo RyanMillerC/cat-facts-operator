@@ -17,7 +17,7 @@ import { CatFact, catFactKind, CatFactModel } from './data/model';
 import { useK8sWatchResource } from '@openshift-console/dynamic-plugin-sdk';
 import './example.css';
 import { k8sCreate } from '@openshift-console/dynamic-plugin-sdk';
-import CubesIcon from '@patternfly/react-icons/dist/esm/icons/cubes-icon';
+// import CubesIcon from '@patternfly/react-icons/dist/esm/icons/cubes-icon';
 import getCatIcon from './CatIcon';
 
 // export type CatFact = {
@@ -69,6 +69,14 @@ export default function ExamplePage() {
   );
 }
 
+function EmptyCatFactsIcon() {
+  return (
+    <>
+      <img src={getCatIcon('Crying')} height={80} width={80} />
+    </>
+  );
+}
+
 function CatFactCatalog() {
   const [catFacts, loaded, loadError] = useK8sWatchResource<CatFact[]>({
     groupVersionKind: catFactKind,
@@ -102,7 +110,7 @@ function CatFactCatalog() {
       <>
         <PageSection variant="light">
           <EmptyState>
-            <EmptyStateIcon icon={CubesIcon} />
+            <EmptyStateIcon icon={EmptyCatFactsIcon} />
             <Title headingLevel="h4" size="lg">
               No CatFacts found
             </Title>
