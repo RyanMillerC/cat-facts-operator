@@ -14,6 +14,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
@@ -29,6 +30,7 @@ func DeployConsolePlugin() error {
 	config := ctrl.GetConfigOrDie()
 	cli := kubernetes.NewForConfigOrDie(config)
 
+	// Create Deployment, if needed
 	deploymentExists, err := doesDeploymentExist(cli)
 	if err != nil {
 		return err
@@ -42,7 +44,68 @@ func DeployConsolePlugin() error {
 			return err
 		}
 	}
+
+	// Create Service, if needed
+	serviceExists, err := doesServiceExist(cli)
+	if err != nil {
+		return err
+	}
+	if serviceExists {
+		consoleLog.Info("cat-facts-console-plugin service exists")
+	} else {
+		consoleLog.Info("cat-facts-console-plugin service does not exist... Creating it now")
+		err = createService(cli)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
+}
+
+func createService(cli *kubernetes.Clientset) error {
+	service := corev1.Service{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Service",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "cat-facts-console-plugin",
+			Namespace: "cat-facts-operator",
+			Labels: map[string]string{
+				"app": "cat-facts-console-plugin",
+			},
+			Annotations: map[string]string{
+				"service.beta.openshift.io/serving-cert-secret-name": "cat-facts-console-plugin-cert",
+			},
+		},
+		Spec: corev1.ServiceSpec{
+			Ports: []corev1.ServicePort{
+				{
+					Name:     "9443-tcp",
+					Protocol: "TCP",
+					Port:     9443,
+					TargetPort: intstr.IntOrString{
+						//Type:   0,
+						IntVal: 9443,
+					},
+				},
+			},
+			Selector: map[string]string{
+				"app": "cat-facts-console-plugin",
+			},
+			Type:            "ClusterIP",
+			SessionAffinity: "None",
+		},
+		Status: corev1.ServiceStatus{},
+	}
+
+	_, err := cli.CoreV1().Services("cat-facts-operator").Create(context.TODO(), &service, metav1.CreateOptions{})
+	if err != nil {
+		return err
+	}
+
+	return nil // No errors; yay!
 }
 
 func deployDeployment(cli *kubernetes.Clientset) error {
@@ -140,6 +203,8 @@ func deployDeployment(cli *kubernetes.Clientset) error {
 	return nil // No errors; yay!
 }
 
+// Returns true if cat-facts-console-plugin Deployment exists in the
+// cat-facts-operator namespace.
 func doesDeploymentExist(cli *kubernetes.Clientset) (bool, error) {
 	deploymentList, err := cli.AppsV1().Deployments("cat-facts-operator").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
@@ -147,6 +212,21 @@ func doesDeploymentExist(cli *kubernetes.Clientset) (bool, error) {
 	}
 	for _, deployment := range deploymentList.Items {
 		if deployment.Name == "cat-facts-console-plugin" {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+// Returns true if cat-facts-console-plugin Service exists in the
+// cat-facts-operator namespace.
+func doesServiceExist(cli *kubernetes.Clientset) (bool, error) {
+	serviceList, err := cli.CoreV1().Services("cat-facts-operator").List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		return false, err
+	}
+	for _, service := range serviceList.Items {
+		if service.Name == "cat-facts-console-plugin" {
 			return true, nil
 		}
 	}
