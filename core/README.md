@@ -5,7 +5,7 @@ in this package to perform tasks.
 
 ## Testing
 
-To test only the core package:
+To test only the core package, cd into core and run:
 
 ```bash
 go test -v
