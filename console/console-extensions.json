@@ -1,0 +1,29 @@
+[
+  {
+    "type": "console.page/route",
+    "properties": {
+      "exact": true,
+      "path": "/cat-facts-catalog",
+      "component": { "$codeRef": "CatFactsPage" }
+    }
+  },
+  {
+    "type": "console.navigation/href",
+    "properties": {
+      "id": "cat-facts-page",
+      "name": "Cat Fact Catalog",
+      "href": "/cat-facts-catalog",
+      "perspective": "admin",
+      "section": "cat-facts-section"
+    }
+  },
+  {
+    "type": "console.navigation/section",
+    "properties": {
+      "id": "cat-facts-section",
+      "insertAfter": "home",
+      "perspective": "admin",
+      "name": "Cat Facts"
+    }
+  }
+]
