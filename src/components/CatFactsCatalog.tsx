@@ -18,7 +18,8 @@ import { useK8sWatchResource } from '@openshift-console/dynamic-plugin-sdk';
 import './example.css';
 import { k8sCreate } from '@openshift-console/dynamic-plugin-sdk';
 // import CubesIcon from '@patternfly/react-icons/dist/esm/icons/cubes-icon';
-import getCatIcon from './CatIcon';
+import { getCatIconSVG, CatIcon } from './CatIcon';
+import CatFactModal from './CatFactModal';
 
 // export type CatFact = {
 //   id: string;
@@ -69,14 +70,6 @@ export default function ExamplePage() {
   );
 }
 
-function EmptyCatFactsIcon() {
-  return (
-    <>
-      <img src={getCatIcon('Crying')} height={80} width={80} />
-    </>
-  );
-}
-
 function CatFactCatalog() {
   const [catFacts, loaded, loadError] = useK8sWatchResource<CatFact[]>({
     groupVersionKind: catFactKind,
@@ -85,9 +78,8 @@ function CatFactCatalog() {
     namespaced: true,
   });
 
-  console.log({ catFacts });
-  console.log({ loaded });
-  console.log({ loadError });
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const [modalData, setModalData] = React.useState({});
 
   if (loaded === false) {
     return (
@@ -106,11 +98,15 @@ function CatFactCatalog() {
   }
 
   if (loaded === true && catFacts.length === 0) {
+    const Icon = () => {
+      return <CatIcon iconName="Smiling" />;
+    };
+
     return (
       <>
         <PageSection variant="light">
           <EmptyState>
-            <EmptyStateIcon icon={EmptyCatFactsIcon} />
+            <EmptyStateIcon icon={Icon} />
             <Title headingLevel="h4" size="lg">
               No CatFacts found
             </Title>
@@ -134,16 +130,25 @@ function CatFactCatalog() {
               className="cat-facts-console-plugin__card"
               key={index}
               id={item.metadata.name}
-              iconImg={getCatIcon(item.spec.iconName)}
+              iconImg={getCatIconSVG(item.spec.iconName)}
               iconAlt="PatternFly logo"
               badges={['Badge']}
               title="Cat Fact"
               vendor="powered by Cat Facts Operator"
               description={item.spec.fact}
+              onClick={() => {
+                setModalData(item);
+                setModalVisible(true);
+              }}
             />
           );
         })}
       </PageSection>
+      <CatFactModal
+        data={modalData}
+        isOpen={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </>
   );
 }
