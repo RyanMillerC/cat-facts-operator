@@ -1,0 +1,19 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: console-plugin-cluster-rolebinding
+    app.kubernetes.io/instance: console-plugin
+    app.kubernetes.io/component: console-plugin
+    app.kubernetes.io/created-by: cat-facts-operator
+    app.kubernetes.io/part-of: cat-facts-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: console-plugin-cluster-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: console-plugin-cluster-role
+subjects:
+- kind: ServiceAccount
+  name: controller-manager
+  namespace: cat-facts-operator
