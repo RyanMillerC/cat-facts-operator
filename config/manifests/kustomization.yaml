@@ -1,9 +1,6 @@
 # These resources constitute the fully configured set of manifests
 # used to generate the 'manifests/' directory in a bundle.
 resources:
-- bases/cat-facts-console-plugin.consoleplugin.yaml
-- bases/cat-facts-console-plugin.deployment.yaml
-- bases/cat-facts-console-plugin.service.yaml
 - bases/cat-facts-operator.clusterserviceversion.yaml
 - ../default
 # - ../samples
