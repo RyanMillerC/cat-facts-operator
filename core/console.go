@@ -23,10 +23,13 @@ var consoleLog = ctrl.Log.WithName("console")
 
 // TODO: Implement this
 // If running on OpenShift 4.10 or higher
-// If Deployment is not present, deploy it
-// If Service is not present, deploy it
+// DONE - If Deployment is not present, deploy it
+// DONE - If Service is not present, deploy it
 // If ConsolePlugin is not present, deploy it
 func DeployConsolePlugin() error {
+	// We can't use the controller client because it hasn't been registered with
+	// the manager yet. There's no good way register it without entering the
+	// reconsile loop. So it's easiest to make up our own client for this package.
 	config := ctrl.GetConfigOrDie()
 	cli := kubernetes.NewForConfigOrDie(config)
 
