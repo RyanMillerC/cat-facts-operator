@@ -1,4 +1,3 @@
-// TODO: Namespace is hardcoded throughout this file. This should be determined
 // based on the namespace the controller is running in.
 
 package core
@@ -142,7 +141,3 @@ func doesDeploymentExist(cli *kubernetes.Clientset) (bool, error) {
 	}
 	return false, nil
 }
-
-func int32Ptr(i int32) *int32 { return &i }
-
-func boolPtr(b bool) *bool { return &b }
