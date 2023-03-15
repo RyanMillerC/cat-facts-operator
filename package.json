@@ -68,7 +68,7 @@
     "displayName": "Cat Facts Console Plugin",
     "description": "For all you cool cats and kittens",
     "exposedModules": {
-      "CatFactsCatalog": "./components/CatFactsCatalog"
+      "CatFactsPage": "./components/CatFactsPage"
     },
     "dependencies": {
       "@console/pluginAPI": "*"

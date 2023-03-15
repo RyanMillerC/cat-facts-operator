@@ -1,33 +1,32 @@
 import * as React from 'react';
 import { Modal, ModalVariant } from '@patternfly/react-core';
-import './example.css';
 import { CatIcon } from './CatIcon';
+import { CatFact } from '../data/model';
+import '../styles/main.css';
 
-export default function CatFactModal(props) {
-  // TODO: Find a better way to check/validate that data comes in
-  if (props.data.metadata === undefined) {
+interface CatFactModalProps {
+  data: CatFact;
+  isOpen: boolean;
+  onClose: any; // TODO: This is a function, not sure how to tell TS that
+}
+
+export const CatFactModal: React.FC<CatFactModalProps> = (props) => {
+  if (props.data === undefined) {
     return null;
   }
-
-  const data = props.data
-
-  const Icon = () => {
-      return <CatIcon iconName={data.spec.iconName} />;
-  };
 
   return (
     <>
       <Modal
         isOpen={props.isOpen}
         onClose={props.onClose}
-        titleIconVariant={Icon}
         variant={ModalVariant.small}
       >
-        <CatIcon iconName={data.spec.iconName} />
+        <CatIcon iconName={props.data.spec.iconName} />
         <h1>Cat Fact</h1>
-        <h2>{data.metadata.name}</h2>
-        <h4>{data.spec.fact}</h4>
+        <h2>{props.data.metadata.name}</h2>
+        <h4>{props.data.spec.fact}</h4>
       </Modal>
     </>
   );
-}
+};

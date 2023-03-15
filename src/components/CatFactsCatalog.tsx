@@ -1,76 +1,19 @@
 import * as React from 'react';
-import Helmet from 'react-helmet';
 import {
-  Button,
-  Page,
-  PageSection,
-  //Text,
-  //TextContent,
-  Title,
   EmptyState,
-  EmptyStateIcon,
   EmptyStateBody,
+  EmptyStateIcon,
+  PageSection,
+  Title,
 } from '@patternfly/react-core';
+import { CatFact, catFactKind } from '../data/model';
+import { CatFactModal } from './CatFactModal';
 import { CatalogTile } from '@patternfly/react-catalog-view-extension';
-import { CatFact, catFactKind, CatFactModel } from './data/model';
-//import { CatFact, catFactKind } from './data/model';
-import { useK8sWatchResource } from '@openshift-console/dynamic-plugin-sdk';
-import './example.css';
-import { k8sCreate } from '@openshift-console/dynamic-plugin-sdk';
-// import CubesIcon from '@patternfly/react-icons/dist/esm/icons/cubes-icon';
 import { getCatIconSVG, CatIcon } from './CatIcon';
-import CatFactModal from './CatFactModal';
+import { useK8sWatchResource } from '@openshift-console/dynamic-plugin-sdk';
+import '../styles/main.css';
 
-// export type CatFact = {
-//   id: string;
-//   fact: string;
-// };
-
-export default function ExamplePage() {
-  // https://www.patternfly.org/v4/extensions/catalog-view/catalog-tile
-
-  async function createCatFact() {
-    const data: CatFact = {
-      // I have no idea why it can't pull apiVersion and Kind from the model I'm
-      // passing but I'm too frustrated to argue with a machine tonight. Here
-      // you go OpenShift, have some extra strings. You've broken me. - RM
-      apiVersion: 'taco.moe/v1alpha1',
-      kind: 'CatFact',
-      metadata: {
-        generateName: 'cat-fact-',
-      },
-      spec: {}, // Cat Facts operator will generate a fact if we don't provide one
-    };
-
-    const options = {
-      model: CatFactModel,
-      data: data,
-      ns: 'cat-facts-operator',
-    };
-
-    //console.log(CatFactModel);
-    await k8sCreate(options);
-  }
-
-  return (
-    <>
-      <Helmet>
-        <title data-test="example-page-title">Hello, Plugin!</title>
-      </Helmet>
-      <Page>
-        <PageSection variant="light">
-          <Title headingLevel="h1">Cat Facts!</Title>
-        </PageSection>
-        <PageSection variant="light">
-          <Button onClick={createCatFact}>Create CatFact</Button>
-        </PageSection>
-        <CatFactCatalog />
-      </Page>
-    </>
-  );
-}
-
-function CatFactCatalog() {
+export const CatFactCatalog: React.FC = () => {
   const [catFacts, loaded, loadError] = useK8sWatchResource<CatFact[]>({
     groupVersionKind: catFactKind,
     isList: true,
@@ -79,7 +22,7 @@ function CatFactCatalog() {
   });
 
   const [modalVisible, setModalVisible] = React.useState(false);
-  const [modalData, setModalData] = React.useState({});
+  const [modalData, setModalData] = React.useState<CatFact>();
 
   if (loaded === false) {
     return (
@@ -99,7 +42,7 @@ function CatFactCatalog() {
 
   if (loaded === true && catFacts.length === 0) {
     const Icon = () => {
-      return <CatIcon iconName="Smiling" />;
+      return <CatIcon iconName="Crying" />;
     };
 
     return (
@@ -120,7 +63,6 @@ function CatFactCatalog() {
     );
   }
 
-  // This renders a blank page after loading with no errors
   return (
     <>
       <PageSection className="cat-facts-console-plugin__cards" variant="light">
@@ -151,4 +93,4 @@ function CatFactCatalog() {
       />
     </>
   );
-}
+};

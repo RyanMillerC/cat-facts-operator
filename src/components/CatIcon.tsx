@@ -22,9 +22,9 @@ const icons = {
   Weary,
 };
 
-export function getCatIconSVG(iconName) {
+export const getCatIconSVG = (iconName: string) => {
   return icons[iconName];
-}
+};
 
 interface CatIconProps {
   iconName: string;
