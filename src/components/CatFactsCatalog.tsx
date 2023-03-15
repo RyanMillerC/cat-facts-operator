@@ -74,7 +74,6 @@ export const CatFactCatalog: React.FC = () => {
               id={item.metadata.name}
               iconImg={getCatIconSVG(item.spec.iconName)}
               iconAlt="PatternFly logo"
-              badges={['Badge']}
               title="Cat Fact"
               vendor="powered by Cat Facts Operator"
               description={item.spec.fact}
