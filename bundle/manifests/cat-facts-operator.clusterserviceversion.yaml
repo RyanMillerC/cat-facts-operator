@@ -14,7 +14,7 @@ metadata:
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v4-alpha
     repository: https://github.com/RyanMillerC/cat-facts-operator
     support: None
-  name: cat-facts-operator.v0.0.4
+  name: cat-facts-operator.v0.0.5
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -52,6 +52,18 @@ spec:
     spec:
       clusterPermissions:
       - rules:
+        - apiGroups:
+          - console.openshift.io
+          resources:
+          - consoleplugins
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
         - apiGroups:
           - taco.moe
           resources:
@@ -160,7 +172,7 @@ spec:
                 - --leader-elect
                 command:
                 - /manager
-                image: quay.io/rymiller/cat-facts-operator:v0.0.4
+                image: quay.io/rymiller/cat-facts-operator:v0.0.5
                 livenessProbe:
                   httpGet:
                     path: /healthz
@@ -247,4 +259,4 @@ spec:
   provider:
     name: Ryan Miller
     url: https://github.com/RyanMillerC/cat-facts-operator
-  version: 0.0.4
+  version: 0.0.5
