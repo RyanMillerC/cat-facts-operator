@@ -6,16 +6,9 @@
   color: var(--pf-global--palette--blue-400);
 }
 
-.cat-facts-console-plugin__cards {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
-}
-
 .cat-facts-console-plugin__card {
   color: var(--pf-c-content--Color);
-  flex: 0 0 250px;
   height: 250px;
-  margin: 10px;
+  margin-bottom: var(--pf-l-flex--spacer); /* margin-left is set by FlexItem to the same value */
   width: 250px;
 }

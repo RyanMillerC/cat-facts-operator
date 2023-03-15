@@ -3,6 +3,8 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
+  Flex,
+  FlexItem,
   PageSection,
   Title,
 } from '@patternfly/react-core';
@@ -66,24 +68,28 @@ export const CatFactCatalog: React.FC = () => {
   return (
     <>
       <PageSection className="cat-facts-console-plugin__cards" variant="light">
-        {catFacts.map((item, index) => {
-          return (
-            <CatalogTile
-              className="cat-facts-console-plugin__card"
-              key={index}
-              id={item.metadata.name}
-              iconImg={getCatIconSVG(item.spec.iconName)}
-              iconAlt="PatternFly logo"
-              title="Cat Fact"
-              vendor="powered by Cat Facts Operator"
-              description={item.spec.fact}
-              onClick={() => {
-                setModalData(item);
-                setModalVisible(true);
-              }}
-            />
-          );
-        })}
+        <Flex>
+          {catFacts.map((item, index) => {
+            return (
+              <FlexItem key={index}>
+                <CatalogTile
+                  className="cat-facts-console-plugin__card"
+                  key={index}
+                  id={item.metadata.name}
+                  iconImg={getCatIconSVG(item.spec.iconName)}
+                  iconAlt="PatternFly logo"
+                  title="Cat Fact"
+                  vendor="powered by Cat Facts Operator"
+                  description={item.spec.fact}
+                  onClick={() => {
+                    setModalData(item);
+                    setModalVisible(true);
+                  }}
+                />
+              </FlexItem>
+            );
+          })}
+        </Flex>
       </PageSection>
       <CatFactModal
         data={modalData}
