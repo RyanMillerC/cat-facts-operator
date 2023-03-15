@@ -1,4 +1,10 @@
-// based on the namespace the controller is running in.
+/*
+
+Code to deploy the OpenShift Dynamic Console plugin
+
+*/
+
+// TODO: Fix namespace so it's always the same as the controller.
 
 package core
 
@@ -11,6 +17,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
+
+var consoleLog = ctrl.Log.WithName("console")
 
 // TODO: Implement this
 // If running on OpenShift 4.10 or higher
@@ -25,7 +33,10 @@ func DeployConsolePlugin() error {
 	if err != nil {
 		return err
 	}
-	if !deploymentExists {
+	if deploymentExists {
+		consoleLog.Info("cat-facts-console-plugin deployment exists")
+	} else {
+		consoleLog.Info("cat-facts-console-plugin deployment does not exist... Creating it now")
 		err = deployDeployment(cli)
 		if err != nil {
 			return err
