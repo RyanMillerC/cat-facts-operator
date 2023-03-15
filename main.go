@@ -112,15 +112,13 @@ func main() {
 	// listing Deployments in the cat-facts-operator namespace. Once that's
 	// worked out I'll switch to list ConsolePlugins, determine if one matches,
 	// if it does bail. If it doesn't, create one.
-	setupLog.Info("Checking for deployments")
-	deploymentList, err := core.DeployConsolePlugin(mgr.GetClient())
+	setupLog.Info("Attempting thing")
+	err = core.DeployConsolePlugin()
 	if err != nil {
 		setupLog.Error(err, "unable to deploy ConsolePlugin")
 		os.Exit(1)
 	}
-	for _, deployment := range deploymentList.Items {
-		setupLog.Info("Found deployment", deployment.Name)
-	}
+	setupLog.Info("Completed thing")
 
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
