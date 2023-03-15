@@ -1,7 +1,11 @@
 import * as React from 'react';
 import Helmet from 'react-helmet';
 import { Button, Page, PageSection, Title } from '@patternfly/react-core';
-import { k8sCreate } from '@openshift-console/dynamic-plugin-sdk';
+import {
+  k8sCreate,
+  k8sDelete,
+  k8sListItems,
+} from '@openshift-console/dynamic-plugin-sdk';
 import { CatFact, CatFactModel } from '../data/model';
 import { CatFactCatalog } from './CatFactsCatalog';
 import '../styles/main.css';
@@ -9,7 +13,7 @@ import '../styles/main.css';
 export const CatFactsPage: React.FC = () => {
   // https://www.patternfly.org/v4/extensions/catalog-view/catalog-tile
 
-  async function createCatFact() {
+  const createCatFact = async () => {
     const data: CatFact = {
       // I have no idea why it can't pull apiVersion and Kind from the model I'm
       // passing but I'm too frustrated to argue with a machine tonight. Here
@@ -27,7 +31,24 @@ export const CatFactsPage: React.FC = () => {
       ns: 'cat-facts-operator',
     };
     await k8sCreate(options);
-  }
+  };
+
+  const deleteAllCatFacts = async () => {
+    const listOptions = {
+      model: CatFactModel,
+      queryParams: {
+        ns: 'cat-facts-operator',
+      },
+    };
+    const catFacts = await k8sListItems(listOptions);
+    catFacts.forEach(async (catFact) => {
+      const deleteOptions = {
+        model: CatFactModel,
+        resource: catFact,
+      };
+      await k8sDelete(deleteOptions);
+    });
+  };
 
   return (
     <>
@@ -39,7 +60,10 @@ export const CatFactsPage: React.FC = () => {
           <Title headingLevel="h1">Cat Facts!</Title>
         </PageSection>
         <PageSection variant="light">
-          <Button onClick={createCatFact}>Create CatFact</Button>
+          <Button onClick={createCatFact}>Create CatFact</Button>{' '}
+          <Button onClick={deleteAllCatFacts} variant="danger">
+            Delete All CatFacts
+          </Button>
         </PageSection>
         <CatFactCatalog />
       </Page>
