@@ -39,7 +39,7 @@ func DeployConsolePlugin() error {
 		consoleLog.Info("cat-facts-console-plugin deployment exists")
 	} else {
 		consoleLog.Info("cat-facts-console-plugin deployment does not exist... Creating it now")
-		err = deployDeployment(cli)
+		err = createDeployment(cli)
 		if err != nil {
 			return err
 		}
@@ -108,7 +108,7 @@ func createService(cli *kubernetes.Clientset) error {
 	return nil // No errors; yay!
 }
 
-func deployDeployment(cli *kubernetes.Clientset) error {
+func createDeployment(cli *kubernetes.Clientset) error {
 	deployment := appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Deployment",
