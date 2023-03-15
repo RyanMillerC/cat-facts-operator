@@ -1,4 +1,0 @@
-# Trying to deploy ConsolePlugin in Go code as part of controller boot
-## Issues with ConsolePlugin so trying with Deployment for now
-## Current doesn't work because cache isn't started by manager
-## Might need a different Kube client API
