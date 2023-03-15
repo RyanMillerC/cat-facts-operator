@@ -17,6 +17,9 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
 	ctrl "sigs.k8s.io/controller-runtime"
+
+	consolev1alpha1 "github.com/openshift/api/console/v1alpha1"
+	consolev1 "github.com/openshift/client-go/console/clientset/versioned/typed/console/v1alpha1"
 )
 
 var consoleLog = ctrl.Log.WithName("console")
@@ -32,6 +35,8 @@ func DeployConsolePlugin() error {
 	// reconsile loop. So it's easiest to make up our own client for this package.
 	config := ctrl.GetConfigOrDie()
 	cli := kubernetes.NewForConfigOrDie(config)
+	// Client for interacting with OpenShift console objects
+	console := consolev1.NewForConfigOrDie(config)
 
 	// Create Deployment, if needed
 	deploymentExists, err := doesDeploymentExist(cli)
@@ -63,7 +68,54 @@ func DeployConsolePlugin() error {
 		}
 	}
 
+	// Create ConsolePlugin, if needed
+	consolePluginExists, err := doesConsolePluginExist(console)
+	if err != nil {
+		return err
+	}
+	if consolePluginExists {
+		consoleLog.Info("cat-facts-console-plugin ConsolePlugin exists")
+	} else {
+		consoleLog.Info("cat-facts-console-plugin ConsolePlugin does not exist... Creating it now")
+		err = createConsolePlugin(console)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
+}
+
+func createConsolePlugin(console *consolev1.ConsoleV1alpha1Client) error {
+	consolePlugin := consolev1alpha1.ConsolePlugin{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "ConsolePlugin",
+			APIVersion: "console.openshift.io/v1alpha1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "cat-facts-console-plugin",
+			Namespace: "cat-facts-operator",
+			Labels: map[string]string{
+				"app": "cat-facts-console-plugin",
+			},
+		},
+		Spec: consolev1alpha1.ConsolePluginSpec{
+			DisplayName: "OpenShift console plugin for all you cool cats and kittens",
+			Service: consolev1alpha1.ConsolePluginService{
+				Name:      "cat-facts-console-plugin",
+				Namespace: "cat-facts-operator",
+				Port:      9443,
+				BasePath:  "/",
+			},
+		},
+	}
+
+	_, err := console.ConsolePlugins().Create(context.TODO(), &consolePlugin, metav1.CreateOptions{})
+	if err != nil {
+		return err
+	}
+
+	return nil // No errors; yay!
 }
 
 func createService(cli *kubernetes.Clientset) error {
@@ -230,6 +282,21 @@ func doesServiceExist(cli *kubernetes.Clientset) (bool, error) {
 	}
 	for _, service := range serviceList.Items {
 		if service.Name == "cat-facts-console-plugin" {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+// Returns true if cat-facts-console-plugin ConsolePlugin exists. (ConsolePlugin
+// is a cluster-scoped resource.)
+func doesConsolePluginExist(console *consolev1.ConsoleV1alpha1Client) (bool, error) {
+	consolePluginList, err := console.ConsolePlugins().List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		return false, err
+	}
+	for _, consolePlugin := range consolePluginList.Items {
+		if consolePlugin.Name == "cat-facts-console-plugin" {
 			return true, nil
 		}
 	}
