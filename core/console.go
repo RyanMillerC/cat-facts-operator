@@ -24,6 +24,10 @@ import (
 
 var consoleLog = ctrl.Log.WithName("console")
 
+// +kubebuilder:rbac:namespace=cat-facts-operator,groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:namespace=cat-facts-operator,groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=console.openshift.io,resources=consoleplugins,verbs=get;list;watch;create;update;patch;delete
+
 // TODO: Implement this
 // If running on OpenShift 4.10 or higher
 // DONE - If Deployment is not present, deploy it
