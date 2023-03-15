@@ -8,13 +8,14 @@ metadata:
     certified: "false"
     console.openshift.io/plugins: '["cat-facts-console-plugin"]'
     containerImage: quay.io/rymiller/cat-facts-operator
+    createdAt: "2023-03-15T04:19:36Z"
     description: An operator for all you cool cats and kittens.
     operatorframework.io/suggested-namespace: cat-facts-operator
-    operators.operatorframework.io/builder: operator-sdk-v1.25.1
+    operators.operatorframework.io/builder: operator-sdk-v1.26.1
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v4-alpha
     repository: https://github.com/RyanMillerC/cat-facts-operator
     support: None
-  name: cat-facts-operator.v0.0.4
+  name: cat-facts-operator.v0.0.5
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -160,7 +161,7 @@ spec:
                 - --leader-elect
                 command:
                 - /manager
-                image: quay.io/rymiller/cat-facts-operator:v0.0.4
+                image: quay.io/rymiller/cat-facts-operator:v0.0.5
                 livenessProbe:
                   httpGet:
                     path: /healthz
@@ -296,4 +297,4 @@ spec:
   provider:
     name: Ryan Miller
     url: https://github.com/RyanMillerC/cat-facts-operator
-  version: 0.0.4
+  version: 0.0.5
