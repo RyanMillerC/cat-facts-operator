@@ -28,12 +28,13 @@ var consoleLog = ctrl.Log.WithName("console")
 // +kubebuilder:rbac:namespace=cat-facts-operator,groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=console.openshift.io,resources=consoleplugins,verbs=get;list;watch;create;update;patch;delete
 
-// TODO: Implement this
-// If running on OpenShift 4.10 or higher
-// DONE - If Deployment is not present, deploy it
-// DONE - If Service is not present, deploy it
-// If ConsolePlugin is not present, deploy it
+// Deploy OpenShift dynamic console plugin. The plugin requires 3 resources: a
+// Deployment, a Service, and a ConsolePlugin. If any of the listed resources
+// exist with the name 'cat-facts-console-plugin', they will be untouched. If
+// any of the listed resources don't exist, they will be created.
 func DeployConsolePlugin() error {
+	// TODO: Only run this if running on OpenShift 4.10 or higher
+
 	// We can't use the controller client because it hasn't been registered with
 	// the manager yet. There's no good way register it without entering the
 	// reconsile loop. So it's easiest to make up our own client for this package.
