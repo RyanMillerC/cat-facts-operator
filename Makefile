@@ -1,15 +1,24 @@
 IMG ?= quay.io/rymiller/cat-facts-console-plugin
 
-# TODO: Update this to a real version! Using latest for testing
 VERSION ?= latest
 
 PLATFORM ?= linux/amd64
 
 CONTAINER_BUILD_TOOL ?= podman
 
+.PHONY: all
+all: build docker-build docker-push
+
+.PHONY: build
+build:
+	yarn build
+
 .PHONY: docker-build
-docker-build:
-	./hack/docker-build.sh
+docker-build: build
+	if [[ -d ./container ]]; then rm -rf ./container; fi
+	mkdir ./container
+	cp -r Dockerfile dist hack/nginx.conf ./container
+	cd ./container; ${CONTAINER_BUILD_TOOL} build --platform ${PLATFORM} --tag ${IMG}:${VERSION} .
 
 .PHONY: docker-push
 docker-push:
