@@ -108,17 +108,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	// This will be used to create the ConsolePlugin but for now it's just
-	// listing Deployments in the cat-facts-operator namespace. Once that's
-	// worked out I'll switch to list ConsolePlugins, determine if one matches,
-	// if it does bail. If it doesn't, create one.
-	setupLog.Info("Attempting thing")
+	// Create resources (Deployment, Service, and ConsolePlugin) required
+	// to run the OpenShift dynamic console plugin.
 	err = core.DeployConsolePlugin()
 	if err != nil {
-		setupLog.Error(err, "unable to deploy ConsolePlugin")
-		os.Exit(1)
+		setupLog.Error(err, "unable to deploy ConsolePlugin.")
 	}
-	setupLog.Info("Completed thing")
 
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
