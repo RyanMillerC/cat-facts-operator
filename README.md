@@ -106,6 +106,11 @@ oc delete consoleplugin cat-facts-console-plugin
 oc delete namespace cat-facts-operator
 ```
 
+## Acknowledgments
+
+Cat icons/emojis used in this project were created by Emily Jäger, licensed under
+[CC BY-SA 4.0] and are [available here][cat-icons].
+
 ## Contributing (This section needs work)
 
 ### **Run `make all` on Linux when you're ready to deploy. Do not use your Mac!**
@@ -182,6 +187,8 @@ make manifests
 
 More information can be found via the [Kubebuilder Documentation]
 
+[CC BY-SA 4.0]: https://creativecommons.org/licenses/by-sa/4.0
+[cat-icons]: https://openmoji.org/library/#group=smileys-emotion%2Fcat-face
 [Controllers]: https://kubernetes.io/docs/concepts/architecture/controller/
 [Kubebuilder Documentation]: https://book.kubebuilder.io/introduction.html
 [Operator Pattern]: https://kubernetes.io/docs/concepts/extend-kubernetes/operator/
