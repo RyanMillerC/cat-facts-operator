@@ -25,3 +25,6 @@ Dockerfile.cross
 *.swo
 *~
 .vscode
+
+# Temporary files for building a container
+container

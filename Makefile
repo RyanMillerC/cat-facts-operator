@@ -3,7 +3,13 @@
 # To re-generate a bundle for another specific version without changing the standard setup, you can:
 # - use the VERSION as arg of the bundle target (e.g make bundle VERSION=0.0.2)
 # - use environment variables to overwrite this value (e.g export VERSION=0.0.2)
-VERSION ?= 0.0.7
+VERSION ?= 0.0.8
+
+# BUILD_OS and BUILD_ARCH defines what operating system and architecture to
+# build binaries and container images for. This should probably always be
+# linux/amd64 unless you're testing on an M1 Mac (darwin/arm64).
+BUILD_OS ?= linux
+BUILD_ARCH ?= amd64
 
 # CHANNELS define the bundle channels used in the bundle.
 # Add a new line here if you would like to change its default config. (E.g CHANNELS = "candidate,fast,stable")
@@ -81,7 +87,7 @@ help: ## Display this help.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
 .PHONY: all
-all: generate manifests build docker-build docker-push bundle bundle-build bundle-push ## Run everything needed to update the operator with OLM. (Should update version before running this)
+all: generate manifests build docker-build docker-push console-build console-push bundle bundle-build bundle-push ## Run everything needed to update the operator with OLM. (Should update version before running this)
 
 ##@ Development
 
@@ -109,7 +115,7 @@ test: manifests generate fmt vet envtest ## Run tests.
 
 .PHONY: build
 build: generate fmt vet ## Build manager binary.
-	go build -o bin/manager main.go
+	CGO_ENABLED=0 GOOS=${BUILD_OS} GOARCH=${BUILD_ARCH} go build -a -o bin/manager main.go
 
 .PHONY: run
 run: manifests generate fmt vet ## Run a controller from your host.
@@ -120,11 +126,27 @@ run: manifests generate fmt vet ## Run a controller from your host.
 # More info: https://docs.docker.com/develop/develop-images/build_enhancements/
 .PHONY: docker-build
 docker-build: test ## Build docker image with the manager.
-	docker build -t ${IMG} .
+	if [[ -d ./container ]]; then rm -rf ./container; fi
+	mkdir ./container
+	cp Dockerfile ./bin/manager ./container
+	cd ./container; docker build --platform ${BUILD_OS}/${BUILD_ARCH} --tag ${IMG} .
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the manager.
 	docker push ${IMG}
+
+.PHONY: console-build ## Build docker image for console plugin.
+console-build:
+	cd ./console; yarn install
+	cd ./console; yarn build
+	if [[ -d ./console/container ]]; then rm -rf ./console/container; fi
+	mkdir ./console/container
+	cp -r ./console/Dockerfile ./console/dist ./console/hack/nginx.conf ./console/container
+	cd ./console/container; docker build --platform ${BUILD_OS}/${BUILD_ARCH} --tag ${IMAGE_TAG_BASE}-console-plugin:v${VERSION} .
+
+.PHONY: console-push ## Push docker image for console plugin.
+console-push:
+	docker push ${IMAGE_TAG_BASE}-console-plugin:v${VERSION}
 
 # PLATFORMS defines the target platforms for  the manager image be build to provide support to multiple
 # architectures. (i.e. make docker-buildx IMG=myregistry/mypoperator:0.0.1). To use this option you need to:

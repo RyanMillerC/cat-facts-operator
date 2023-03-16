@@ -18,7 +18,7 @@ docker-build: build
 	if [[ -d ./container ]]; then rm -rf ./container; fi
 	mkdir ./container
 	cp -r Dockerfile dist hack/nginx.conf ./container
-	cd ./container; ${CONTAINER_BUILD_TOOL} build --platform ${PLATFORM} --tag ${IMG}:${VERSION} .
+	cd ./container; ${CONTAINER_BUILD_TOOL} build --platform ${BUILD_OS}/${BUILD_ARCH} --tag ${IMG}:${VERSION} .
 
 .PHONY: docker-push
 docker-push:

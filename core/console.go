@@ -208,8 +208,9 @@ func createDeployment(cli *kubernetes.Clientset) error {
 					},
 					Containers: []corev1.Container{
 						{
-							Name:  "cat-facts-console-plugin",
-							Image: "quay.io/rymiller/cat-facts-console-plugin:latest",
+							Name: "cat-facts-console-plugin",
+							// TODO: Replace hardcoded v0.0.8!
+							Image: "quay.io/rymiller/cat-facts-operator-console-plugin:v0.0.8",
 							Ports: []corev1.ContainerPort{
 								{
 									ContainerPort: 9443,
