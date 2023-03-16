@@ -1,3 +1,7 @@
+<!--
+    This first chunk is HTML so it can be centered. I didn't have any luck
+    wrapping all the elements in a <p> element with align="center". 🤷
+-->
 <p align="center">
     <img src="docs/img/smiling_cat.svg" alt="Smiling Cat Icon" height="100" width="100" />
 </p>
@@ -7,6 +11,9 @@
 <h4 align="center">
     A Kubernetes operator for all you cool cats and kittens.
 </h4>
+<p align="center">
+    <img src="docs/img/catalog_view.png" alt="Cat Facts Operator catalog view" />
+</p>
 
 ## Description
 
