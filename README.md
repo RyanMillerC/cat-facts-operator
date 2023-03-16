@@ -21,7 +21,7 @@ cats. It uses https://catfact.ninja/fact to generate facts about cats.
     * Cat Facts Operator **may** work on other versions of OpenShift but they
       have not been tested.
 
-## Getting Started
+## Installing
 
 Cat Facts Operator is distributed through an OLM catalog. Cat Facts Operator is
 not included in any default OperatorHub catalog so you'll need to create a
@@ -63,12 +63,32 @@ refresh your OpenShift console in the top-right corner.
 
 1. Navigate to *Cat Facts > Cat Fact Catalog* on the left-side navigation pane
    of the OpenShift console
-2. Click *Create CatFact*
-3. Click *Create CatFact* again
-4. Click *Create CatFact* 20 more times!!
-5. If you get bored and want to delete all your CatFacts, click
+2. Select *Create CatFact*
+3. Select the new CatFact card to view it
+4. Select *Create CatFact* again
+5. Select *Create CatFact* 20 more times!!
+6. If you get bored and want to delete all your CatFacts, select
    *Delete All CatFacts*
-6. 🎉
+7. 🎉
+
+## Uninstalling
+
+To uninstall, go to *Operators > Installed Operators* in the OpenShfit console.
+Select the Cat Facts Operator and uninstall.
+
+After uninstalling, run these commands to clean up resources the operator
+leaves behind:
+
+```bash
+# Remove all CatFacts
+oc delete -n cat-facts-operator $(oc get -n cat-facts-operator catfacts -o name)
+
+# Remove the CatFacts CRD
+oc delete crd catfact.taco.moe
+
+# Remove the cat-facts-operator namespace
+oc delete namespace cat-facts-operator
+```
 
 ## Contributing (This section needs work)
 
