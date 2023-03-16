@@ -74,6 +74,22 @@ endif
 SHELL = /usr/bin/env bash -o pipefail
 .SHELLFLAGS = -ec
 
+# Escape sequences to print colors
+COLOR_OFF = \e[0m
+COLOR_GREEN = \e[32m
+
+# Prints a header. Should be called by every make task before running anything
+# else. This helps to follow what's happening in the make output especially
+# when troubleshooting errors.
+define print_header
+	@printf "${COLOR_GREEN}"
+	@printf "=======================\n"
+	@printf "make: ${1}\n"
+	@printf "=======================\n"
+	@printf "${COLOR_OFF}"
+endef
+
+
 ##@ General
 
 # The help target prints out all targets with their descriptions organized
@@ -98,32 +114,39 @@ all: generate manifests build docker-build docker-push console-build console-pus
 
 .PHONY: manifests
 manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
+	$(call print_header,manifests)
 	$(CONTROLLER_GEN) rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
 
 .PHONY: generate
 generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
+	$(call print_header,generate)
 	$(CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./..."
 
 .PHONY: fmt
 fmt: ## Run go fmt against code.
+	$(call print_header,fmt)
 	go fmt ./...
 
 .PHONY: vet
 vet: ## Run go vet against code.
+	$(call print_header,vet)
 	go vet ./...
 
 .PHONY: test
 test: manifests generate fmt vet envtest ## Run tests.
+	$(call print_header,test)
 	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test ./... -coverprofile cover.out
 
 ##@ Build
 
 .PHONY: build
 build: generate fmt vet ## Build manager binary.
+	$(call print_header,build)
 	CGO_ENABLED=0 GOOS=${BUILD_OS} GOARCH=${BUILD_ARCH} go build -a -o bin/manager main.go
 
 .PHONY: run
 run: manifests generate fmt vet ## Run a controller from your host.
+	$(call print_header,run)
 	go run ./main.go
 
 # If you wish built the manager image targeting other platforms you can use the --platform flag.
@@ -131,6 +154,7 @@ run: manifests generate fmt vet ## Run a controller from your host.
 # More info: https://docs.docker.com/develop/develop-images/build_enhancements/
 .PHONY: docker-build
 docker-build: test ## Build docker image with the manager.
+	$(call print_header,docker-build)
 	if [[ -d ./container ]]; then rm -rf ./container; fi
 	mkdir ./container
 	cp Dockerfile ./bin/manager ./container
@@ -138,10 +162,12 @@ docker-build: test ## Build docker image with the manager.
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the manager.
+	$(call print_header,docker-push)
 	docker push ${IMG}
 
 .PHONY: console-build ## Build docker image for console plugin.
 console-build:
+	$(call print_header,console-build)
 	cd ./console; yarn install
 	cd ./console; yarn build
 	if [[ -d ./console/container ]]; then rm -rf ./console/container; fi
@@ -151,6 +177,7 @@ console-build:
 
 .PHONY: console-push ## Push docker image for console plugin.
 console-push:
+	$(call print_header,console-push)
 	docker push ${IMAGE_TAG_BASE}-console-plugin:v${VERSION}
 
 # PLATFORMS defines the target platforms for  the manager image be build to provide support to multiple
@@ -163,6 +190,7 @@ PLATFORMS ?= linux/arm64,linux/amd64,linux/s390x,linux/ppc64le
 .PHONY: docker-buildx
 docker-buildx: test ## Build and push docker image for the manager for cross-platform support
 	# copy existing Dockerfile and insert --platform=${BUILDPLATFORM} into Dockerfile.cross, and preserve the original Dockerfile
+	$(call print_header,docker-buildx)
 	sed -e '1 s/\(^FROM\)/FROM --platform=\$$\{BUILDPLATFORM\}/; t' -e ' 1,// s//FROM --platform=\$$\{BUILDPLATFORM\}/' Dockerfile > Dockerfile.cross
 	- docker buildx create --name project-v3-builder
 	docker buildx use project-v3-builder
@@ -178,19 +206,23 @@ endif
 
 .PHONY: install
 install: manifests kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.
+	$(call print_header,install)
 	$(KUSTOMIZE) build config/crd | kubectl apply -f -
 
 .PHONY: uninstall
 uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
+	$(call print_header,uninstall)
 	$(KUSTOMIZE) build config/crd | kubectl delete --ignore-not-found=$(ignore-not-found) -f -
 
 .PHONY: deploy
 deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
+	$(call print_header,deploy)
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
 	$(KUSTOMIZE) build config/default | kubectl apply -f -
 
 .PHONY: undeploy
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
+	$(call print_header,undeploy)
 	$(KUSTOMIZE) build config/default | kubectl delete --ignore-not-found=$(ignore-not-found) -f -
 
 ##@ Build Dependencies
@@ -213,20 +245,24 @@ KUSTOMIZE_INSTALL_SCRIPT ?= "https://raw.githubusercontent.com/kubernetes-sigs/k
 .PHONY: kustomize
 kustomize: $(KUSTOMIZE) ## Download kustomize locally if necessary.
 $(KUSTOMIZE): $(LOCALBIN)
+	$(call print_header,kustomize)
 	test -s $(LOCALBIN)/kustomize || { curl -Ss $(KUSTOMIZE_INSTALL_SCRIPT) | bash -s -- $(subst v,,$(KUSTOMIZE_VERSION)) $(LOCALBIN); }
 
 .PHONY: controller-gen
 controller-gen: $(CONTROLLER_GEN) ## Download controller-gen locally if necessary.
 $(CONTROLLER_GEN): $(LOCALBIN)
+	$(call print_header,controller-gen)
 	test -s $(LOCALBIN)/controller-gen || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-tools/cmd/controller-gen@$(CONTROLLER_TOOLS_VERSION)
 
 .PHONY: envtest
 envtest: $(ENVTEST) ## Download envtest-setup locally if necessary.
 $(ENVTEST): $(LOCALBIN)
+	$(call print_header,env-test)
 	test -s $(LOCALBIN)/setup-envtest || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
 
 .PHONY: bundle
 bundle: manifests kustomize ## Generate bundle manifests and metadata, then validate generated files.
+	$(call print_header,bundle)
 	rm -rf ./bundle
 	operator-sdk generate kustomize manifests -q
 	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
@@ -235,10 +271,12 @@ bundle: manifests kustomize ## Generate bundle manifests and metadata, then vali
 
 .PHONY: bundle-build
 bundle-build: ## Build the bundle image.
+	$(call print_header,bundle-build)
 	docker build -f bundle.Dockerfile -t $(BUNDLE_IMG) .
 
 .PHONY: bundle-push
 bundle-push: ## Push the bundle image.
+	$(call print_header,bundle-push)
 	$(MAKE) docker-push IMG=$(BUNDLE_IMG)
 
 .PHONY: opm
@@ -246,6 +284,7 @@ OPM = ./bin/opm
 opm: ## Download opm locally if necessary.
 ifeq (,$(wildcard $(OPM)))
 ifeq (,$(shell which opm 2>/dev/null))
+	$(call print_header,opm)
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(OPM)) ;\
@@ -275,9 +314,11 @@ endif
 # https://github.com/operator-framework/community-operators/blob/7f1438c/docs/packaging-operator.md#updating-your-existing-operator
 .PHONY: catalog-build
 catalog-build: opm ## Build a catalog image.
+	$(call print_header,catalog-build)
 	$(OPM) index add --container-tool docker --mode semver --tag $(CATALOG_IMG) --bundles $(BUNDLE_IMGS) $(FROM_INDEX_OPT)
 
 # Push the catalog image.
 .PHONY: catalog-push
 catalog-push: ## Push a catalog image.
+	$(call print_header,catalog-push)
 	$(MAKE) docker-push IMG=$(CATALOG_IMG)
