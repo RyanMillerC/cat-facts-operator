@@ -1,8 +1,12 @@
 <p align="center">
-  <h1>Cat Facts Operator</h1>
-  <img src="docs/img/smiling_cat.svg" alt="Smiling Cat Icon" height="200" width="200" />
-  <h4>An operator for all you cool cats and kittens.</h4>
+    <img src="docs/img/smiling_cat.svg" alt="Smiling Cat Icon" height="100" width="100" />
 </p>
+<h1 align="center">
+    Cat Facts Operator
+</h1>
+<h4 align="center">
+    A Kubernetes operator for all you cool cats and kittens.
+</h4>
 
 ## Description
 
