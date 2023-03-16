@@ -14,7 +14,7 @@ metadata:
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v4-alpha
     repository: https://github.com/RyanMillerC/cat-facts-operator
     support: None
-  name: cat-facts-operator.v0.0.8
+  name: cat-facts-operator.v0.0.9
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -172,7 +172,7 @@ spec:
                 - --leader-elect
                 command:
                 - /manager
-                image: quay.io/rymiller/cat-facts-operator:v0.0.8
+                image: quay.io/rymiller/cat-facts-operator:v0.0.9
                 livenessProbe:
                   httpGet:
                     path: /healthz
@@ -283,4 +283,4 @@ spec:
   provider:
     name: Ryan Miller
     url: https://github.com/RyanMillerC/cat-facts-operator
-  version: 0.0.8
+  version: 0.0.9
