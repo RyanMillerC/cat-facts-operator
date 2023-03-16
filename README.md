@@ -70,12 +70,14 @@ After ~1 minute, navigate to OperatorHub and search for "Cat Facts".
 Follow the prompts to install operator page. Accept the default options for
 everything **except for Console Plugin**. For security, OpenShift defaults
 *Console Plugin* to *Disabled* on operators that come from non-official
-catalogs. Enable console plugin and install.
+catalogs. Select *Enable* for *Console plugin* and install the operator.
 
 ![Install the operator](docs/img/install_operator.png)
 
 Within ~1 minute after the installation completes, you will be prompted to
 refresh your OpenShift console in the top-right corner.
+
+![Refresh OpenShift web console](docs/img/refresh_web_console.png)
 
 ## How to Use Cat Facts
 
