@@ -40,6 +40,11 @@ Cat Facts Operator is distributed through an OLM catalog. Cat Facts Operator is
 not included in any default OperatorHub catalog so you'll need to create a
 CatalogSource to install it.
 
+Use the *Import YAML* feature of the OpenShift console or `oc` command line
+interface to create the CatalogSource object below.
+
+![Import YAML feature of OpenShift console](docs/img/import_yaml.png)
+
 ```yaml
 # Apply this object to your cluster to add the catalog to OperatorHub.
 # After ~1 minute, search for "Cat Facts" in OperatorHub.
