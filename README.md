@@ -1,6 +1,8 @@
-# Cat Facts Operator
-
-An operator for all you cool cats and kittens.
+<p align="center">
+  <h1>Cat Facts Operator</h1>
+  <img src="docs/img/smiling_cat.svg" alt="Smiling Cat Icon" height="200" width="200" />
+  <h4>An operator for all you cool cats and kittens.</h4>
+</p>
 
 ## Description
 
