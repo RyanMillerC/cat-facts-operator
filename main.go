@@ -33,7 +33,7 @@ import (
 
 	tacomoev1alpha1 "github.com/ryanmillerc/cat-facts-operator/api/v1alpha1"
 	"github.com/ryanmillerc/cat-facts-operator/controllers"
-	"github.com/ryanmillerc/cat-facts-operator/pkg/core"
+	"github.com/ryanmillerc/cat-facts-operator/pkg/console"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -109,8 +109,9 @@ func main() {
 	}
 
 	// Create resources (Deployment, Service, and ConsolePlugin) required
-	// to run the OpenShift dynamic console plugin.
-	err = core.DeployConsolePlugin()
+	// to run the OpenShift dynamic console plugin. This has to be done before
+	// starting the manager, which kicks off the reconsile infinite loop.
+	err = console.DeployConsolePlugin()
 	if err != nil {
 		setupLog.Error(err, "unable to deploy ConsolePlugin.")
 	}

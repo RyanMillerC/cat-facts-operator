@@ -6,7 +6,7 @@ Code to deploy the OpenShift Dynamic Console plugin
 
 // TODO: Fix namespace so it's always the same as the controller.
 
-package core
+package console
 
 import (
 	"context"
