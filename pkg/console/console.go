@@ -64,9 +64,11 @@ func DeployConsolePlugin() error {
 		// This isn't an error but this will stop the flow since the OpenShift
 		// version does not support dynamic console plugins.
 		consoleLog.Info(
-			"Minimum OpenShift version to install console plugin not met",
-			"OpenShift Version",
+			"Minimum required OpenShift version to install console plugin not met",
+			"OpenShift version",
 			ocpVersion,
+			"Minimum required version",
+			config.MinConsolePluginOCPVer,
 		)
 		consoleLog.Info("Skipping console plugin")
 		return nil
