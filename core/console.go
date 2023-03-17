@@ -20,6 +20,9 @@ import (
 
 	consolev1alpha1 "github.com/openshift/api/console/v1alpha1"
 	consolev1 "github.com/openshift/client-go/console/clientset/versioned/typed/console/v1alpha1"
+
+	// configv1 "github.com/openshift/api/config/v1"
+	configv1client "github.com/openshift/client-go/config/clientset/versioned/typed/config/v1"
 )
 
 var consoleLog = ctrl.Log.WithName("console")
@@ -42,6 +45,16 @@ func DeployConsolePlugin() error {
 	cli := kubernetes.NewForConfigOrDie(config)
 	// Client for interacting with OpenShift console objects
 	console := consolev1.NewForConfigOrDie(config)
+	configClient := configv1client.NewForConfigOrDie(config)
+
+	// Validate OpenShift version is 4.12 or higher. If the version requirement
+	// is not met, do not install the console plugin.
+	ocpVersion, err := getOpenShiftVersion(configClient)
+	if err != nil {
+		consoleLog.Error(err, "unable to validate OpenShift version")
+	}
+	// TODO: Do something useful here
+	consoleLog.Info("Information", "OpenShift Version", ocpVersion)
 
 	// Create Deployment, if needed
 	deploymentExists, err := doesDeploymentExist(cli)
@@ -89,6 +102,17 @@ func DeployConsolePlugin() error {
 	}
 
 	return nil
+}
+
+// Get OpenShift semantic version of the running cluster
+func getOpenShiftVersion(cli *configv1client.ConfigV1Client) (string, error) {
+	version, err := cli.ClusterVersions().Get(context.TODO(), "version", metav1.GetOptions{})
+	if err != nil {
+		return "", err
+	}
+	// From what I can tell, Desired version is the current OpenShift cluster
+	// version.
+	return version.Status.Desired.Version, nil
 }
 
 func createConsolePlugin(console *consolev1.ConsoleV1alpha1Client) error {
