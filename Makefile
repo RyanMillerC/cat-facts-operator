@@ -8,7 +8,7 @@
 # upgrade the version of your project.
 # --- IMPORTANT: At the moment you need to also update line 213 in ./core/console.go ---
 # TODO: Rig up something so you don't need to update line 213 in the above file every time you update the version
-VERSION ?= 0.0.9
+VERSION ?= 0.0.10
 
 # BUILD_OS and BUILD_ARCH defines what operating system and architecture to
 # build binaries and container images for. This should probably always be
