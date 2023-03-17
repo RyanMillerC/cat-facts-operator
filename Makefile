@@ -155,10 +155,7 @@ run: manifests generate fmt vet ## Run a controller from your host.
 .PHONY: docker-build
 docker-build: test ## Build docker image with the manager.
 	$(call print_header,docker-build)
-	if [[ -d ./container ]]; then rm -rf ./container; fi
-	mkdir ./container
-	cp Dockerfile ./bin/manager ./container
-	cd ./container; docker build --platform ${BUILD_OS}/${BUILD_ARCH} --tag ${IMG} .
+	docker build --platform ${BUILD_OS}/${BUILD_ARCH} --tag ${IMG} .
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the manager.
@@ -170,10 +167,7 @@ console-build:
 	$(call print_header,console-build)
 	cd ./console; yarn install
 	cd ./console; yarn build
-	if [[ -d ./console/container ]]; then rm -rf ./console/container; fi
-	mkdir ./console/container
-	cp -r ./console/Dockerfile ./console/dist ./console/hack/nginx.conf ./console/container
-	cd ./console/container; docker build --platform ${BUILD_OS}/${BUILD_ARCH} --tag ${IMAGE_TAG_BASE}-console-plugin:v${VERSION} .
+	cd ./console; docker build --platform ${BUILD_OS}/${BUILD_ARCH} --tag ${IMAGE_TAG_BASE}-console-plugin:v${VERSION} .
 
 .PHONY: console-push ## Push docker image for console plugin.
 console-push:
@@ -272,7 +266,7 @@ bundle: manifests kustomize ## Generate bundle manifests and metadata, then vali
 .PHONY: bundle-build
 bundle-build: ## Build the bundle image.
 	$(call print_header,bundle-build)
-	docker build -f bundle.Dockerfile -t $(BUNDLE_IMG) .
+	docker build --file bundle.Dockerfile --platform ${BUILD_OS}/${BUILD_ARCH} --tag $(BUNDLE_IMG) .
 
 .PHONY: bundle-push
 bundle-push: ## Push the bundle image.

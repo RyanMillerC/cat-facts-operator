@@ -8,6 +8,6 @@ COPY ./dist /usr/share/nginx/html
 # /var/cert. The OpenShift service and deployment will handle this
 # automatically. If for some reason you need to test this outside of OpenShift,
 # either mount a certificate/key pair or remove this section.
-COPY ./nginx.conf /etc/nginx/nginx.conf
+COPY ./hack/nginx.conf /etc/nginx/nginx.conf
 
 RUN chmod g+rwx /etc/nginx/nginx.conf /var/cache/nginx /var/log/nginx /var/run
