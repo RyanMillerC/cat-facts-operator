@@ -26,5 +26,5 @@ Dockerfile.cross
 *~
 .vscode
 
-# Temporary files for building a container
-container
+# Temp working files
+tmp
