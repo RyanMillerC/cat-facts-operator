@@ -27,7 +27,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	tacomoev1alpha1 "github.com/ryanmillerc/cat-facts-operator/api/v1alpha1"
-	"github.com/ryanmillerc/cat-facts-operator/core"
+	"github.com/ryanmillerc/cat-facts-operator/pkg/core"
 )
 
 // CatFactReconciler reconciles a CatFact object

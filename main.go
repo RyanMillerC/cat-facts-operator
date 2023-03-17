@@ -33,7 +33,7 @@ import (
 
 	tacomoev1alpha1 "github.com/ryanmillerc/cat-facts-operator/api/v1alpha1"
 	"github.com/ryanmillerc/cat-facts-operator/controllers"
-	"github.com/ryanmillerc/cat-facts-operator/core"
+	"github.com/ryanmillerc/cat-facts-operator/pkg/core"
 	//+kubebuilder:scaffold:imports
 )
 
