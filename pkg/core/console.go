@@ -10,6 +10,7 @@ package core
 
 import (
 	"context"
+	"fmt"
 
 	"golang.org/x/mod/semver"
 
@@ -19,6 +20,8 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
 	ctrl "sigs.k8s.io/controller-runtime"
+
+	"github.com/ryanmillerc/cat-facts-operator/pkg/config"
 
 	consolev1alpha1 "github.com/openshift/api/console/v1alpha1"
 	consolev1 "github.com/openshift/client-go/console/clientset/versioned/typed/console/v1alpha1"
@@ -43,11 +46,11 @@ func DeployConsolePlugin() error {
 	// We can't use the controller client because it hasn't been registered with
 	// the manager yet. There's no good way register it without entering the
 	// reconsile loop. So it's easiest to make up our own client for this package.
-	config := ctrl.GetConfigOrDie()
-	cli := kubernetes.NewForConfigOrDie(config)
+	k8sConfig := ctrl.GetConfigOrDie()
+	cli := kubernetes.NewForConfigOrDie(k8sConfig)
 	// Client for interacting with OpenShift console objects
-	console := consolev1.NewForConfigOrDie(config)
-	configClient := configv1client.NewForConfigOrDie(config)
+	console := consolev1.NewForConfigOrDie(k8sConfig)
+	configClient := configv1client.NewForConfigOrDie(k8sConfig)
 
 	// Validate OpenShift version is 4.12 or higher. If the version requirement
 	// is not met, do not install the console plugin.
@@ -130,13 +133,11 @@ func getOpenShiftVersion(cli *configv1client.ConfigV1Client) (string, error) {
 // Returns true if the passed semantic version is equal to or greater than the
 // minimum required version.
 func isOpenShiftVersionOk(ocpVersion string) bool {
-	// TODO: Move this to a const somewhere
-	minVersion := "4.12"
 	// semver.Compare will return:
 	// * 0 if the versions match
 	// * 1 if ocpVerion is greater than minVersion
 	// * -1 if ocpVerion is less than minVersion
-	return semver.Compare(ocpVersion, minVersion) >= 0
+	return semver.Compare(ocpVersion, config.MinConsolePluginOCPVer) >= 0
 }
 
 func createConsolePlugin(console *consolev1.ConsoleV1alpha1Client) error {
@@ -256,9 +257,8 @@ func createDeployment(cli *kubernetes.Clientset) error {
 					},
 					Containers: []corev1.Container{
 						{
-							Name: "cat-facts-console-plugin",
-							// TODO: Replace hardcoded v0.0.8!
-							Image: "quay.io/rymiller/cat-facts-operator-console-plugin:v0.0.9",
+							Name:  "cat-facts-console-plugin",
+							Image: fmt.Sprintf("quay.io/rymiller/cat-facts-operator-console-plugin:v%s", config.Version),
 							Ports: []corev1.ContainerPort{
 								{
 									ContainerPort: 9443,
