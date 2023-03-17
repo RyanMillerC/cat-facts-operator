@@ -11,6 +11,8 @@ package core
 import (
 	"context"
 
+	"golang.org/x/mod/semver"
+
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -53,8 +55,18 @@ func DeployConsolePlugin() error {
 	if err != nil {
 		consoleLog.Error(err, "unable to validate OpenShift version")
 	}
-	// TODO: Do something useful here
-	consoleLog.Info("Information", "OpenShift Version", ocpVersion)
+	shouldInstallPlugin := isOpenShiftVersionOk(ocpVersion)
+	if !shouldInstallPlugin {
+		// This isn't an error but this will stop the flow since the OpenShift
+		// version does not support dynamic console plugins.
+		consoleLog.Info(
+			"Minimum OpenShift version to install console plugin not met",
+			"OpenShift Version",
+			ocpVersion,
+		)
+		consoleLog.Info("Skipping console plugin")
+		return nil
+	}
 
 	// Create Deployment, if needed
 	deploymentExists, err := doesDeploymentExist(cli)
@@ -104,15 +116,27 @@ func DeployConsolePlugin() error {
 	return nil
 }
 
-// Get OpenShift semantic version of the running cluster
+// Return semantic version of the running OpenShift cluster
 func getOpenShiftVersion(cli *configv1client.ConfigV1Client) (string, error) {
-	version, err := cli.ClusterVersions().Get(context.TODO(), "version", metav1.GetOptions{})
+	clusterVersion, err := cli.ClusterVersions().Get(context.TODO(), "version", metav1.GetOptions{})
 	if err != nil {
 		return "", err
 	}
 	// From what I can tell, Desired version is the current OpenShift cluster
 	// version.
-	return version.Status.Desired.Version, nil
+	return clusterVersion.Status.Desired.Version, nil
+}
+
+// Returns true if the passed semantic version is equal to or greater than the
+// minimum required version.
+func isOpenShiftVersionOk(ocpVersion string) bool {
+	// TODO: Move this to a const somewhere
+	minVersion := "4.12"
+	// semver.Compare will return:
+	// * 0 if the versions match
+	// * 1 if ocpVerion is greater than minVersion
+	// * -1 if ocpVerion is less than minVersion
+	return semver.Compare(ocpVersion, minVersion) >= 0
 }
 
 func createConsolePlugin(console *consolev1.ConsoleV1alpha1Client) error {
