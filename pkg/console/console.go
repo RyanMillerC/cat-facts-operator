@@ -1,7 +1,5 @@
 /*
-
-Code to deploy the OpenShift Dynamic Console plugin
-
+Code to deploy the OpenShift Dynamic Console plugin.
 */
 
 // TODO: Fix namespace so it's always the same as the controller.
@@ -12,8 +10,10 @@ import (
 	"context"
 	"fmt"
 
+	consolev1alpha1 "github.com/openshift/api/console/v1alpha1"
+	configv1client "github.com/openshift/client-go/config/clientset/versioned/typed/config/v1"
+	consolev1alpha1client "github.com/openshift/client-go/console/clientset/versioned/typed/console/v1alpha1"
 	"golang.org/x/mod/semver"
-
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -22,12 +22,6 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	"github.com/ryanmillerc/cat-facts-operator/pkg/config"
-
-	consolev1alpha1 "github.com/openshift/api/console/v1alpha1"
-	consolev1 "github.com/openshift/client-go/console/clientset/versioned/typed/console/v1alpha1"
-
-	// configv1 "github.com/openshift/api/config/v1"
-	configv1client "github.com/openshift/client-go/config/clientset/versioned/typed/config/v1"
 )
 
 var consoleLog = ctrl.Log.WithName("console")
@@ -36,24 +30,27 @@ var consoleLog = ctrl.Log.WithName("console")
 // +kubebuilder:rbac:namespace=cat-facts-operator,groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=console.openshift.io,resources=consoleplugins,verbs=get;list;watch;create;update;patch;delete
 
-// Deploy OpenShift dynamic console plugin. The plugin requires 3 resources: a
-// Deployment, a Service, and a ConsolePlugin. If any of the listed resources
-// exist with the name 'cat-facts-console-plugin', they will be untouched. If
-// any of the listed resources don't exist, they will be created.
+// Deploy OpenShift dynamic console plugin.
+//
+// Console plugins require 3 resources: a Deployment, a Service, and a
+// ConsolePlugin. If any of the listed resources exist from a previous
+// installation, they will be untouched.
+//
+// If the cluster does not meet the minimum version set by
+// config.MinConsolePluginOCPVer, console plugin resources will not be deployed.
+//
+// If the cluster is not an OpenShift cluster, this function will error.
 func DeployConsolePlugin() error {
-	// TODO: Only run this if running on OpenShift 4.10 or higher
-
 	// We can't use the controller client because it hasn't been registered with
 	// the manager yet. There's no good way register it without entering the
-	// reconsile loop. So it's easiest to make up our own client for this package.
+	// reconsile loop. So it's easiest to make up our own clients for this package.
 	k8sConfig := ctrl.GetConfigOrDie()
-	cli := kubernetes.NewForConfigOrDie(k8sConfig)
-	// Client for interacting with OpenShift console objects
-	console := consolev1.NewForConfigOrDie(k8sConfig)
-	configClient := configv1client.NewForConfigOrDie(k8sConfig)
+	k8sClient := kubernetes.NewForConfigOrDie(k8sConfig)
+	consoleClient := consolev1alpha1client.NewForConfigOrDie(k8sConfig) // Client for ConsolePlugin
+	configClient := configv1client.NewForConfigOrDie(k8sConfig)         // Client for ClusterVersion
 
-	// Validate OpenShift version is 4.12 or higher. If the version requirement
-	// is not met, do not install the console plugin.
+	// Validate OpenShift version meets minimum requirements. If the version
+	// requirement is not met, do not install the console plugin.
 	ocpVersion, err := getOpenShiftVersion(configClient)
 	if err != nil {
 		consoleLog.Error(err, "unable to validate OpenShift version")
@@ -72,45 +69,45 @@ func DeployConsolePlugin() error {
 	}
 
 	// Create Deployment, if needed
-	deploymentExists, err := doesDeploymentExist(cli)
+	deploymentExists, err := doesDeploymentExist(k8sClient)
 	if err != nil {
 		return err
 	}
 	if deploymentExists {
-		consoleLog.Info("cat-facts-console-plugin deployment exists")
+		consoleLog.Info("Console plugin Deployment exists")
 	} else {
-		consoleLog.Info("cat-facts-console-plugin deployment does not exist... Creating it now")
-		err = createDeployment(cli)
+		consoleLog.Info("Console plugin Deployment does not exist... Creating it now")
+		err = createDeployment(k8sClient)
 		if err != nil {
 			return err
 		}
 	}
 
 	// Create Service, if needed
-	serviceExists, err := doesServiceExist(cli)
+	serviceExists, err := doesServiceExist(k8sClient)
 	if err != nil {
 		return err
 	}
 	if serviceExists {
-		consoleLog.Info("cat-facts-console-plugin service exists")
+		consoleLog.Info("Console plugin Service exists")
 	} else {
-		consoleLog.Info("cat-facts-console-plugin service does not exist... Creating it now")
-		err = createService(cli)
+		consoleLog.Info("Console plugin Service does not exist... Creating it now")
+		err = createService(k8sClient)
 		if err != nil {
 			return err
 		}
 	}
 
 	// Create ConsolePlugin, if needed
-	consolePluginExists, err := doesConsolePluginExist(console)
+	consolePluginExists, err := doesConsolePluginExist(consoleClient)
 	if err != nil {
 		return err
 	}
 	if consolePluginExists {
-		consoleLog.Info("cat-facts-console-plugin ConsolePlugin exists")
+		consoleLog.Info("Console plugin ConsolePlugin exists")
 	} else {
-		consoleLog.Info("cat-facts-console-plugin ConsolePlugin does not exist... Creating it now")
-		err = createConsolePlugin(console)
+		consoleLog.Info("Console plugin ConsolePlugin does not exist... Creating it now")
+		err = createConsolePlugin(consoleClient)
 		if err != nil {
 			return err
 		}
@@ -125,8 +122,7 @@ func getOpenShiftVersion(cli *configv1client.ConfigV1Client) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// From what I can tell, Desired version is the current OpenShift cluster
-	// version.
+	// Desired version appears to be the current OpenShift cluster version
 	return clusterVersion.Status.Desired.Version, nil
 }
 
@@ -140,116 +136,54 @@ func isOpenShiftVersionOk(ocpVersion string) bool {
 	return semver.Compare(ocpVersion, config.MinConsolePluginOCPVer) >= 0
 }
 
-func createConsolePlugin(console *consolev1.ConsoleV1alpha1Client) error {
-	consolePlugin := consolev1alpha1.ConsolePlugin{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "ConsolePlugin",
-			APIVersion: "console.openshift.io/v1alpha1",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "cat-facts-console-plugin",
-			Namespace: "cat-facts-operator",
-			Labels: map[string]string{
-				"app": "cat-facts-console-plugin",
-			},
-		},
-		Spec: consolev1alpha1.ConsolePluginSpec{
-			DisplayName: "OpenShift console plugin for all you cool cats and kittens",
-			Service: consolev1alpha1.ConsolePluginService{
-				Name:      "cat-facts-console-plugin",
-				Namespace: "cat-facts-operator",
-				Port:      9443,
-				BasePath:  "/",
-			},
-		},
-	}
-
-	_, err := console.ConsolePlugins().Create(context.TODO(), &consolePlugin, metav1.CreateOptions{})
+// Returns true if an existing console plugin Deployment exists.
+func doesDeploymentExist(client *kubernetes.Clientset) (bool, error) {
+	deploymentList, err := client.AppsV1().Deployments("cat-facts-operator").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		return err
+		return false, err
 	}
-
-	return nil // No errors; yay!
+	for _, deployment := range deploymentList.Items {
+		if deployment.Name == fmt.Sprintf("%s-console-plugin", config.OperatorName) {
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
-func createService(cli *kubernetes.Clientset) error {
-	service := corev1.Service{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "Service",
-			APIVersion: "v1",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "cat-facts-console-plugin",
-			Namespace: "cat-facts-operator",
-			Labels: map[string]string{
-				"app": "cat-facts-console-plugin",
-			},
-			Annotations: map[string]string{
-				"service.beta.openshift.io/serving-cert-secret-name": "cat-facts-console-plugin-cert",
-			},
-		},
-		Spec: corev1.ServiceSpec{
-			Ports: []corev1.ServicePort{
-				{
-					Name:     "9443-tcp",
-					Protocol: "TCP",
-					Port:     9443,
-					TargetPort: intstr.IntOrString{
-						//Type:   0,
-						IntVal: 9443,
-					},
-				},
-			},
-			Selector: map[string]string{
-				"app": "cat-facts-console-plugin",
-			},
-			Type:            "ClusterIP",
-			SessionAffinity: "None",
-		},
-		Status: corev1.ServiceStatus{},
-	}
-
-	_, err := cli.CoreV1().Services("cat-facts-operator").Create(context.TODO(), &service, metav1.CreateOptions{})
-	if err != nil {
-		return err
-	}
-
-	return nil // No errors; yay!
-}
-
-func createDeployment(cli *kubernetes.Clientset) error {
+// Create Deployment for dynamic console plugin
+func createDeployment(client *kubernetes.Clientset) error {
 	deployment := appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Deployment",
 			APIVersion: "apps/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "cat-facts-console-plugin",
+			Name:      fmt.Sprintf("%s-console-plugin", config.OperatorName),
 			Namespace: "cat-facts-operator",
 			Labels: map[string]string{
-				"app": "cat-facts-console-plugin",
+				"app": fmt.Sprintf("%s-console-plugin", config.OperatorName),
 			},
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: int32Ptr(1),
 			Selector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{
-					"app": "cat-facts-console-plugin",
+					"app": fmt.Sprintf("%s-console-plugin", config.OperatorName),
 				},
 			},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: map[string]string{
-						"app": "cat-facts-console-plugin",
+						"app": fmt.Sprintf("%s-console-plugin", config.OperatorName),
 					},
 				},
 				Spec: corev1.PodSpec{
 					Volumes: []corev1.Volume{
 						{
-							Name: "cat-facts-console-plugin-cert",
+							Name: fmt.Sprintf("%s-console-plugin-cert", config.OperatorName),
 							VolumeSource: corev1.VolumeSource{
 								Secret: &corev1.SecretVolumeSource{
-									SecretName:  "cat-facts-console-plugin-cert",
+									SecretName:  fmt.Sprintf("%s-console-plugin-cert", config.OperatorName),
 									DefaultMode: int32Ptr(420),
 								},
 							},
@@ -257,8 +191,8 @@ func createDeployment(cli *kubernetes.Clientset) error {
 					},
 					Containers: []corev1.Container{
 						{
-							Name:  "cat-facts-console-plugin",
-							Image: fmt.Sprintf("quay.io/rymiller/cat-facts-operator-console-plugin:v%s", config.Version),
+							Name:  fmt.Sprintf("%s-console-plugin", config.OperatorName),
+							Image: fmt.Sprintf("%s:%s", config.ConsolePluginImage, config.Version),
 							Ports: []corev1.ContainerPort{
 								{
 									ContainerPort: 9443,
@@ -275,7 +209,7 @@ func createDeployment(cli *kubernetes.Clientset) error {
 							// },
 							VolumeMounts: []corev1.VolumeMount{
 								{
-									Name:      "cat-facts-console-plugin-cert",
+									Name:      fmt.Sprintf("%s-console-plugin-cert", config.OperatorName),
 									ReadOnly:  true,
 									MountPath: "/var/cert",
 								},
@@ -304,55 +238,116 @@ func createDeployment(cli *kubernetes.Clientset) error {
 		Status: appsv1.DeploymentStatus{},
 	}
 
-	_, err := cli.AppsV1().Deployments("cat-facts-operator").Create(context.TODO(), &deployment, metav1.CreateOptions{})
+	_, err := client.AppsV1().Deployments("cat-facts-operator").Create(context.TODO(), &deployment, metav1.CreateOptions{})
 	if err != nil {
 		return err
 	}
 
-	return nil // No errors; yay!
+	return nil
 }
 
-// Returns true if cat-facts-console-plugin Deployment exists in the
-// cat-facts-operator namespace.
-func doesDeploymentExist(cli *kubernetes.Clientset) (bool, error) {
-	deploymentList, err := cli.AppsV1().Deployments("cat-facts-operator").List(context.TODO(), metav1.ListOptions{})
-	if err != nil {
-		return false, err
-	}
-	for _, deployment := range deploymentList.Items {
-		if deployment.Name == "cat-facts-console-plugin" {
-			return true, nil
-		}
-	}
-	return false, nil
-}
-
-// Returns true if cat-facts-console-plugin Service exists in the
-// cat-facts-operator namespace.
-func doesServiceExist(cli *kubernetes.Clientset) (bool, error) {
-	serviceList, err := cli.CoreV1().Services("cat-facts-operator").List(context.TODO(), metav1.ListOptions{})
+// Returns true if an existing console plugin Service exists.
+func doesServiceExist(client *kubernetes.Clientset) (bool, error) {
+	serviceList, err := client.CoreV1().Services("cat-facts-operator").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		return false, err
 	}
 	for _, service := range serviceList.Items {
-		if service.Name == "cat-facts-console-plugin" {
+		if service.Name == fmt.Sprintf("%s-console-plugin", config.OperatorName) {
 			return true, nil
 		}
 	}
 	return false, nil
 }
 
-// Returns true if cat-facts-console-plugin ConsolePlugin exists. (ConsolePlugin
-// is a cluster-scoped resource.)
-func doesConsolePluginExist(console *consolev1.ConsoleV1alpha1Client) (bool, error) {
-	consolePluginList, err := console.ConsolePlugins().List(context.TODO(), metav1.ListOptions{})
+// Create Service for dynamic console plugin
+func createService(client *kubernetes.Clientset) error {
+	service := corev1.Service{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Service",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      fmt.Sprintf("%s-console-plugin", config.OperatorName),
+			Namespace: "cat-facts-operator",
+			Labels: map[string]string{
+				"app": fmt.Sprintf("%s-console-plugin", config.OperatorName),
+			},
+			Annotations: map[string]string{
+				"service.beta.openshift.io/serving-cert-secret-name": fmt.Sprintf("%s-console-plugin-cert", config.OperatorName),
+			},
+		},
+		Spec: corev1.ServiceSpec{
+			Ports: []corev1.ServicePort{
+				{
+					Name:     "9443-tcp",
+					Protocol: "TCP",
+					Port:     9443,
+					TargetPort: intstr.IntOrString{
+						IntVal: 9443,
+					},
+				},
+			},
+			Selector: map[string]string{
+				"app": fmt.Sprintf("%s-console-plugin", config.OperatorName),
+			},
+			Type:            "ClusterIP",
+			SessionAffinity: "None",
+		},
+		Status: corev1.ServiceStatus{},
+	}
+
+	_, err := client.CoreV1().Services("cat-facts-operator").Create(context.TODO(), &service, metav1.CreateOptions{})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Returns true if an existing console plugin ConsolePlugin exists.
+func doesConsolePluginExist(client *consolev1alpha1client.ConsoleV1alpha1Client) (bool, error) {
+	consolePluginList, err := client.ConsolePlugins().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		return false, err
 	}
 	for _, consolePlugin := range consolePluginList.Items {
-		if consolePlugin.Name == "cat-facts-console-plugin" {
+		if consolePlugin.Name == fmt.Sprintf("%s-console-plugin", config.OperatorName) {
 			return true, nil
 		}
 	}
 	return false, nil
+}
+
+// Create ConsolePlugin for dynamic console plugin
+func createConsolePlugin(console *consolev1alpha1client.ConsoleV1alpha1Client) error {
+	consolePlugin := consolev1alpha1.ConsolePlugin{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "ConsolePlugin",
+			APIVersion: "console.openshift.io/v1alpha1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      fmt.Sprintf("%s-console-plugin", config.OperatorName),
+			Namespace: "cat-facts-operator",
+			Labels: map[string]string{
+				"app": fmt.Sprintf("%s-console-plugin", config.OperatorName),
+			},
+		},
+		Spec: consolev1alpha1.ConsolePluginSpec{
+			DisplayName: "OpenShift console plugin for all you cool cats and kittens",
+			Service: consolev1alpha1.ConsolePluginService{
+				Name:      fmt.Sprintf("%s-console-plugin", config.OperatorName),
+				Namespace: "cat-facts-operator",
+				Port:      9443,
+				BasePath:  "/",
+			},
+		},
+	}
+
+	_, err := console.ConsolePlugins().Create(context.TODO(), &consolePlugin, metav1.CreateOptions{})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
