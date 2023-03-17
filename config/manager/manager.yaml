@@ -37,7 +37,7 @@ spec:
         control-plane: controller-manager
     spec:
       # TODO(user): Uncomment the following code to configure the nodeAffinity expression
-      # according to the platforms which are supported by your solution. 
+      # according to the platforms which are supported by your solution.
       # It is considered best practice to support multiple architectures. You can
       # build your manager image using the makefile target docker-buildx.
       # affinity:
@@ -70,6 +70,13 @@ spec:
         - /manager
         args:
         - --leader-elect
+        env:
+        # Used by controller to determine which namespace to deploy console
+        # plugin into. https://github.com/kubernetes/kubernetes/pull/63707
+        - name: CONTROLLER_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         image: controller:latest
         name: manager
         securityContext:
