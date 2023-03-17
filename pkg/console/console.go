@@ -362,8 +362,7 @@ func createConsolePlugin(console *consolev1alpha1client.ConsoleV1alpha1Client, n
 			APIVersion: "console.openshift.io/v1alpha1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      fmt.Sprintf("%s-console-plugin", config.OperatorName),
-			Namespace: namespace,
+			Name: fmt.Sprintf("%s-console-plugin", config.OperatorName),
 			Labels: map[string]string{
 				"app": fmt.Sprintf("%s-console-plugin", config.OperatorName),
 			},
