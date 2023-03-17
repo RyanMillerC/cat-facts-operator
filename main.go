@@ -113,7 +113,7 @@ func main() {
 	// starting the manager, which kicks off the reconsile infinite loop.
 	err = console.DeployConsolePlugin()
 	if err != nil {
-		setupLog.Error(err, "unable to deploy ConsolePlugin.")
+		setupLog.Error(err, "unable to deploy console plugin")
 	}
 
 	setupLog.Info("starting manager")

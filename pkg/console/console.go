@@ -57,7 +57,7 @@ func DeployConsolePlugin() error {
 	// requirement is not met, do not install the console plugin.
 	ocpVersion, err := getOpenShiftVersion(configClient)
 	if err != nil {
-		consoleLog.Error(err, "unable to validate OpenShift version")
+		return errors.New("unable to validate OpenShift version")
 	}
 	shouldInstallPlugin := isOpenShiftVersionOk(ocpVersion)
 	if !shouldInstallPlugin {
