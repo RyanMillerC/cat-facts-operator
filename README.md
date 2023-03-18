@@ -104,7 +104,7 @@ leaves behind:
 oc delete -n cat-facts-operator $(oc get -n cat-facts-operator catfacts -o name)
 
 # Remove the CatFacts CRD
-oc delete crd catfact.taco.moe
+oc delete crd catfacts.taco.moe
 
 # Remove the OpenShift console plugin
 oc delete consoleplugin cat-facts-operator-console-plugin
