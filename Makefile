@@ -8,7 +8,7 @@
 # upgrade the version of your project.
 # --- IMPORTANT: At the moment you need to also update line 213 in ./core/console.go ---
 # TODO: Rig up something so you don't need to update line 213 in the above file every time you update the version
-VERSION ?= 0.0.11
+VERSION ?= 0.0.12
 
 # BUILD_OS and BUILD_ARCH defines what operating system and architecture to
 # build binaries and container images for. This should probably always be
@@ -108,7 +108,7 @@ help: ## Display this help.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
 .PHONY: all
-all: generate manifests build docker-build docker-push console-build console-push bundle bundle-build bundle-push ## Run everything needed to update the operator with OLM. (Should update version before running this)
+all: update-version generate manifests build docker-build docker-push console-build console-push bundle bundle-build bundle-push ## Run everything needed to update the operator with OLM. (Should update version before running this)
 
 ##@ Development
 
