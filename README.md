@@ -107,7 +107,7 @@ oc delete -n cat-facts-operator $(oc get -n cat-facts-operator catfacts -o name)
 oc delete crd catfact.taco.moe
 
 # Remove the OpenShift console plugin
-oc delete consoleplugin cat-facts-console-plugin
+oc delete consoleplugin cat-facts-operator-console-plugin
 
 # Remove the cat-facts-operator namespace
 oc delete namespace cat-facts-operator
