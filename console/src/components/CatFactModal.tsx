@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Modal, ModalVariant } from '@patternfly/react-core';
 import { CatIcon } from './CatIcon';
 import { CatFact } from '../data/model';
-import '../styles/main.css';
 
 interface CatFactModalProps {
   data: CatFact;

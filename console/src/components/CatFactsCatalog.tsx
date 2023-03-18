@@ -73,7 +73,7 @@ export const CatFactCatalog: React.FC = () => {
             return (
               <FlexItem key={index}>
                 <CatalogTile
-                  className="cat-facts-console-plugin__card"
+                  className="cat-facts-operator-console-plugin__card"
                   key={index}
                   id={item.metadata.name}
                   iconImg={getCatIconSVG(item.spec.iconName)}
