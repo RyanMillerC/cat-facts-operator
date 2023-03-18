@@ -176,7 +176,7 @@ func getControllerNamespace() (string, error) {
 
 // Returns true if an existing console plugin Deployment exists.
 func doesDeploymentExist(client *kubernetes.Clientset, namespace string) (bool, error) {
-	deploymentList, err := client.AppsV1().Deployments("cat-facts-operator").List(context.TODO(), metav1.ListOptions{})
+	deploymentList, err := client.AppsV1().Deployments(namespace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		return false, err
 	}
@@ -276,7 +276,7 @@ func createDeployment(client *kubernetes.Clientset, namespace string) error {
 		Status: appsv1.DeploymentStatus{},
 	}
 
-	_, err := client.AppsV1().Deployments("cat-facts-operator").Create(context.TODO(), &deployment, metav1.CreateOptions{})
+	_, err := client.AppsV1().Deployments(namespace).Create(context.TODO(), &deployment, metav1.CreateOptions{})
 	if err != nil {
 		return err
 	}
@@ -286,7 +286,7 @@ func createDeployment(client *kubernetes.Clientset, namespace string) error {
 
 // Returns true if an existing console plugin Service exists.
 func doesServiceExist(client *kubernetes.Clientset, namespace string) (bool, error) {
-	serviceList, err := client.CoreV1().Services("cat-facts-operator").List(context.TODO(), metav1.ListOptions{})
+	serviceList, err := client.CoreV1().Services(namespace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		return false, err
 	}
@@ -335,7 +335,7 @@ func createService(client *kubernetes.Clientset, namespace string) error {
 		Status: corev1.ServiceStatus{},
 	}
 
-	_, err := client.CoreV1().Services("cat-facts-operator").Create(context.TODO(), &service, metav1.CreateOptions{})
+	_, err := client.CoreV1().Services(namespace).Create(context.TODO(), &service, metav1.CreateOptions{})
 	if err != nil {
 		return err
 	}
