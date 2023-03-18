@@ -111,6 +111,9 @@ oc delete consoleplugin cat-facts-operator-console-plugin
 
 # Remove the cat-facts-operator namespace
 oc delete namespace cat-facts-operator
+
+# Optional: Remove the Cat Facts OLM CatalogSource
+oc delete -n openshift-marketplace catalogsource cat-facts-catalog
 ```
 
 ## Acknowledgments
