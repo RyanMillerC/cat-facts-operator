@@ -254,6 +254,12 @@ $(ENVTEST): $(LOCALBIN)
 	$(call print_header,envtest)
 	test -s $(LOCALBIN)/setup-envtest || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
 
+.PHONY: update-version
+update-version: ## Update version number throughout the project to match VERSION make variable
+	$(call print_header,update-version)
+	sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" ./console/package.json
+	sed -i "s/Version string = \"v.*\"/Version string = \"v${VERSION}\"/g" ./pkg/config/config.go
+
 .PHONY: bundle
 bundle: manifests kustomize ## Generate bundle manifests and metadata, then validate generated files.
 	$(call print_header,bundle)
