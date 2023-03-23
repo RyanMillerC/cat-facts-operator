@@ -8,7 +8,6 @@ import {
 } from '@openshift-console/dynamic-plugin-sdk';
 import { CatFact, CatFactModel } from '../data/model';
 import { CatFactCatalog } from './CatFactsCatalog';
-import '../styles/main.css';
 
 export const CatFactsPage: React.FC = () => {
   // https://www.patternfly.org/v4/extensions/catalog-view/catalog-tile
