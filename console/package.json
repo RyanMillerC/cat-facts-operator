@@ -1,6 +1,6 @@
 {
   "name": "cat-facts-operator-console-plugin",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "private": true,
   "repository": "https://github.com/RyanMillerC/cat-facts-operator",
   "license": "Apache-2.0",
@@ -58,7 +58,7 @@
   },
   "consolePlugin": {
     "name": "cat-facts-operator-console-plugin",
-    "version": "0.0.12",
+    "version": "0.0.13",
     "displayName": "Cat Facts Console Plugin",
     "description": "For all you cool cats and kittens",
     "exposedModules": {
