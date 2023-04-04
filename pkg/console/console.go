@@ -13,16 +13,16 @@ import (
 	"os"
 	"strings"
 
+	configv1 "github.com/openshift/api/config/v1"
 	consolev1alpha1 "github.com/openshift/api/console/v1alpha1"
-	configv1client "github.com/openshift/client-go/config/clientset/versioned/typed/config/v1"
-	consolev1alpha1client "github.com/openshift/client-go/console/clientset/versioned/typed/console/v1alpha1"
 	"golang.org/x/mod/semver"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/intstr"
-	"k8s.io/client-go/kubernetes"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/ryanmillerc/cat-facts-operator/pkg/config"
 )
@@ -34,7 +34,7 @@ var consoleLog = ctrl.Log.WithName("console")
 // +kubebuilder:rbac:groups=console.openshift.io,resources=consoleplugins,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=config.openshift.io,resources=clusterversions,verbs=get
 
-// Deploy OpenShift dynamic console plugin.
+// Deploy OpenShift console dynamic plugin.
 //
 // Console plugins require 3 resources: a Deployment, a Service, and a
 // ConsolePlugin. If any of the listed resources exist from a previous
@@ -47,16 +47,22 @@ var consoleLog = ctrl.Log.WithName("console")
 func DeployConsolePlugin() error {
 	// We can't use the controller client because it hasn't been registered with
 	// the manager yet. There's no good way register it without entering the
-	// reconsile loop. So it's easiest to make up our own clients for this package.
-	k8sConfig := ctrl.GetConfigOrDie()
-
-	k8sClient := kubernetes.NewForConfigOrDie(k8sConfig)
-	consoleClient := consolev1alpha1client.NewForConfigOrDie(k8sConfig) // Client for ConsolePlugin
-	configClient := configv1client.NewForConfigOrDie(k8sConfig)         // Client for ClusterVersion
+	// reconsile loop. So it's easiest to make our own client and pass it around
+	// to functions in this package.
+	scheme := runtime.NewScheme()
+	appsv1.AddToScheme(scheme)          // Deployment
+	corev1.AddToScheme(scheme)          // Service
+	consolev1alpha1.AddToScheme(scheme) // ConsolePlugin
+	configv1.AddToScheme(scheme)        // ClusterVersion
+	kubeconfig := ctrl.GetConfigOrDie()
+	kclient, err := client.New(kubeconfig, client.Options{Scheme: scheme})
+	if err != nil {
+		return err
+	}
 
 	// Validate OpenShift version meets minimum requirements. If the version
 	// requirement is not met, do not install the console plugin.
-	ocpVersion, err := getOpenShiftVersion(configClient)
+	ocpVersion, err := getOpenShiftVersion(kclient)
 	if err != nil {
 		return errors.New("unable to validate OpenShift version")
 	}
@@ -81,7 +87,7 @@ func DeployConsolePlugin() error {
 	}
 
 	// Create Deployment, if needed
-	deploymentExists, err := doesDeploymentExist(k8sClient, namespace)
+	deploymentExists, err := doesDeploymentExist(kclient, namespace)
 	if err != nil {
 		return err
 	}
@@ -89,14 +95,14 @@ func DeployConsolePlugin() error {
 		consoleLog.Info("Console plugin Deployment exists")
 	} else {
 		consoleLog.Info("Console plugin Deployment does not exist... Creating it now")
-		err = createDeployment(k8sClient, namespace)
+		err = createDeployment(kclient, namespace)
 		if err != nil {
 			return err
 		}
 	}
 
 	// Create Service, if needed
-	serviceExists, err := doesServiceExist(k8sClient, namespace)
+	serviceExists, err := doesServiceExist(kclient, namespace)
 	if err != nil {
 		return err
 	}
@@ -104,14 +110,14 @@ func DeployConsolePlugin() error {
 		consoleLog.Info("Console plugin Service exists")
 	} else {
 		consoleLog.Info("Console plugin Service does not exist... Creating it now")
-		err = createService(k8sClient, namespace)
+		err = createService(kclient, namespace)
 		if err != nil {
 			return err
 		}
 	}
 
 	// Create ConsolePlugin, if needed
-	consolePluginExists, err := doesConsolePluginExist(consoleClient, namespace)
+	consolePluginExists, err := doesConsolePluginExist(kclient, namespace)
 	if err != nil {
 		return err
 	}
@@ -119,7 +125,7 @@ func DeployConsolePlugin() error {
 		consoleLog.Info("Console plugin ConsolePlugin exists")
 	} else {
 		consoleLog.Info("Console plugin ConsolePlugin does not exist... Creating it now")
-		err = createConsolePlugin(consoleClient, namespace)
+		err = createConsolePlugin(kclient, namespace)
 		if err != nil {
 			return err
 		}
@@ -129,8 +135,9 @@ func DeployConsolePlugin() error {
 }
 
 // Return semantic version of the running OpenShift cluster
-func getOpenShiftVersion(cli *configv1client.ConfigV1Client) (string, error) {
-	clusterVersion, err := cli.ClusterVersions().Get(context.TODO(), "version", metav1.GetOptions{})
+func getOpenShiftVersion(kclient client.Client) (string, error) {
+	var clusterVersion configv1.ClusterVersion
+	err := kclient.Get(context.TODO(), client.ObjectKey{Name: "version"}, &clusterVersion, &client.GetOptions{})
 	if err != nil {
 		return "", err
 	}
@@ -142,9 +149,9 @@ func getOpenShiftVersion(cli *configv1client.ConfigV1Client) (string, error) {
 // minimum required version.
 func isOpenShiftVersionOk(ocpVersion string) bool {
 	// semver.Compare will return:
-	// * 0 if the versions match
-	// * 1 if ocpVerion is greater than minVersion
-	// * -1 if ocpVerion is less than minVersion
+	// 0 if the versions match
+	// 1 if ocpVerion is greater than minVersion
+	// -1 if ocpVerion is less than minVersion
 	return semver.Compare(ocpVersion, config.MinConsolePluginOCPVer) >= 0
 }
 
@@ -175,11 +182,13 @@ func getControllerNamespace() (string, error) {
 }
 
 // Returns true if an existing console plugin Deployment exists.
-func doesDeploymentExist(client *kubernetes.Clientset, namespace string) (bool, error) {
-	deploymentList, err := client.AppsV1().Deployments(namespace).List(context.TODO(), metav1.ListOptions{})
+func doesDeploymentExist(kclient client.Client, namespace string) (bool, error) {
+	var deploymentList appsv1.DeploymentList
+	err := kclient.List(context.TODO(), &deploymentList, &client.ListOptions{Namespace: namespace})
 	if err != nil {
 		return false, err
 	}
+
 	for _, deployment := range deploymentList.Items {
 		if deployment.Name == fmt.Sprintf("%s-console-plugin", config.OperatorName) {
 			return true, nil
@@ -189,7 +198,7 @@ func doesDeploymentExist(client *kubernetes.Clientset, namespace string) (bool, 
 }
 
 // Create Deployment for dynamic console plugin
-func createDeployment(client *kubernetes.Clientset, namespace string) error {
+func createDeployment(kclient client.Client, namespace string) error {
 	deployment := appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Deployment",
@@ -276,7 +285,7 @@ func createDeployment(client *kubernetes.Clientset, namespace string) error {
 		Status: appsv1.DeploymentStatus{},
 	}
 
-	_, err := client.AppsV1().Deployments(namespace).Create(context.TODO(), &deployment, metav1.CreateOptions{})
+	err := kclient.Create(context.TODO(), &deployment, &client.CreateOptions{})
 	if err != nil {
 		return err
 	}
@@ -285,11 +294,13 @@ func createDeployment(client *kubernetes.Clientset, namespace string) error {
 }
 
 // Returns true if an existing console plugin Service exists.
-func doesServiceExist(client *kubernetes.Clientset, namespace string) (bool, error) {
-	serviceList, err := client.CoreV1().Services(namespace).List(context.TODO(), metav1.ListOptions{})
+func doesServiceExist(kclient client.Client, namespace string) (bool, error) {
+	var serviceList corev1.ServiceList
+	err := kclient.List(context.TODO(), &serviceList, &client.ListOptions{Namespace: namespace})
 	if err != nil {
 		return false, err
 	}
+
 	for _, service := range serviceList.Items {
 		if service.Name == fmt.Sprintf("%s-console-plugin", config.OperatorName) {
 			return true, nil
@@ -299,7 +310,7 @@ func doesServiceExist(client *kubernetes.Clientset, namespace string) (bool, err
 }
 
 // Create Service for dynamic console plugin
-func createService(client *kubernetes.Clientset, namespace string) error {
+func createService(kclient client.Client, namespace string) error {
 	service := corev1.Service{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Service",
@@ -335,7 +346,7 @@ func createService(client *kubernetes.Clientset, namespace string) error {
 		Status: corev1.ServiceStatus{},
 	}
 
-	_, err := client.CoreV1().Services(namespace).Create(context.TODO(), &service, metav1.CreateOptions{})
+	err := kclient.Create(context.TODO(), &service, &client.CreateOptions{})
 	if err != nil {
 		return err
 	}
@@ -344,11 +355,13 @@ func createService(client *kubernetes.Clientset, namespace string) error {
 }
 
 // Returns true if an existing console plugin ConsolePlugin exists.
-func doesConsolePluginExist(client *consolev1alpha1client.ConsoleV1alpha1Client, namespace string) (bool, error) {
-	consolePluginList, err := client.ConsolePlugins().List(context.TODO(), metav1.ListOptions{})
+func doesConsolePluginExist(kclient client.Client, namespace string) (bool, error) {
+	var consolePluginList consolev1alpha1.ConsolePluginList
+	err := kclient.List(context.TODO(), &consolePluginList, &client.ListOptions{Namespace: namespace})
 	if err != nil {
 		return false, err
 	}
+
 	for _, consolePlugin := range consolePluginList.Items {
 		if consolePlugin.Name == fmt.Sprintf("%s-console-plugin", config.OperatorName) {
 			return true, nil
@@ -358,7 +371,7 @@ func doesConsolePluginExist(client *consolev1alpha1client.ConsoleV1alpha1Client,
 }
 
 // Create ConsolePlugin for dynamic console plugin
-func createConsolePlugin(console *consolev1alpha1client.ConsoleV1alpha1Client, namespace string) error {
+func createConsolePlugin(kclient client.Client, namespace string) error {
 	consolePlugin := consolev1alpha1.ConsolePlugin{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "ConsolePlugin",
@@ -381,7 +394,7 @@ func createConsolePlugin(console *consolev1alpha1client.ConsoleV1alpha1Client, n
 		},
 	}
 
-	_, err := console.ConsolePlugins().Create(context.TODO(), &consolePlugin, metav1.CreateOptions{})
+	err := kclient.Create(context.TODO(), &consolePlugin, &client.CreateOptions{})
 	if err != nil {
 		return err
 	}
