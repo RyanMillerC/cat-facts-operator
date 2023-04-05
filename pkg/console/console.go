@@ -94,18 +94,10 @@ func DeployConsolePlugin() error {
 	}
 
 	// Create Service, if needed
-	serviceExists, err := doesServiceExist(kclient, namespace)
+	service := getService(name, namespace)
+	createOrUpdateService(kclient, &service)
 	if err != nil {
 		return err
-	}
-	if serviceExists {
-		consoleLog.Info("Console plugin Service exists")
-	} else {
-		consoleLog.Info("Console plugin Service does not exist... Creating it now")
-		err = createService(kclient, namespace)
-		if err != nil {
-			return err
-		}
 	}
 
 	// Create ConsolePlugin, if needed
@@ -294,37 +286,52 @@ func getDeployment(name string, namespace string) appsv1.Deployment {
 	return deployment
 }
 
-// Returns true if an existing console plugin Service exists.
-func doesServiceExist(kclient client.Client, namespace string) (bool, error) {
-	var serviceList corev1.ServiceList
-	err := kclient.List(context.TODO(), &serviceList, &client.ListOptions{Namespace: namespace})
+// Create or update the Service for a console dynamic plugin
+func createOrUpdateService(kclient client.Client, service *corev1.Service) error {
+	var found corev1.Service
+	key := client.ObjectKeyFromObject(service)
+	err := kclient.Get(context.TODO(), key, &found, &client.GetOptions{})
+	create := false
 	if err != nil {
-		return false, err
-	}
-
-	for _, service := range serviceList.Items {
-		if service.Name == fmt.Sprintf("%s-console-plugin", config.OperatorName) {
-			return true, nil
+		if kerrors.IsNotFound(err) {
+			create = true
+		} else {
+			return err
 		}
 	}
-	return false, nil
+
+	if create {
+		consoleLog.Info("Creating Service for console dynamic plugin")
+		err := kclient.Create(context.TODO(), service, &client.CreateOptions{})
+		if err != nil {
+			return err
+		}
+	} else {
+		consoleLog.Info("Updating Service for console dynamic plugin")
+		service.DeepCopyInto(&found)
+		err := kclient.Update(context.TODO(), &found, &client.UpdateOptions{})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
-// Create Service for dynamic console plugin
-func createService(kclient client.Client, namespace string) error {
+func getService(name string, namespace string) corev1.Service {
 	service := corev1.Service{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Service",
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      fmt.Sprintf("%s-console-plugin", config.OperatorName),
+			Name:      name,
 			Namespace: namespace,
 			Labels: map[string]string{
-				"app": fmt.Sprintf("%s-console-plugin", config.OperatorName),
+				"app": name,
 			},
 			Annotations: map[string]string{
-				"service.beta.openshift.io/serving-cert-secret-name": fmt.Sprintf("%s-console-plugin-cert", config.OperatorName),
+				"service.beta.openshift.io/serving-cert-secret-name": fmt.Sprintf("%s-cert", name),
 			},
 		},
 		Spec: corev1.ServiceSpec{
@@ -339,20 +346,14 @@ func createService(kclient client.Client, namespace string) error {
 				},
 			},
 			Selector: map[string]string{
-				"app": fmt.Sprintf("%s-console-plugin", config.OperatorName),
+				"app": name,
 			},
 			Type:            "ClusterIP",
 			SessionAffinity: "None",
 		},
 		Status: corev1.ServiceStatus{},
 	}
-
-	err := kclient.Create(context.TODO(), &service, &client.CreateOptions{})
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return service
 }
 
 // Returns true if an existing console plugin ConsolePlugin exists.
