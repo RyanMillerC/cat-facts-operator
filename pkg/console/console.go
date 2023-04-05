@@ -18,6 +18,7 @@ import (
 	"golang.org/x/mod/semver"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -68,8 +69,6 @@ func DeployConsolePlugin() error {
 	}
 	shouldInstallPlugin := isOpenShiftVersionOk(ocpVersion)
 	if !shouldInstallPlugin {
-		// This isn't an error but this will stop the flow since the OpenShift
-		// version does not support dynamic console plugins.
 		consoleLog.Info(
 			"Minimum required OpenShift version to install console plugin not met",
 			"OpenShift version",
@@ -77,28 +76,21 @@ func DeployConsolePlugin() error {
 			"Minimum required version",
 			config.MinConsolePluginOCPVer,
 		)
-		consoleLog.Info("Skipping console plugin")
 		return nil
 	}
 
+	// All resources (Deployment, Service, and ConsolePlugin) share the same
+	name := fmt.Sprintf("%s-console-plugin", config.OperatorName)
 	namespace, err := getControllerNamespace()
 	if err != nil {
 		return err
 	}
 
 	// Create Deployment, if needed
-	deploymentExists, err := doesDeploymentExist(kclient, namespace)
+	deployment := getDeployment(name, namespace)
+	createOrUpdateDeployment(kclient, &deployment)
 	if err != nil {
 		return err
-	}
-	if deploymentExists {
-		consoleLog.Info("Console plugin Deployment exists")
-	} else {
-		consoleLog.Info("Console plugin Deployment does not exist... Creating it now")
-		err = createDeployment(kclient, namespace)
-		if err != nil {
-			return err
-		}
 	}
 
 	// Create Service, if needed
@@ -146,7 +138,7 @@ func getOpenShiftVersion(kclient client.Client) (string, error) {
 }
 
 // Returns true if the passed semantic version is equal to or greater than the
-// minimum required version.
+// minimconfig.OperatorName),um required version.
 func isOpenShiftVersionOk(ocpVersion string) bool {
 	// semver.Compare will return:
 	// 0 if the versions match
@@ -181,56 +173,71 @@ func getControllerNamespace() (string, error) {
 	return "", errors.New("could not determine controller namespace. Set CONTROLLER_NAMESPACE environment variable if running controller outside of cluster")
 }
 
-// Returns true if an existing console plugin Deployment exists.
-func doesDeploymentExist(kclient client.Client, namespace string) (bool, error) {
-	var deploymentList appsv1.DeploymentList
-	err := kclient.List(context.TODO(), &deploymentList, &client.ListOptions{Namespace: namespace})
+// Create or update the Deployment for a console dynamic plugin
+func createOrUpdateDeployment(kclient client.Client, deployment *appsv1.Deployment) error {
+	var found appsv1.Deployment
+	key := client.ObjectKeyFromObject(deployment)
+	err := kclient.Get(context.TODO(), key, &found, &client.GetOptions{})
+	create := false
 	if err != nil {
-		return false, err
-	}
-
-	for _, deployment := range deploymentList.Items {
-		if deployment.Name == fmt.Sprintf("%s-console-plugin", config.OperatorName) {
-			return true, nil
+		if kerrors.IsNotFound(err) {
+			create = true
+		} else {
+			return err
 		}
 	}
-	return false, nil
+
+	if create {
+		consoleLog.Info("Creating Deployment for console dynamic plugin")
+		err := kclient.Create(context.TODO(), deployment, &client.CreateOptions{})
+		if err != nil {
+			return err
+		}
+	} else {
+		consoleLog.Info("Updating Deployment for console dynamic plugin")
+		deployment.DeepCopyInto(&found)
+		err := kclient.Update(context.TODO(), &found, &client.UpdateOptions{})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
-// Create Deployment for dynamic console plugin
-func createDeployment(kclient client.Client, namespace string) error {
+func getDeployment(name string, namespace string) appsv1.Deployment {
 	deployment := appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Deployment",
 			APIVersion: "apps/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      fmt.Sprintf("%s-console-plugin", config.OperatorName),
+			Name:      name,
 			Namespace: namespace,
 			Labels: map[string]string{
-				"app": fmt.Sprintf("%s-console-plugin", config.OperatorName),
+				"app": name,
 			},
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: int32Ptr(1),
 			Selector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{
-					"app": fmt.Sprintf("%s-console-plugin", config.OperatorName),
+					"app": name,
 				},
 			},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: map[string]string{
-						"app": fmt.Sprintf("%s-console-plugin", config.OperatorName),
+						"app": name,
 					},
 				},
 				Spec: corev1.PodSpec{
 					Volumes: []corev1.Volume{
 						{
-							Name: fmt.Sprintf("%s-console-plugin-cert", config.OperatorName),
+							Name: fmt.Sprintf("%s-cert", name),
 							VolumeSource: corev1.VolumeSource{
 								Secret: &corev1.SecretVolumeSource{
-									SecretName:  fmt.Sprintf("%s-console-plugin-cert", config.OperatorName),
+									SecretName:  fmt.Sprintf("%s-cert", name),
 									DefaultMode: int32Ptr(420),
 								},
 							},
@@ -238,7 +245,7 @@ func createDeployment(kclient client.Client, namespace string) error {
 					},
 					Containers: []corev1.Container{
 						{
-							Name:  fmt.Sprintf("%s-console-plugin", config.OperatorName),
+							Name:  name,
 							Image: fmt.Sprintf("%s:%s", config.ConsolePluginImage, config.Version),
 							Ports: []corev1.ContainerPort{
 								{
@@ -256,7 +263,7 @@ func createDeployment(kclient client.Client, namespace string) error {
 							// },
 							VolumeMounts: []corev1.VolumeMount{
 								{
-									Name:      fmt.Sprintf("%s-console-plugin-cert", config.OperatorName),
+									Name:      fmt.Sprintf("%s-cert", name),
 									ReadOnly:  true,
 									MountPath: "/var/cert",
 								},
@@ -284,13 +291,7 @@ func createDeployment(kclient client.Client, namespace string) error {
 		},
 		Status: appsv1.DeploymentStatus{},
 	}
-
-	err := kclient.Create(context.TODO(), &deployment, &client.CreateOptions{})
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return deployment
 }
 
 // Returns true if an existing console plugin Service exists.
