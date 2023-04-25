@@ -162,15 +162,15 @@ docker-push: ## Push docker image with the manager.
 	$(call print_header,docker-push)
 	docker push ${IMG}
 
-.PHONY: console-build ## Build docker image for console plugin.
-console-build:
+.PHONY: console-build
+console-build: ## Build docker image for console plugin.
 	$(call print_header,console-build)
 	cd ./console; yarn install
 	cd ./console; yarn build
 	cd ./console; docker build --platform ${BUILD_OS}/${BUILD_ARCH} --tag ${IMAGE_TAG_BASE}-console-plugin:v${VERSION} .
 
-.PHONY: console-push ## Push docker image for console plugin.
-console-push:
+.PHONY: console-push
+console-push: ## Push docker image for console plugin.
 	$(call print_header,console-push)
 	docker push ${IMAGE_TAG_BASE}-console-plugin:v${VERSION}
 
@@ -289,7 +289,7 @@ ifeq (,$(shell which opm 2>/dev/null))
 	set -e ;\
 	mkdir -p $(dir $(OPM)) ;\
 	OS=$(shell go env GOOS) && ARCH=$(shell go env GOARCH) && \
-	curl -sSLo $(OPM) https://github.com/operator-framework/operator-registry/releases/download/v1.23.0/$${OS}-$${ARCH}-opm ;\
+	curl -sSLo $(OPM) https://github.com/operator-framework/operator-registry/releases/download/v1.26.5/$${OS}-$${ARCH}-opm ;\
 	chmod +x $(OPM) ;\
 	}
 else
@@ -301,24 +301,29 @@ endif
 # These images MUST exist in a registry and be pull-able.
 BUNDLE_IMGS ?= $(BUNDLE_IMG)
 
-# The image tag given to the resulting catalog image (e.g. make catalog-build CATALOG_IMG=example.com/operator-catalog:v0.2.0).
-CATALOG_IMG ?= $(IMAGE_TAG_BASE)-catalog:v$(VERSION)
+# Catalog image is only used for testing. Catalog image tag should always point to latest.
+CATALOG_IMG ?= $(IMAGE_TAG_BASE)-catalog:latest
 
 # Set CATALOG_BASE_IMG to an existing catalog image tag to add $BUNDLE_IMGS to that image.
 ifneq ($(origin CATALOG_BASE_IMG), undefined)
 FROM_INDEX_OPT := --from-index $(CATALOG_BASE_IMG)
 endif
 
-# Build a catalog image by adding bundle images to an empty catalog using the operator package manager tool, 'opm'.
-# This recipe invokes 'opm' in 'semver' bundle add mode. For more information on add modes, see:
-# https://github.com/operator-framework/community-operators/blob/7f1438c/docs/packaging-operator.md#updating-your-existing-operator
+# Build an OLM catalog image by adding the bundle image to a simple catalog using the
+# operator package manager tool, 'opm'. For more information see:
+# https://olm.operatorframework.io/docs/reference/catalog-templates
 .PHONY: catalog-build
-catalog-build: opm ## Build a catalog image.
-	$(call print_header,catalog-build)
-	$(OPM) index add --container-tool docker --mode semver --tag $(CATALOG_IMG) --bundles $(BUNDLE_IMGS) $(FROM_INDEX_OPT)
+catalog-build: opm ## Build an OLM catalog image (for testing).
+	cat catalog/template.yaml | BUNDLE_IMG=$(BUNDLE_IMG) VERSION=$(VERSION) envsubst > catalog/_template.yaml
+	$(OPM) alpha render-template basic -o yaml < catalog/_template.yaml > catalog/catalog.yaml
+	cd catalog ; docker build --platform $(BUILD_OS)/$(BUILD_ARCH) -t $(CATALOG_IMG) .
 
-# Push the catalog image.
 .PHONY: catalog-push
-catalog-push: ## Push a catalog image.
-	$(call print_header,catalog-push)
+catalog-push: ## Push the OLM catalog image (for testing).
 	$(MAKE) docker-push IMG=$(CATALOG_IMG)
+
+.PHONY: catalog-install
+catalog-install: ## Install the OLM catalog on a cluster (for testing).
+	sed -e "s@CATALOG_IMG@$(CATALOG_IMG)@g" catalog/catalog-source.yaml > catalog/_catalog-source.yaml
+	-oc delete -f catalog/_catalog-source.yaml
+	oc create -f catalog/_catalog-source.yaml

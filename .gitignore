@@ -28,3 +28,8 @@ Dockerfile.cross
 
 # Temp working files
 tmp
+
+# Catalog files generated for OLM testing
+/catalog/catalog.yaml
+/catalog/_catalog-source.yaml
+/catalog/_template.yaml
