@@ -68,51 +68,49 @@ func DeployConsolePlugin() error {
 		return errors.New("unable to validate OpenShift version")
 	}
 	shouldInstallPlugin := isOpenShiftVersionOk(ocpVersion)
-	if !shouldInstallPlugin {
+	if shouldInstallPlugin {
 		consoleLog.Info(
-			"Minimum required OpenShift version to install console plugin not met",
-			"OpenShift version",
+			"OpenShift version supports console dynamic plugins",
+			"openShiftVersion",
 			ocpVersion,
-			"Minimum required version",
+			"minimumRequiredVersion",
 			config.MinConsolePluginOCPVer,
 		)
-		return nil
+	} else {
+		consoleLog.Info(
+			"OpenShift version does not support console dynamic plugins",
+			"openShiftVersion",
+			ocpVersion,
+			"minimumRequiredVersion",
+			config.MinConsolePluginOCPVer,
+		)
+		return nil // Do not continue since OCP version doesn't support plugins
 	}
 
 	// All resources (Deployment, Service, and ConsolePlugin) share the same
+	// name and namespace
 	name := fmt.Sprintf("%s-console-plugin", config.OperatorName)
 	namespace, err := getControllerNamespace()
 	if err != nil {
 		return err
 	}
 
-	// Create Deployment, if needed
 	deployment := getDeployment(name, namespace)
 	createOrUpdateDeployment(kclient, &deployment)
 	if err != nil {
 		return err
 	}
 
-	// Create Service, if needed
 	service := getService(name, namespace)
 	createOrUpdateService(kclient, &service)
 	if err != nil {
 		return err
 	}
 
-	// Create ConsolePlugin, if needed
-	consolePluginExists, err := doesConsolePluginExist(kclient, namespace)
+	consolePlugin := getConsolePlugin(name, namespace)
+	createOrUpdateConsolePlugin(kclient, &consolePlugin)
 	if err != nil {
 		return err
-	}
-	if consolePluginExists {
-		consoleLog.Info("Console plugin ConsolePlugin exists")
-	} else {
-		consoleLog.Info("Console plugin ConsolePlugin does not exist... Creating it now")
-		err = createConsolePlugin(kclient, namespace)
-		if err != nil {
-			return err
-		}
 	}
 
 	return nil
@@ -356,50 +354,59 @@ func getService(name string, namespace string) corev1.Service {
 	return service
 }
 
-// Returns true if an existing console plugin ConsolePlugin exists.
-func doesConsolePluginExist(kclient client.Client, namespace string) (bool, error) {
-	var consolePluginList consolev1alpha1.ConsolePluginList
-	err := kclient.List(context.TODO(), &consolePluginList, &client.ListOptions{Namespace: namespace})
+// Create or update the ConsolePlugin for a console dynamic plugin
+func createOrUpdateConsolePlugin(kclient client.Client, consolePlugin *consolev1alpha1.ConsolePlugin) error {
+	var found consolev1alpha1.ConsolePlugin
+	key := client.ObjectKeyFromObject(consolePlugin)
+	err := kclient.Get(context.TODO(), key, &found, &client.GetOptions{})
+	create := false
 	if err != nil {
-		return false, err
-	}
-
-	for _, consolePlugin := range consolePluginList.Items {
-		if consolePlugin.Name == fmt.Sprintf("%s-console-plugin", config.OperatorName) {
-			return true, nil
+		if kerrors.IsNotFound(err) {
+			create = true
+		} else {
+			return err
 		}
 	}
-	return false, nil
+
+	if create {
+		consoleLog.Info("Creating ConsolePlugin for console dynamic plugin")
+		err := kclient.Create(context.TODO(), consolePlugin, &client.CreateOptions{})
+		if err != nil {
+			return err
+		}
+	} else {
+		consoleLog.Info("Updating ConsolePlugin for console dynamic plugin")
+		consolePlugin.DeepCopyInto(&found)
+		err := kclient.Update(context.TODO(), &found, &client.UpdateOptions{})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
-// Create ConsolePlugin for dynamic console plugin
-func createConsolePlugin(kclient client.Client, namespace string) error {
+func getConsolePlugin(name string, namespace string) consolev1alpha1.ConsolePlugin {
 	consolePlugin := consolev1alpha1.ConsolePlugin{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "ConsolePlugin",
 			APIVersion: "console.openshift.io/v1alpha1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: fmt.Sprintf("%s-console-plugin", config.OperatorName),
+			Name: name,
 			Labels: map[string]string{
-				"app": fmt.Sprintf("%s-console-plugin", config.OperatorName),
+				"app": name,
 			},
 		},
 		Spec: consolev1alpha1.ConsolePluginSpec{
 			DisplayName: "OpenShift console plugin for all you cool cats and kittens",
 			Service: consolev1alpha1.ConsolePluginService{
-				Name:      fmt.Sprintf("%s-console-plugin", config.OperatorName),
+				Name:      name,
 				Namespace: namespace,
 				Port:      9443,
 				BasePath:  "/",
 			},
 		},
 	}
-
-	err := kclient.Create(context.TODO(), &consolePlugin, &client.CreateOptions{})
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return consolePlugin
 }
