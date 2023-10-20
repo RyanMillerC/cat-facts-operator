@@ -21,6 +21,7 @@ This is a Go-based Operator built with the Operator SDK. I built this as a
 proof-of-concept to learn operator development and distribution through
 Operator Lifecycle Management (OLM). This operator includes an OpenShift
 Dynamic Console Plugin that serves a front-end to manage operator resources.
+This operator *
 
 ### What Does It Do?
 
@@ -30,9 +31,12 @@ cats. It uses https://catfact.ninja/fact to generate facts about cats.
 
 ## Requirements
 
-* OpenShift 4.12
-    * Cat Facts Operator **may** work on other versions of OpenShift but they
-      have not been tested.
+* OKD/OpenShift 4.11 or later
+
+**NOTE:** Cat Facts Operator should work on older versions of OpenShift and
+on other Kubernetes distributions; **however, the console dynamic plugin UI
+(the main feature of this operator) will not be installed.** The controller and
+CatFact CRD will install and should work as expected.
 
 ## Installing
 
@@ -121,60 +125,60 @@ oc delete -n openshift-marketplace catalogsource cat-facts-catalog
 Cat icons/emojis used in this project were created by Emily Jäger, licensed under
 [CC BY-SA 4.0] and are [available here][cat-icons].
 
-## Contributing (This section needs work)
-
-### **Run `make all` on Linux when you're ready to deploy. Do not use your Mac!**
+## Development
 
 ### How it works
 
-This project aims to follow the Kubernetes [Operator Pattern].
+This project follows the Kubernetes [Operator Pattern].
 
-It uses [Controllers] which provides a reconcile function responsible for
+It uses a [Controller] which provides a reconcile function responsible for
 synchronizing resources untile the desired state is reached on the cluster.
 
-### Test It Out
+Additionally, this project includes a React JS-based OpenShift Console Dynamic
+Plugin, under the ./console directory. For details on developing the console
+plugin, view ./console/README.md.
 
-1. Install the CRDs into the cluster:
+### Validate your changes locally against a remote cluster
 
-```sh
-make install
-```
+Run the operator on your machine from your local directory against a cluster's
+API.
 
-2. Run your controller (this will run in the foreground, so switch to a new terminal if you want to leave it running):
+```bash
+oc login
+oc apply -f ./config/crd/bases
 
-```sh
+# If running Linux/amd64
 make run
+
+# If running MacOS/arm64 (M series processor)
+GOOS=darwin GOARCH=arm64 make run
 ```
 
-**NOTE:** You can also run this in one step by running: `make install run`
+### Validate your changes in a Pod on a cluster
 
-### Running on the cluster
+This will run the operator in a Pod on an OpenShift cluster. It will create a
+container image under your user account in Quay.
 
-1. Install Instances of Custom Resources:
+**NOTE:** If you're doing this for the first time, the repo in Quay will be set
+to private. You will need to change the permission on the repo to public before
+running `make deploy`.
 
-```sh
-kubectl apply -f config/samples/
+```bash
+# Set environment variables
+export USER=rymiller # Replace with your username
+export IMAGE_TAG_BASE="quay.io/${USER}/cat-facts-operator"
+
+# Build and push container image
+make docker-build docker-push bundle
+
+# Deploy to OpenShift
+make install
+make deploy
 ```
 
-2. Build and push your image to the location specified by `IMG`:
-
-```sh
-make docker-build docker-push IMG=<some-registry>/cat-facts-operator:tag
-```
-
-3. Deploy the controller to the cluster with the image specified by `IMG`:
-
-```sh
-make deploy IMG=<some-registry>/cat-facts-operator:tag
-```
-
-### Uninstall CRDs
-
-To delete the CRDs from the cluster:
-
-```sh
-make uninstall
-```
+**NOTE:** If the operator Pod is already running on the cluster, you may need
+to manually kill the controller Pod to force a redeploy using the latest
+container image in Quay.
 
 ### Undeploy controller
 
