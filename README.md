@@ -17,11 +17,14 @@
 
 ## Description
 
-This is a Go-based Operator built with the Operator SDK. I built this as a
-proof-of-concept to learn operator development and distribution through
-Operator Lifecycle Management (OLM). This operator includes an OpenShift
-Dynamic Console Plugin that serves a front-end to manage operator resources.
-This operator *
+This is a proof-of-concept, just for fun, operator. This operator integrates a
+custom UI into the OpenShift Console through a Dynamic Plugin.
+
+Cat Facts Operator is a Go-based Operator built with the Operator SDK. I built
+this as a proof-of-concept to learn operator development and distribution
+through Operator Lifecycle Management (OLM). This operator includes an
+OpenShift Dynamic Console Plugin that serves a front-end to manage operator
+resources.
 
 ### What Does It Do?
 
