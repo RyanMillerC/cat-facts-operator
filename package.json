@@ -74,10 +74,10 @@
     "webpack-dev-server": "^5.2.3"
   },
   "consolePlugin": {
-    "name": "console-plugin-template",
-    "version": "0.0.1",
-    "displayName": "OpenShift Console Plugin Template",
-    "description": "Template project for OpenShift Console plugins. Edit package.json to change this message and the plugin name.",
+    "name": "cat-facts-operator-console-plugin",
+    "version": "4.21.0",
+    "displayName": "Cat Facts Operator",
+    "description": "An operator for all you cool cats and kittens.",
     "exposedModules": {
       "ExamplePage": "./components/ExamplePage"
     },
