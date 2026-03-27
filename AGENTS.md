@@ -1,15 +1,10 @@
-# AI Agent Instructions for OpenShift Console Plugin Template
+# AI Agent Instructions for Cat Facts Console Plugin
 
 This document provides context and guidelines for AI coding assistants working on this codebase.
 
 ## Project Overview
 
-This is a **template repository** for creating OpenShift Console dynamic plugins. It's meant to be used via GitHub's "Use this template" feature, NOT forked. The template provides a minimal starting point for extending the OpenShift Console UI with custom pages and functionality.
-
-> **⚠️ WARNING:**
-> This repository is used by multiple large-scale enterprise web applications. Please proceed with caution when making any changes to this codebase. Changes here can affect downstream projects that depend on this template.
->
-> **Only make changes that should be standard practice for ALL plugins created from this template.** If a change is specific to one plugin use case, it belongs in the instantiated plugin repository, not in this template.
+This is the **Cat Facts Operator** OpenShift Console dynamic plugin — a console plugin that surfaces cat facts within the OpenShift UI. It was bootstrapped from the OpenShift Console Plugin template.
 
 **Key Technologies:**
 - TypeScript + React 17
@@ -47,23 +42,23 @@ This plugin uses webpack module federation to load at runtime into the OpenShift
 - **NO hex colors** - use PatternFly CSS variables (e.g., `var(--pf-v6-global-palette--blue-500)`)
 - **NO naked element selectors** (like `table`, `div`) - prevents overwriting console styles
 - **NO `.pf-` or `.co-` prefixed classes** - these are reserved for PatternFly and console
-- **Prefix all custom classes** with plugin name (e.g., `console-plugin-template__nice`)
+- **Prefix all custom classes** with plugin name (e.g., `cat-facts__nice`)
 
 Don't disable these rules without understanding they protect against layout breakage!
 
 ## Internationalization (i18n)
 
-**Namespace Convention:** `plugin__<plugin-name>` (e.g., `plugin__console-plugin-template`)
+**Namespace Convention:** `plugin__cat-facts`
 
 ### In React Components:
 ```tsx
-const { t } = useTranslation('plugin__console-plugin-template');
+const { t } = useTranslation('plugin__cat-facts');
 return <h1>{t('Hello, World!')}</h1>;
 ```
 
 ### In console-extensions.json:
 ```json
-"name": "%plugin__console-plugin-template~My Label%"
+"name": "%plugin__cat-facts~My Label%"
 ```
 
 **After adding/changing messages:** Run `yarn i18n` to update locale files in `/locales`
@@ -135,21 +130,13 @@ Current config has `strict: false` but enforces:
   "type": "console.navigation/href",
   "properties": {
     "id": "my-nav-item",
-    "name": "%plugin__console-plugin-template~My Page%",
+    "name": "%plugin__cat-facts~My Page%",
     "href": "/my-page",
     "perspective": "admin",
     "section": "home"
   }
 }
 ```
-
-### Updating Plugin Name
-When instantiating from template, update:
-1. `package.json` - `name` and `consolePlugin.name`
-2. `package.json` - `consolePlugin.displayName` and `description`
-3. All i18n namespace references (`plugin__<name>`)
-4. CSS class prefixes
-5. Helm chart values
 
 ## Build & Deployment
 
@@ -171,8 +158,7 @@ helm upgrade -i my-plugin charts/openshift-console-plugin \
 
 ## Important Constraints & Gotchas
 
-1. **Template, not fork:** Users should use "Use this template", not fork
-2. **i18n namespace must match ConsolePlugin resource name** with `plugin__` prefix
+1. **i18n namespace must match ConsolePlugin resource name** with `plugin__` prefix
 3. **CSS class prefixes prevent style conflicts** - always prefix with plugin name
 4. **Module federation requires exact module mapping** - `exposedModules` must match `$codeRef` values
 5. **PatternFly CSS variables only** - hex colors break dark mode
@@ -219,7 +205,6 @@ See [Console Plugin SDK README](https://github.com/openshift/console/tree/master
 
 **When should I...**
 
-- **Use this template?** When creating a NEW OpenShift Console plugin from scratch
 - **Add a page?** Update console-extensions.json + exposedModules + create component
 - **Style something?** Use PatternFly components and CSS variables, prefix custom classes
 - **Add translations?** Use `t()` function, run `yarn i18n` after
