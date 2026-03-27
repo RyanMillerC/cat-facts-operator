@@ -1,47 +1,16 @@
-import * as React from 'react';
 import {
   DocumentTitle,
   ListPageBody,
   ListPageHeader,
   ResourceLink,
-  RowProps,
-  TableColumn,
-  TableData,
   Timestamp,
-  VirtualizedTable,
   k8sCreate,
   useK8sWatchResource,
 } from '@openshift-console/dynamic-plugin-sdk';
-import { Button } from '@patternfly/react-core';
+import { Button, Spinner } from '@patternfly/react-core';
+import { Table, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
 import { CatFact, CatFactGVK, CatFactModel } from '../models/CatFact';
-
-const columns: TableColumn<CatFact>[] = [
-  { id: 'name', title: 'Name' },
-  { id: 'namespace', title: 'Namespace' },
-  { id: 'fact', title: 'Fact' },
-  { id: 'age', title: 'Age' },
-];
-
-const CatFactRow: React.FC<RowProps<CatFact>> = ({ obj, activeColumnIDs }) => (
-  <>
-    <TableData id="name" activeColumnIDs={activeColumnIDs}>
-      <ResourceLink
-        groupVersionKind={CatFactGVK}
-        name={obj.metadata?.name}
-        namespace={obj.metadata?.namespace}
-      />
-    </TableData>
-    <TableData id="namespace" activeColumnIDs={activeColumnIDs}>
-      {obj.metadata?.namespace}
-    </TableData>
-    <TableData id="fact" activeColumnIDs={activeColumnIDs}>
-      {obj.spec.fact}
-    </TableData>
-    <TableData id="age" activeColumnIDs={activeColumnIDs}>
-      <Timestamp timestamp={obj.metadata?.creationTimestamp} />
-    </TableData>
-  </>
-);
+import CatIcon from './CatIcon';
 
 export default function CatFactsPage() {
   const [catFacts, loaded, loadError] = useK8sWatchResource<CatFact[]>({
@@ -67,15 +36,40 @@ export default function CatFactsPage() {
         <Button variant="primary" onClick={createCatFact}>Create CatFact</Button>
       </ListPageHeader>
       <ListPageBody>
-        <VirtualizedTable
-          data={catFacts ?? []}
-          unfilteredData={catFacts ?? []}
-          loaded={loaded}
-          loadError={loadError}
-          columns={columns}
-          Row={CatFactRow}
-          aria-label="Cat Facts"
-        />
+        {!loaded && <Spinner />}
+        {loadError && <p>Error loading CatFacts: {String(loadError)}</p>}
+        {loaded && !loadError && (
+          <Table aria-label="Cat Facts" variant="compact">
+            <Thead>
+              <Tr>
+                <Th width={20}>Name</Th>
+                <Th modifier="fitContent">Icon</Th>
+                <Th>Fact</Th>
+                <Th modifier="fitContent">Age</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {catFacts?.map((catFact) => (
+                <Tr key={catFact.metadata?.uid}>
+                  <Td>
+                    <ResourceLink
+                      groupVersionKind={CatFactGVK}
+                      name={catFact.metadata?.name}
+                      namespace={catFact.metadata?.namespace}
+                    />
+                  </Td>
+                  <Td modifier="fitContent">
+                    <CatIcon iconName={catFact.spec.iconName} />
+                  </Td>
+                  <Td>{catFact.spec.fact}</Td>
+                  <Td modifier="fitContent">
+                    <Timestamp timestamp={catFact.metadata?.creationTimestamp} />
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        )}
       </ListPageBody>
     </>
   );
