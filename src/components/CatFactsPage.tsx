@@ -8,15 +8,26 @@ import {
   k8sCreate,
   useK8sWatchResource,
 } from '@openshift-console/dynamic-plugin-sdk';
-import { Button, Spinner } from '@patternfly/react-core';
+import { Button, Pagination, Spinner } from '@patternfly/react-core';
 import { ThProps } from '@patternfly/react-table';
-import { DataView, DataViewTable, DataViewTh, DataViewTr } from '@patternfly/react-data-view';
+import {
+  DataView,
+  DataViewTable,
+  DataViewTextFilter,
+  DataViewTh,
+  DataViewToolbar,
+  DataViewTr,
+  useDataViewFilters,
+  useDataViewPagination,
+} from '@patternfly/react-data-view';
 import { CatFact, CatFactGVK, CatFactModel } from '../models/CatFact';
 import CatIcon from './CatIcon';
 
 type ColWidths = { name: number; icon: number; fact: number; age: number };
+type CatFactFilters = { name: string };
 
 const DEFAULT_COL_WIDTHS: ColWidths = { name: 200, icon: 80, fact: 500, age: 150 };
+const DEFAULT_PER_PAGE = 20;
 
 // Map from sort column id to its index in the columns array
 const SORT_COLUMN_INDEX: Record<string, number> = { name: 0, age: 3 };
@@ -35,6 +46,9 @@ export default function CatFactsPage({ namespace }: CatFactsPageProps) {
   const [sortBy, setSortBy] = React.useState<string | undefined>(undefined);
   const [direction, setDirection] = React.useState<'asc' | 'desc'>('asc');
   const [colWidths, setColWidths] = React.useState<ColWidths>(DEFAULT_COL_WIDTHS);
+
+  const { filters, onSetFilters } = useDataViewFilters<CatFactFilters>({ initialFilters: { name: '' } });
+  const { page, perPage, onSetPage, onPerPageSelect } = useDataViewPagination({ perPage: DEFAULT_PER_PAGE });
 
   const activeSortIndex = sortBy !== undefined ? SORT_COLUMN_INDEX[sortBy] : undefined;
 
@@ -88,7 +102,18 @@ export default function CatFactsPage({ namespace }: CatFactsPageProps) {
     return direction === 'desc' ? sorted.reverse() : sorted;
   }, [catFacts, sortBy, direction]);
 
-  const rows: DataViewTr[] = sortedData.map((catFact) => [
+  const filteredData = React.useMemo(() => {
+    if (!filters.name) return sortedData;
+    const lower = filters.name.toLowerCase();
+    return sortedData.filter((cf) => (cf.metadata?.name ?? '').toLowerCase().includes(lower));
+  }, [sortedData, filters.name]);
+
+  const paginatedData = React.useMemo(
+    () => filteredData.slice((page - 1) * perPage, page * perPage),
+    [filteredData, page, perPage],
+  );
+
+  const rows: DataViewTr[] = paginatedData.map((catFact) => [
     <ResourceLink
       groupVersionKind={CatFactGVK}
       name={catFact.metadata?.name}
@@ -121,11 +146,45 @@ export default function CatFactsPage({ namespace }: CatFactsPageProps) {
         {loadError && <p>Error loading CatFacts: {String(loadError)}</p>}
         {loaded && !loadError && (
           <DataView>
+            <DataViewToolbar
+              pagination={
+                <Pagination
+                  itemCount={filteredData.length}
+                  page={page}
+                  perPage={perPage}
+                  onSetPage={onSetPage}
+                  onPerPageSelect={onPerPageSelect}
+                />
+              }
+              filters={
+                <DataViewTextFilter
+                  filterId="name"
+                  title="Name"
+                  value={filters.name}
+                  onChange={(_event, value) => {
+                    onSetFilters({ name: value });
+                    onSetPage(undefined, 1);
+                  }}
+                />
+              }
+            />
             <DataViewTable
               isResizable
               columns={columns}
               rows={rows}
               aria-label="Cat Facts"
+            />
+            <DataViewToolbar
+              pagination={
+                <Pagination
+                  itemCount={filteredData.length}
+                  page={page}
+                  perPage={perPage}
+                  onSetPage={onSetPage}
+                  onPerPageSelect={onPerPageSelect}
+                  variant="bottom"
+                />
+              }
             />
           </DataView>
         )}
