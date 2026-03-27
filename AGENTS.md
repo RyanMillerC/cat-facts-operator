@@ -48,17 +48,17 @@ Don't disable these rules without understanding they protect against layout brea
 
 ## Internationalization (i18n)
 
-**Namespace Convention:** `plugin__cat-facts`
+**Namespace Convention:** `plugin__cat-facts-operator-console-plugin`
 
 ### In React Components:
 ```tsx
-const { t } = useTranslation('plugin__cat-facts');
+const { t } = useTranslation('plugin__cat-facts-operator-console-plugin');
 return <h1>{t('Hello, World!')}</h1>;
 ```
 
 ### In console-extensions.json:
 ```json
-"name": "%plugin__cat-facts~My Label%"
+"name": "%plugin__cat-facts-operator-console-plugin~My Label%"
 ```
 
 **After adding/changing messages:** Run `yarn i18n` to update locale files in `/locales`
@@ -130,7 +130,7 @@ Current config has `strict: false` but enforces:
   "type": "console.navigation/href",
   "properties": {
     "id": "my-nav-item",
-    "name": "%plugin__cat-facts~My Page%",
+    "name": "%plugin__cat-facts-operator-console-plugin~My Page%",
     "href": "/my-page",
     "perspective": "admin",
     "section": "home"

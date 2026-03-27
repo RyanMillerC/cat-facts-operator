@@ -4,7 +4,7 @@ import { Content, PageSection } from '@patternfly/react-core';
 import './cat-facts.css';
 
 export default function CatFactsPage() {
-  const { t } = useTranslation('plugin__cat-facts');
+  const { t } = useTranslation('plugin__cat-facts-operator-console-plugin');
 
   return (
     <>

@@ -11,7 +11,7 @@
     "type": "console.navigation/href",
     "properties": {
       "id": "cat-facts",
-      "name": "%plugin__cat-facts~Cat Facts%",
+      "name": "%plugin__cat-facts-operator-console-plugin~Cat Facts%",
       "href": "/cat-facts",
       "perspective": "admin",
       "section": "home"
