@@ -3,16 +3,16 @@
     "type": "console.page/route",
     "properties": {
       "exact": true,
-      "path": "/example",
-      "component": { "$codeRef": "ExamplePage" }
+      "path": "/cat-facts",
+      "component": { "$codeRef": "CatFactsPage" }
     }
   },
   {
     "type": "console.navigation/href",
     "properties": {
-      "id": "example",
-      "name": "%plugin__console-plugin-template~Plugin example%",
-      "href": "/example",
+      "id": "cat-facts",
+      "name": "%plugin__cat-facts~Cat Facts%",
+      "href": "/cat-facts",
       "perspective": "admin",
       "section": "home"
     }

@@ -4228,6 +4228,61 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cat-facts-operator-console-plugin@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "cat-facts-operator-console-plugin@workspace:."
+  dependencies:
+    "@babel/core": "npm:^7.29.0"
+    "@babel/preset-env": "npm:^7.29.0"
+    "@cypress/webpack-preprocessor": "npm:^7.0.2"
+    "@openshift-console/dynamic-plugin-sdk": "npm:4.21-latest"
+    "@openshift-console/dynamic-plugin-sdk-webpack": "npm:4.21-latest"
+    "@patternfly/react-core": "npm:^6.2.2"
+    "@patternfly/react-icons": "npm:^6.2.2"
+    "@patternfly/react-table": "npm:^6.2.2"
+    "@types/node": "npm:^22.0.0"
+    "@types/react": "npm:^17.0.37"
+    "@types/react-router-dom": "npm:^5.3.3"
+    babel-loader: "npm:^10.1.0"
+    copy-webpack-plugin: "npm:^14.0.0"
+    css-loader: "npm:^7.1.4"
+    cypress: "npm:^15.11.0"
+    cypress-multi-reporters: "npm:^2.0.5"
+    eslint: "npm:^9.7.0"
+    eslint-config-prettier: "npm:^10.1.8"
+    eslint-plugin-cypress: "npm:^6.1.0"
+    eslint-plugin-prettier: "npm:^5.5.5"
+    eslint-plugin-react: "npm:^7.37.5"
+    eslint-plugin-react-hooks: "npm:^7.0.1"
+    globals: "npm:^17.4.0"
+    i18next: "npm:^23.11.5"
+    i18next-parser: "npm:^9.4.0"
+    mocha: "npm:^11.7.5"
+    mocha-junit-reporter: "npm:^2.2.1"
+    mochawesome: "npm:^7.1.4"
+    mochawesome-merge: "npm:^5.1.1"
+    pluralize: "npm:^8.0.0"
+    prettier: "npm:^3.8.1"
+    prettier-stylelint: "npm:^0.4.2"
+    react: "npm:^17.0.1"
+    react-dom: "npm:^17.0.1"
+    react-i18next: "npm:^11.7.3"
+    react-router: "npm:5.3.x"
+    react-router-dom: "npm:5.3.x"
+    react-router-dom-v5-compat: "npm:^6.11.2"
+    style-loader: "npm:^4.0.0"
+    stylelint: "npm:^17.4.0"
+    stylelint-config-standard: "npm:^40.0.0"
+    ts-loader: "npm:^9.5.4"
+    ts-node: "npm:^10.9.2"
+    typescript: "npm:^5.9.3"
+    typescript-eslint: "npm:^8.56.1"
+    webpack: "npm:^5.100.0"
+    webpack-cli: "npm:^6.0.1"
+    webpack-dev-server: "npm:^5.2.3"
+  languageName: unknown
+  linkType: soft
+
 "ccount@npm:^1.0.0":
   version: 1.1.0
   resolution: "ccount@npm:1.1.0"
@@ -4653,61 +4708,6 @@ __metadata:
   checksum: 10c0/90fa8b16ab76e9531646cc70b010b1dbd078153730c510d3142f6cf07479ae8a812c5a3c0e40a28528dd1681a62395d0cfdef67da9e914c4772ac85d69a3ed87
   languageName: node
   linkType: hard
-
-"console-plugin-template@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "console-plugin-template@workspace:."
-  dependencies:
-    "@babel/core": "npm:^7.29.0"
-    "@babel/preset-env": "npm:^7.29.0"
-    "@cypress/webpack-preprocessor": "npm:^7.0.2"
-    "@openshift-console/dynamic-plugin-sdk": "npm:4.21-latest"
-    "@openshift-console/dynamic-plugin-sdk-webpack": "npm:4.21-latest"
-    "@patternfly/react-core": "npm:^6.2.2"
-    "@patternfly/react-icons": "npm:^6.2.2"
-    "@patternfly/react-table": "npm:^6.2.2"
-    "@types/node": "npm:^22.0.0"
-    "@types/react": "npm:^17.0.37"
-    "@types/react-router-dom": "npm:^5.3.3"
-    babel-loader: "npm:^10.1.0"
-    copy-webpack-plugin: "npm:^14.0.0"
-    css-loader: "npm:^7.1.4"
-    cypress: "npm:^15.11.0"
-    cypress-multi-reporters: "npm:^2.0.5"
-    eslint: "npm:^9.7.0"
-    eslint-config-prettier: "npm:^10.1.8"
-    eslint-plugin-cypress: "npm:^6.1.0"
-    eslint-plugin-prettier: "npm:^5.5.5"
-    eslint-plugin-react: "npm:^7.37.5"
-    eslint-plugin-react-hooks: "npm:^7.0.1"
-    globals: "npm:^17.4.0"
-    i18next: "npm:^23.11.5"
-    i18next-parser: "npm:^9.4.0"
-    mocha: "npm:^11.7.5"
-    mocha-junit-reporter: "npm:^2.2.1"
-    mochawesome: "npm:^7.1.4"
-    mochawesome-merge: "npm:^5.1.1"
-    pluralize: "npm:^8.0.0"
-    prettier: "npm:^3.8.1"
-    prettier-stylelint: "npm:^0.4.2"
-    react: "npm:^17.0.1"
-    react-dom: "npm:^17.0.1"
-    react-i18next: "npm:^11.7.3"
-    react-router: "npm:5.3.x"
-    react-router-dom: "npm:5.3.x"
-    react-router-dom-v5-compat: "npm:^6.11.2"
-    style-loader: "npm:^4.0.0"
-    stylelint: "npm:^17.4.0"
-    stylelint-config-standard: "npm:^40.0.0"
-    ts-loader: "npm:^9.5.4"
-    ts-node: "npm:^10.9.2"
-    typescript: "npm:^5.9.3"
-    typescript-eslint: "npm:^8.56.1"
-    webpack: "npm:^5.100.0"
-    webpack-cli: "npm:^6.0.1"
-    webpack-dev-server: "npm:^5.2.3"
-  languageName: unknown
-  linkType: soft
 
 "content-disposition@npm:~0.5.4":
   version: 0.5.4

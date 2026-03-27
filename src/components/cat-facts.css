@@ -1,6 +1,6 @@
 /* Prefixing your CSS classes with your plugin name is a best practice to avoid
  * collisions with other plugin styles. */
-.console-plugin-template__nice {
+.cat-facts__nice {
   /* Use PatternFly semantic tokens for colors to support theming.
    * https://www.patternfly.org/tokens/all-patternfly-tokens */
   color: var(--pf-t--global--color--brand--default);
