@@ -1,12 +1,12 @@
 {
-  "name": "console-plugin-template",
+  "name": "cat-facts-operator-console-plugin",
   "version": "0.0.1",
-  "description": "Template project for OpenShift Console plugins",
+  "description": "An operator for all you cool cats and kittens.",
   "private": true,
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openshift/console-plugin-template.git"
+    "url": "https://github.com/RyanMillerC/cat-facts-4.21.git"
   },
   "scripts": {
     "clean": "rm -rf dist",
