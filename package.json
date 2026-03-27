@@ -85,5 +85,8 @@
       "@console/pluginAPI": "^4.21.0"
     }
   },
-  "packageManager": "yarn@4.13.0"
+  "packageManager": "yarn@4.13.0",
+  "dependencies": {
+    "@patternfly/react-data-view": "6.4.0"
+  }
 }
