@@ -23,7 +23,7 @@
     "properties": {
       "id": "cat-facts",
       "name": "%plugin__cat-facts-operator-console-plugin~Cat Facts%",
-      "href": "/cat-facts",
+      "href": "/k8s/all-namespaces/taco.moe~v1alpha1~CatFact",
       "perspective": "admin",
       "section": "home"
     }

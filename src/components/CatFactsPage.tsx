@@ -12,10 +12,15 @@ import { Table, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
 import { CatFact, CatFactGVK, CatFactModel } from '../models/CatFact';
 import CatIcon from './CatIcon';
 
-export default function CatFactsPage() {
+type CatFactsPageProps = {
+  namespace?: string;
+};
+
+export default function CatFactsPage({ namespace }: CatFactsPageProps) {
   const [catFacts, loaded, loadError] = useK8sWatchResource<CatFact[]>({
     groupVersionKind: CatFactGVK,
     isList: true,
+    namespace,
   });
 
   const createCatFact = () =>
@@ -24,7 +29,7 @@ export default function CatFactsPage() {
       data: {
         apiVersion: 'taco.moe/v1alpha1',
         kind: 'CatFact',
-        metadata: { generateName: 'cat-fact-', namespace: 'cat-facts-operator' },
+        metadata: { generateName: 'cat-fact-', namespace: namespace ?? 'cat-facts-operator' },
         spec: {},
       },
     });
