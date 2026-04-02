@@ -16,11 +16,16 @@ import {
   Gallery,
   GalleryItem,
   Label,
+  MenuToggle,
+  MenuToggleElement,
   Nav,
   NavItem,
   NavList,
   PageSection,
   SearchInput,
+  Select,
+  SelectList,
+  SelectOption,
   Spinner,
 } from '@patternfly/react-core';
 import { CatFact, CatFactGVK } from '../models/CatFact';
@@ -29,12 +34,17 @@ import CatIcon from './CatIcon';
 const ALL_NAMESPACES_KEY = '#ALL_NS#';
 const ICON_OPTIONS = ['Crying', 'Evil', 'Grinning', 'Hearts', 'Joy', 'Kissing', 'Pouting', 'Smiling', 'Weary'];
 
-type CatFactsPageProps = { namespace?: string };
+type SortOrder = 'relevance' | 'asc' | 'desc';
+const SORT_LABELS: Record<SortOrder, string> = { relevance: 'Relevance', asc: 'A-Z', desc: 'Z-A' };
 
-export default function CatFactsCatalogPage({ namespace }: CatFactsPageProps) {
+type CatFactsCatalogPageProps = { namespace?: string };
+
+export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPageProps) {
   const [activeNamespace] = useActiveNamespace();
   const [nameFilter, setNameFilter] = React.useState('');
   const [selectedCategory, setSelectedCategory] = React.useState('all');
+  const [sortOrder, setSortOrder] = React.useState<SortOrder>('relevance');
+  const [sortSelectOpen, setSortSelectOpen] = React.useState(false);
 
   const ns = namespace ?? (activeNamespace === ALL_NAMESPACES_KEY ? undefined : activeNamespace);
 
@@ -54,6 +64,14 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsPageProps) {
     });
   }, [catFacts, selectedCategory, nameFilter]);
 
+  const sortedFacts = React.useMemo(() => {
+    if (sortOrder === 'asc')
+      return [...filteredFacts].sort((a, b) => (a.metadata?.name ?? '').localeCompare(b.metadata?.name ?? ''));
+    if (sortOrder === 'desc')
+      return [...filteredFacts].sort((a, b) => (b.metadata?.name ?? '').localeCompare(a.metadata?.name ?? ''));
+    return filteredFacts;
+  }, [filteredFacts, sortOrder]);
+
   const categoryLabel = selectedCategory === 'all' ? 'All items' : selectedCategory;
 
   return (
@@ -71,24 +89,20 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsPageProps) {
       </PageSection>
       <PageSection>
         <div style={{
-          border: '1px solid var(--pf-v6-global--BorderColor--100)',
+          border: '1px solid var(--pf-v6-global--BorderColor--200)',
           borderRadius: 'var(--pf-v6-global--BorderRadius--sm)',
           overflow: 'hidden',
         }}>
           <Flex alignItems={{ default: 'alignItemsFlexStart' }}>
             {/* Sidebar */}
-            <FlexItem style={{ width: '260px', minWidth: '260px', borderRight: '1px solid var(--pf-v6-global--BorderColor--100)' }}>
+            <FlexItem style={{ width: '260px', minWidth: '260px', borderRight: '1px solid var(--pf-v6-global--BorderColor--200)' }}>
               <Nav aria-label="Cat Facts categories">
                 <NavList>
                   <NavItem isActive={selectedCategory === 'all'} onClick={() => setSelectedCategory('all')}>
                     All items
                   </NavItem>
                   {ICON_OPTIONS.map((icon) => (
-                    <NavItem
-                      key={icon}
-                      isActive={selectedCategory === icon}
-                      onClick={() => setSelectedCategory(icon)}
-                    >
+                    <NavItem key={icon} isActive={selectedCategory === icon} onClick={() => setSelectedCategory(icon)}>
                       {icon}
                     </NavItem>
                   ))}
@@ -98,10 +112,10 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsPageProps) {
 
             {/* Main content */}
             <FlexItem style={{ flex: 1, minWidth: 0, padding: 'var(--pf-v6-global--spacer--lg)' }}>
-              <Content component="h2">{categoryLabel}</Content>
+              <Content component="h4">{categoryLabel}</Content>
               <Flex
                 alignItems={{ default: 'alignItemsCenter' }}
-                style={{ margin: 'var(--pf-v6-global--spacer--md) 0' }}
+                style={{ margin: 'var(--pf-v6-global--spacer--md) 0 var(--pf-v6-global--spacer--lg)' }}
               >
                 <FlexItem>
                   <SearchInput
@@ -111,9 +125,27 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsPageProps) {
                     onClear={() => setNameFilter('')}
                   />
                 </FlexItem>
+                <FlexItem>
+                  <Select
+                    isOpen={sortSelectOpen}
+                    onSelect={(_e, val) => { setSortOrder(val as SortOrder); setSortSelectOpen(false); }}
+                    onOpenChange={setSortSelectOpen}
+                    toggle={(ref: React.Ref<MenuToggleElement>) => (
+                      <MenuToggle ref={ref} onClick={() => setSortSelectOpen(!sortSelectOpen)} isExpanded={sortSelectOpen}>
+                        {SORT_LABELS[sortOrder]}
+                      </MenuToggle>
+                    )}
+                  >
+                    <SelectList>
+                      <SelectOption value="relevance">Relevance</SelectOption>
+                      <SelectOption value="asc">A-Z</SelectOption>
+                      <SelectOption value="desc">Z-A</SelectOption>
+                    </SelectList>
+                  </Select>
+                </FlexItem>
                 <FlexItem align={{ default: 'alignRight' }}>
                   <span style={{ color: 'var(--pf-v6-global--Color--200)', fontSize: 'var(--pf-v6-global--FontSize--sm)' }}>
-                    {filteredFacts.length} item{filteredFacts.length !== 1 ? 's' : ''}
+                    {sortedFacts.length} item{sortedFacts.length !== 1 ? 's' : ''}
                   </span>
                 </FlexItem>
               </Flex>
@@ -121,7 +153,7 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsPageProps) {
               {loadError && <p>Error loading Cat Facts: {String(loadError)}</p>}
               {loaded && !loadError && (
                 <Gallery hasGutter minWidths={{ default: '260px' }}>
-                  {filteredFacts.map((cf) => (
+                  {sortedFacts.map((cf) => (
                     <GalleryItem key={`${cf.metadata?.namespace}/${cf.metadata?.name}`}>
                       <Card isFullHeight>
                         <CardHeader>
