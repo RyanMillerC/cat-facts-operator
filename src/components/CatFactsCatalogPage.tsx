@@ -2,11 +2,11 @@ import * as React from 'react';
 import {
   DocumentTitle,
   ListPageHeader,
+  NamespaceBar,
   ResourceLink,
   Timestamp,
   useActiveNamespace,
   useK8sWatchResource,
-  K8sResourceCommon,
 } from '@openshift-console/dynamic-plugin-sdk';
 import {
   Card,
@@ -20,32 +20,21 @@ import {
   FlexItem,
   Gallery,
   GalleryItem,
-  MenuToggle,
-  MenuToggleElement,
   PageSection,
   SearchInput,
-  Select,
-  SelectList,
-  SelectOption,
   Spinner,
   Title,
 } from '@patternfly/react-core';
 import { CatFact, CatFactGVK } from '../models/CatFact';
 import CatIcon from './CatIcon';
 
-const ALL_NAMESPACES_KEY = '#ALL_NS#';
+const ALL_NAMESPACES_KEY = '#ALL_NS#'; // used by useActiveNamespace return value
 const ICON_OPTIONS = ['Crying', 'Evil', 'Grinning', 'Hearts', 'Joy', 'Kissing', 'Pouting', 'Smiling', 'Weary'];
 
 export default function CatFactsCatalogPage() {
-  const [activeNamespace, setActiveNamespace] = useActiveNamespace();
-  const [namespaceSelectOpen, setNamespaceSelectOpen] = React.useState(false);
+  const [activeNamespace] = useActiveNamespace();
   const [nameFilter, setNameFilter] = React.useState('');
   const [iconFilters, setIconFilters] = React.useState<Set<string>>(new Set());
-
-  const [projects] = useK8sWatchResource<K8sResourceCommon[]>({
-    groupVersionKind: { group: 'project.openshift.io', version: 'v1', kind: 'Project' },
-    isList: true,
-  });
 
   const [catFacts, loaded, loadError] = useK8sWatchResource<CatFact[]>({
     groupVersionKind: CatFactGVK,
@@ -72,59 +61,19 @@ export default function CatFactsCatalogPage() {
     });
   }, [catFacts, nameFilter, iconFilters]);
 
-  const namespaceLabel = activeNamespace === ALL_NAMESPACES_KEY ? 'All Projects' : activeNamespace;
-
   return (
     <>
       <DocumentTitle>Cat Facts Catalog</DocumentTitle>
+      <NamespaceBar />
       <ListPageHeader title="Cat Facts Catalog" />
       <PageSection>
-        <Flex alignItems={{ default: 'alignItemsCenter' }} style={{ marginBottom: 'var(--pf-v6-global--spacer--md)' }}>
-          <FlexItem>
-            <SearchInput
-              placeholder="Filter by name..."
-              value={nameFilter}
-              onChange={(_e, val) => setNameFilter(val)}
-              onClear={() => setNameFilter('')}
-            />
-          </FlexItem>
-          <FlexItem align={{ default: 'alignRight' }}>
-            <Flex alignItems={{ default: 'alignItemsCenter' }}>
-              <FlexItem>
-                <strong>Project:</strong>
-              </FlexItem>
-              <FlexItem>
-                <Select
-                  isOpen={namespaceSelectOpen}
-                  onSelect={(_e, val) => {
-                    setActiveNamespace(val as string);
-                    setNamespaceSelectOpen(false);
-                  }}
-                  onOpenChange={setNamespaceSelectOpen}
-                  toggle={(ref: React.Ref<MenuToggleElement>) => (
-                    <MenuToggle
-                      ref={ref}
-                      onClick={() => setNamespaceSelectOpen(!namespaceSelectOpen)}
-                      isExpanded={namespaceSelectOpen}
-                    >
-                      {namespaceLabel}
-                    </MenuToggle>
-                  )}
-                >
-                  <SelectList>
-                    <SelectOption value={ALL_NAMESPACES_KEY}>All Projects</SelectOption>
-                    {projects?.map((p) => (
-                      <SelectOption key={p.metadata?.name} value={p.metadata?.name ?? ''}>
-                        {p.metadata?.name}
-                      </SelectOption>
-                    ))}
-                  </SelectList>
-                </Select>
-              </FlexItem>
-            </Flex>
-          </FlexItem>
-        </Flex>
-
+        <SearchInput
+          placeholder="Filter by name..."
+          value={nameFilter}
+          onChange={(_e, val) => setNameFilter(val)}
+          onClear={() => setNameFilter('')}
+          style={{ marginBottom: 'var(--pf-v6-global--spacer--md)' }}
+        />
         <Flex alignItems={{ default: 'alignItemsFlexStart' }}>
           {/* Sidebar */}
           <FlexItem style={{ minWidth: '220px', width: '220px' }}>
