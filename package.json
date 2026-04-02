@@ -79,7 +79,8 @@
     "displayName": "Cat Facts Operator",
     "description": "An operator for all you cool cats and kittens.",
     "exposedModules": {
-      "CatFactsPage": "./components/CatFactsPage"
+      "CatFactsPage": "./components/CatFactsPage",
+      "CatFactsCatalogPage": "./components/CatFactsCatalogPage"
     },
     "dependencies": {
       "@console/pluginAPI": "^4.21.0"
