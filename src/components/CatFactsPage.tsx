@@ -61,6 +61,7 @@ export default function CatFactsPage({ namespace }: CatFactsPageProps) {
   const [colVisible, setColVisible] = React.useState<Record<ColKey, boolean>>(
     { name: true, icon: true, fact: true, age: true },
   );
+  const [tableKey, setTableKey] = React.useState(0);
   const [activeFilterAttr, setActiveFilterAttr] = React.useState('Name');
   const [attrSelectOpen, setAttrSelectOpen] = React.useState(false);
   const [iconSelectOpen, setIconSelectOpen] = React.useState(false);
@@ -291,13 +292,14 @@ export default function CatFactsPage({ namespace }: CatFactsPageProps) {
                   <Popover headerContent="Manage columns" bodyContent={manageColsBody} position="bottom">
                     <Button variant="plain">Manage columns</Button>
                   </Popover>
-                  <Button variant="plain" onClick={() => setColWidths(DEFAULT_COL_WIDTHS)}>
+                  <Button variant="plain" onClick={() => { setColWidths(DEFAULT_COL_WIDTHS); setTableKey((k) => k + 1); }}>
                     Reset column widths
                   </Button>
                 </>
               }
             />
             <DataViewTable
+              key={tableKey}
               isResizable
               columns={columns}
               rows={rows}
