@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {
   DocumentTitle,
-  ListPageHeader,
   NamespaceBar,
   ResourceLink,
   Timestamp,
@@ -15,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
   Checkbox,
+  Content,
   Divider,
   Flex,
   FlexItem,
@@ -65,7 +65,12 @@ export default function CatFactsCatalogPage() {
     <>
       <DocumentTitle>Cat Facts Catalog</DocumentTitle>
       <NamespaceBar />
-      <ListPageHeader title="Cat Facts Catalog" />
+      <PageSection>
+        <Content>
+          <Content component="h1">Cat Facts Catalog</Content>
+          <Content component="p">A catalog for all you cool cats and kittens. Browse all CAT FACTS from the CAT FACTS Operator. Use the filters to find facts by name or icon type.</Content>
+        </Content>
+      </PageSection>
       <PageSection>
         <SearchInput
           placeholder="Filter by name..."
