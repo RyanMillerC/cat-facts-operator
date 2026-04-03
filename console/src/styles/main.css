@@ -1,9 +1,0 @@
-/* Prefixing your CSS classes with your plugin name is a best practice to avoid
- * collisions with other plugin styles. */
-
-.cat-facts-operator-console-plugin__card {
-  color: var(--pf-c-content--Color);
-  height: 250px;
-  margin-bottom: var(--pf-l-flex--spacer); /* margin-left is set by FlexItem to the same value */
-  width: 250px;
-}
