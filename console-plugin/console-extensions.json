@@ -1,0 +1,57 @@
+[
+  {
+    "type": "console.page/route",
+    "properties": {
+      "exact": true,
+      "path": "/cat-facts",
+      "component": { "$codeRef": "CatFactsPage" }
+    }
+  },
+  {
+    "type": "console.page/resource/list",
+    "properties": {
+      "model": {
+        "group": "taco.moe",
+        "version": "v1alpha1",
+        "kind": "CatFact"
+      },
+      "component": { "$codeRef": "CatFactsPage" }
+    }
+  },
+  {
+    "type": "console.page/route",
+    "properties": {
+      "exact": true,
+      "path": "/cat-facts-catalog",
+      "component": { "$codeRef": "CatFactsCatalogPage" }
+    }
+  },
+  {
+    "type": "console.navigation/section",
+    "properties": {
+      "id": "cat-facts-section",
+      "name": "%plugin__cat-facts-operator-console-plugin~Cat Facts%",
+      "perspective": "admin"
+    }
+  },
+  {
+    "type": "console.navigation/href",
+    "properties": {
+      "id": "cat-facts",
+      "name": "%plugin__cat-facts-operator-console-plugin~Cat Facts%",
+      "href": "/k8s/all-namespaces/taco.moe~v1alpha1~CatFact",
+      "perspective": "admin",
+      "section": "cat-facts-section"
+    }
+  },
+  {
+    "type": "console.navigation/href",
+    "properties": {
+      "id": "cat-facts-catalog",
+      "name": "%plugin__cat-facts-operator-console-plugin~Catalog%",
+      "href": "/cat-facts-catalog",
+      "perspective": "admin",
+      "section": "cat-facts-section"
+    }
+  }
+]
