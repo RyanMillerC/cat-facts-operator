@@ -3,6 +3,7 @@ import {
   DocumentTitle,
   NamespaceBar,
   ResourceLink,
+  k8sCreate,
   useActiveNamespace,
   useK8sWatchResource,
 } from '@openshift-console/dynamic-plugin-sdk';
@@ -26,10 +27,12 @@ import {
   Select,
   SelectList,
   SelectOption,
+  Button,
   Spinner,
 } from '@patternfly/react-core';
-import { CatFact, CatFactGVK } from '../models/CatFact';
+import { CatFact, CatFactGVK, CatFactModel } from '../models/CatFact';
 import CatIcon from './CatIcon';
+import './cat-facts.css';
 
 const ALL_NAMESPACES_KEY = '#ALL_NS#';
 const ICON_OPTIONS = ['Crying', 'Evil', 'Grinning', 'Hearts', 'Joy', 'Kissing', 'Pouting', 'Smiling', 'Weary'];
@@ -54,6 +57,38 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
     namespace: ns,
   });
 
+  const seenUids = React.useRef<Set<string>>(new Set());
+  const [newUids, setNewUids] = React.useState<Set<string>>(new Set());
+
+  React.useEffect(() => {
+    if (!loaded || !catFacts) return;
+    const incoming = new Set(catFacts.map((cf) => cf.metadata?.uid ?? ''));
+    const added = [...incoming].filter((uid) => uid && !seenUids.current.has(uid));
+    const isFirstLoad = seenUids.current.size === 0;
+    incoming.forEach((uid) => seenUids.current.add(uid));
+    if (!isFirstLoad && added.length > 0) {
+      setNewUids((prev) => new Set([...prev, ...added]));
+      setTimeout(() => {
+        setNewUids((prev) => {
+          const next = new Set(prev);
+          added.forEach((uid) => next.delete(uid));
+          return next;
+        });
+      }, 1500);
+    }
+  }, [catFacts, loaded]);
+
+  const createCatFact = () =>
+    k8sCreate({
+      model: CatFactModel,
+      data: {
+        apiVersion: 'taco.moe/v1alpha1',
+        kind: 'CatFact',
+        metadata: { generateName: 'cat-fact-', namespace: ns ?? 'cat-facts-operator' },
+        spec: {},
+      },
+    });
+
   const filteredFacts = React.useMemo(() => {
     if (!catFacts) return [];
     return catFacts.filter((cf) => {
@@ -69,7 +104,11 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
       return [...filteredFacts].sort((a, b) => (a.metadata?.name ?? '').localeCompare(b.metadata?.name ?? ''));
     if (sortOrder === 'desc')
       return [...filteredFacts].sort((a, b) => (b.metadata?.name ?? '').localeCompare(a.metadata?.name ?? ''));
-    return filteredFacts;
+    return [...filteredFacts].sort(
+      (a, b) =>
+        new Date(b.metadata?.creationTimestamp ?? 0).getTime() -
+        new Date(a.metadata?.creationTimestamp ?? 0).getTime(),
+    );
   }, [filteredFacts, sortOrder]);
 
   const categoryLabel = selectedCategory === 'all' ? 'All items' : selectedCategory;
@@ -148,6 +187,9 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
                     {sortedFacts.length} item{sortedFacts.length !== 1 ? 's' : ''}
                   </span>
                 </FlexItem>
+                <FlexItem>
+                  <Button variant="primary" onClick={createCatFact}>Create CatFact</Button>
+                </FlexItem>
               </Flex>
               {!loaded && <Spinner />}
               {loadError && <p>Error loading Cat Facts: {String(loadError)}</p>}
@@ -157,7 +199,7 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
                 <Gallery hasGutter minWidths={{ default: '260px' }}>
                   {sortedFacts.map((cf) => (
                     <GalleryItem key={`${cf.metadata?.namespace}/${cf.metadata?.name}`}>
-                      <Card isFullHeight>
+                      <Card isFullHeight className={newUids.has(cf.metadata?.uid ?? '') ? 'cat-facts__new-card' : undefined}>
                         <CardHeader>
                           <Flex
                             justifyContent={{ default: 'justifyContentSpaceBetween' }}

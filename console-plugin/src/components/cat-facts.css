@@ -1,2 +1,11 @@
 /* Prefixing your CSS classes with your plugin name is a best practice to avoid
  * collisions with other plugin styles. */
+
+@keyframes cat-facts__new-fact-flash {
+  0% { background-color: var(--pf-t--color--blue--20); }
+  100% { background-color: transparent; }
+}
+
+.cat-facts__new-card {
+  animation: cat-facts__new-fact-flash 1.5s ease-out forwards;
+}
