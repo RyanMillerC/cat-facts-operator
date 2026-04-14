@@ -14,7 +14,7 @@ import (
 	"strings"
 
 	configv1 "github.com/openshift/api/config/v1"
-	consolev1alpha1 "github.com/openshift/api/console/v1alpha1"
+	consolev1 "github.com/openshift/api/console/v1"
 	"golang.org/x/mod/semver"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -51,10 +51,10 @@ func DeployConsolePlugin() error {
 	// reconsile loop. So it's easiest to make our own client and pass it around
 	// to functions in this package.
 	scheme := runtime.NewScheme()
-	appsv1.AddToScheme(scheme)          // Deployment
-	corev1.AddToScheme(scheme)          // Service
-	consolev1alpha1.AddToScheme(scheme) // ConsolePlugin
-	configv1.AddToScheme(scheme)        // ClusterVersion
+	appsv1.AddToScheme(scheme)    // Deployment
+	corev1.AddToScheme(scheme)    // Service
+	consolev1.AddToScheme(scheme) // ConsolePlugin
+	configv1.AddToScheme(scheme)  // ClusterVersion
 	kubeconfig := ctrl.GetConfigOrDie()
 	kclient, err := client.New(kubeconfig, client.Options{Scheme: scheme})
 	if err != nil {
@@ -355,8 +355,8 @@ func getService(name string, namespace string) corev1.Service {
 }
 
 // Create or update the ConsolePlugin for a console dynamic plugin
-func createOrUpdateConsolePlugin(kclient client.Client, consolePlugin *consolev1alpha1.ConsolePlugin) error {
-	var found consolev1alpha1.ConsolePlugin
+func createOrUpdateConsolePlugin(kclient client.Client, consolePlugin *consolev1.ConsolePlugin) error {
+	var found consolev1.ConsolePlugin
 	key := client.ObjectKeyFromObject(consolePlugin)
 	err := kclient.Get(context.TODO(), key, &found, &client.GetOptions{})
 	create := false
@@ -386,11 +386,11 @@ func createOrUpdateConsolePlugin(kclient client.Client, consolePlugin *consolev1
 	return nil
 }
 
-func getConsolePlugin(name string, namespace string) consolev1alpha1.ConsolePlugin {
-	consolePlugin := consolev1alpha1.ConsolePlugin{
+func getConsolePlugin(name string, namespace string) consolev1.ConsolePlugin {
+	consolePlugin := consolev1.ConsolePlugin{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "ConsolePlugin",
-			APIVersion: "console.openshift.io/v1alpha1",
+			APIVersion: "console.openshift.io/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name: name,
@@ -398,13 +398,16 @@ func getConsolePlugin(name string, namespace string) consolev1alpha1.ConsolePlug
 				"app": name,
 			},
 		},
-		Spec: consolev1alpha1.ConsolePluginSpec{
+		Spec: consolev1.ConsolePluginSpec{
 			DisplayName: "OpenShift console plugin for all you cool cats and kittens",
-			Service: consolev1alpha1.ConsolePluginService{
-				Name:      name,
-				Namespace: namespace,
-				Port:      9443,
-				BasePath:  "/",
+			Backend: consolev1.ConsolePluginBackend{
+				Type: consolev1.Service,
+				Service: &consolev1.ConsolePluginService{
+					Name:      name,
+					Namespace: namespace,
+					Port:      9443,
+					BasePath:  "/",
+				},
 			},
 		},
 	}
