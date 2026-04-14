@@ -227,8 +227,8 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
                               <CatIcon iconName={cf.spec.iconName} size={48} />
                             </FlexItem>
                             {cf.spec.iconName && (
-                              <FlexItem>
-                                <Label color="blue" isCompact>{cf.spec.iconName}</Label>
+                              <FlexItem style={{ marginTop: '8px' }}>
+                                <Label color="grey" isCompact><span style={{ fontWeight: 500 }}>{cf.spec.iconName}</span></Label>
                               </FlexItem>
                             )}
                           </Flex>
@@ -251,6 +251,7 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
                           </p>
                           <p style={{
                             display: '-webkit-box',
+                            marginTop: 'var(--pf-t--global--spacer--sm)',
                             WebkitLineClamp: 3,
                             WebkitBoxOrient: 'vertical',
                             overflow: 'hidden',
