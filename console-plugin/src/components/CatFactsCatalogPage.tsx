@@ -95,7 +95,7 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
         }}>
           <Flex alignItems={{ default: 'alignItemsFlexStart' }}>
             {/* Sidebar */}
-            <FlexItem style={{ width: '260px', minWidth: '260px', borderRight: '1px solid var(--pf-v6-global--BorderColor--200)' }}>
+            <FlexItem style={{ width: 'fit-content', minWidth: '10rem', borderRight: '1px solid var(--pf-v6-global--BorderColor--200)' }}>
               <Nav aria-label="Cat Facts categories">
                 <NavList>
                   <NavItem isActive={selectedCategory === 'all'} onClick={() => setSelectedCategory('all')}>
@@ -115,7 +115,7 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
               <Content component="h4">{categoryLabel}</Content>
               <Flex
                 alignItems={{ default: 'alignItemsCenter' }}
-                style={{ margin: 'var(--pf-v6-global--spacer--md) 0 var(--pf-v6-global--spacer--lg)' }}
+                style={{ margin: 'var(--pf-v6-global--spacer--md) 0' }}
               >
                 <FlexItem>
                   <SearchInput
@@ -144,7 +144,7 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
                   </Select>
                 </FlexItem>
                 <FlexItem align={{ default: 'alignRight' }}>
-                  <span style={{ color: 'var(--pf-v6-global--Color--200)', fontSize: 'var(--pf-v6-global--FontSize--sm)' }}>
+                  <span style={{ color: 'var(--pf-v6-global--Color--200)', fontSize: 'var(--pf-v6-global--FontSize--sm)', fontWeight: 'bold' }}>
                     {sortedFacts.length} item{sortedFacts.length !== 1 ? 's' : ''}
                   </span>
                 </FlexItem>
@@ -152,6 +152,8 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
               {!loaded && <Spinner />}
               {loadError && <p>Error loading Cat Facts: {String(loadError)}</p>}
               {loaded && !loadError && (
+                <>
+                <div style={{ height: 'var(--pf-t--global--spacer--gutter--default)' }} />
                 <Gallery hasGutter minWidths={{ default: '260px' }}>
                   {sortedFacts.map((cf) => (
                     <GalleryItem key={`${cf.metadata?.namespace}/${cf.metadata?.name}`}>
@@ -200,6 +202,7 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
                     </GalleryItem>
                   ))}
                 </Gallery>
+                </>
               )}
             </FlexItem>
           </Flex>
