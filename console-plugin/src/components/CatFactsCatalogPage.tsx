@@ -4,6 +4,7 @@ import {
   NamespaceBar,
   ResourceLink,
   k8sCreate,
+  k8sDelete,
   useActiveNamespace,
   useK8sWatchResource,
 } from '@openshift-console/dynamic-plugin-sdk';
@@ -89,6 +90,11 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
       },
     });
 
+  const deleteAllCatFacts = () => {
+    if (!catFacts?.length) return;
+    catFacts.forEach((cf) => k8sDelete({ model: CatFactModel, resource: cf }));
+  };
+
   const filteredFacts = React.useMemo(() => {
     if (!catFacts) return [];
     return catFacts.filter((cf) => {
@@ -154,9 +160,12 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
               <Content component="h4">{categoryLabel}</Content>
               <Flex
                 alignItems={{ default: 'alignItemsCenter' }}
+                justifyContent={{ default: 'justifyContentSpaceBetween' }}
                 style={{ margin: 'var(--pf-v6-global--spacer--md) 0' }}
               >
                 <FlexItem>
+                  <Flex alignItems={{ default: 'alignItemsCenter' }} flexWrap={{ default: 'nowrap' }}>
+                  <FlexItem>
                   <SearchInput
                     placeholder="Filter by keyword..."
                     value={nameFilter}
@@ -182,13 +191,22 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
                     </SelectList>
                   </Select>
                 </FlexItem>
-                <FlexItem align={{ default: 'alignRight' }}>
-                  <span style={{ color: 'var(--pf-v6-global--Color--200)', fontSize: 'var(--pf-v6-global--FontSize--sm)', fontWeight: 'bold' }}>
-                    {sortedFacts.length} item{sortedFacts.length !== 1 ? 's' : ''}
-                  </span>
+                  </Flex>
                 </FlexItem>
                 <FlexItem>
-                  <Button variant="primary" onClick={createCatFact}>Create CatFact</Button>
+                  <Flex alignItems={{ default: 'alignItemsCenter' }} spaceItems={{ default: 'spaceItemsSm' }} flexWrap={{ default: 'nowrap' }}>
+                    <FlexItem>
+                      <span style={{ color: 'var(--pf-v6-global--Color--200)', fontSize: 'var(--pf-v6-global--FontSize--sm)', fontWeight: 'bold' }}>
+                        {sortedFacts.length} item{sortedFacts.length !== 1 ? 's' : ''}
+                      </span>
+                    </FlexItem>
+                    <FlexItem>
+                      <Button variant="primary" onClick={createCatFact}>Create CatFact</Button>
+                    </FlexItem>
+                    <FlexItem>
+                      <Button variant="danger" onClick={deleteAllCatFacts} isDisabled={!catFacts?.length}>Delete All</Button>
+                    </FlexItem>
+                  </Flex>
                 </FlexItem>
               </Flex>
               {!loaded && <Spinner />}
@@ -226,6 +244,7 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
                           <p style={{
                             color: 'var(--pf-v6-global--Color--200)',
                             fontSize: 'var(--pf-v6-global--FontSize--sm)',
+                            fontWeight: 500,
                             marginBottom: 'var(--pf-v6-global--spacer--sm)',
                           }}>
                             {cf.metadata?.namespace}
