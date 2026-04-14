@@ -14,5 +14,5 @@ const (
 
 	// Version of the operator. This should be a valid semantic version (semver).
 	// TODO: Should allow this to be set from Makefile as an environment variable
-	Version string = "v0.0.13"
+	Version string = "v1.0.0-rc1"
 )

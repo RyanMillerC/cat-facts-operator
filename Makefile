@@ -6,9 +6,9 @@
 
 # VERSION defines the project version for the bundle. Update this value when you
 # upgrade the version of your project.
-# --- IMPORTANT: At the moment you need to also update line 213 in ./core/console.go ---
-# TODO: Rig up something so you don't need to update line 213 in the above file every time you update the version
-VERSION ?= 0.0.13
+# --- IMPORTANT: At the moment you need to also update Version in ./pkg/config/config.go ---
+# TODO: Rig up something so you don't need to update Version in the above file every time you update the version
+VERSION ?= 1.0.0-rc1
 
 # BUILD_OS and BUILD_ARCH defines what operating system and architecture to
 # build binaries and container images for. This should probably always be
@@ -40,7 +40,10 @@ BUNDLE_METADATA_OPTS ?= $(BUNDLE_CHANNELS) $(BUNDLE_DEFAULT_CHANNEL)
 #
 # For example, running 'make bundle-build bundle-push catalog-build catalog-push' will build and push both
 # taco.moe/cat-facts-operator-bundle:$VERSION and taco.moe/cat-facts-operator-catalog:$VERSION.
-IMAGE_TAG_BASE ?= quay.io/rymiller/cat-facts-operator
+IMAGE_TAG_BASE ?= quay.io/ryanmillerc/cat-facts-operator
+
+# Container runtime (docker or podman)
+DOCKER ?= podman
 
 # BUNDLE_IMG defines the image:tag used for the bundle.
 # You can use it as an arg. (E.g make bundle-build BUNDLE_IMG=<some-registry>/<project-name-bundle>:<tag>)
@@ -155,24 +158,24 @@ run: manifests generate fmt vet ## Run a controller from your host.
 .PHONY: docker-build
 docker-build: test ## Build docker image with the manager.
 	$(call print_header,docker-build)
-	docker build --platform ${BUILD_OS}/${BUILD_ARCH} --tag ${IMG} .
+	${DOCKER} build --platform ${BUILD_OS}/${BUILD_ARCH} --tag ${IMG} .
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the manager.
 	$(call print_header,docker-push)
-	docker push ${IMG}
+	${DOCKER} push ${IMG}
 
 .PHONY: console-build
 console-build: ## Build docker image for console plugin.
 	$(call print_header,console-build)
-	cd ./console; yarn install
-	cd ./console; yarn build
-	cd ./console; docker build --platform ${BUILD_OS}/${BUILD_ARCH} --tag ${IMAGE_TAG_BASE}-console-plugin:v${VERSION} .
+	cd ./console-plugin; yarn install
+	cd ./console-plugin; yarn build
+	cd ./console-plugin; ${DOCKER} build --platform ${BUILD_OS}/${BUILD_ARCH} --tag ${IMAGE_TAG_BASE}-console-plugin:v${VERSION} .
 
 .PHONY: console-push
 console-push: ## Push docker image for console plugin.
 	$(call print_header,console-push)
-	docker push ${IMAGE_TAG_BASE}-console-plugin:v${VERSION}
+	${DOCKER} push ${IMAGE_TAG_BASE}-console-plugin:v${VERSION}
 
 # PLATFORMS defines the target platforms for  the manager image be build to provide support to multiple
 # architectures. (i.e. make docker-buildx IMG=myregistry/mypoperator:0.0.1). To use this option you need to:
@@ -233,7 +236,7 @@ ENVTEST ?= $(LOCALBIN)/setup-envtest
 
 ## Tool Versions
 KUSTOMIZE_VERSION ?= v4.5.7
-CONTROLLER_TOOLS_VERSION ?= v0.10.0
+CONTROLLER_TOOLS_VERSION ?= v0.20.1
 
 KUSTOMIZE_INSTALL_SCRIPT ?= "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"
 .PHONY: kustomize
@@ -257,7 +260,7 @@ $(ENVTEST): $(LOCALBIN)
 .PHONY: update-version
 update-version: ## Update version number throughout the project to match VERSION make variable
 	$(call print_header,update-version)
-	sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" ./console/package.json
+	sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" ./console-plugin/package.json
 	sed -i "s/Version string = \"v.*\"/Version string = \"v${VERSION}\"/g" ./pkg/config/config.go
 
 .PHONY: bundle
@@ -272,12 +275,12 @@ bundle: manifests kustomize ## Generate bundle manifests and metadata, then vali
 .PHONY: bundle-build
 bundle-build: ## Build the bundle image.
 	$(call print_header,bundle-build)
-	docker build --file bundle.Dockerfile --platform ${BUILD_OS}/${BUILD_ARCH} --tag $(BUNDLE_IMG) .
+	${DOCKER} build --file bundle.Dockerfile --platform ${BUILD_OS}/${BUILD_ARCH} --tag $(BUNDLE_IMG) .
 
 .PHONY: bundle-push
 bundle-push: ## Push the bundle image.
 	$(call print_header,bundle-push)
-	docker push $(BUNDLE_IMG)
+	${DOCKER} push $(BUNDLE_IMG)
 
 .PHONY: opm
 OPM = ./bin/opm
@@ -316,7 +319,7 @@ endif
 catalog-build: opm ## Build an OLM catalog image (for testing).
 	cat catalog/template.yaml | BUNDLE_IMG=$(BUNDLE_IMG) VERSION=$(VERSION) envsubst > catalog/_template.yaml
 	$(OPM) alpha render-template basic -o yaml < catalog/_template.yaml > catalog/catalog.yaml
-	cd catalog ; docker build --platform $(BUILD_OS)/$(BUILD_ARCH) -t $(CATALOG_IMG) .
+	cd catalog ; ${DOCKER} build --platform $(BUILD_OS)/$(BUILD_ARCH) -t $(CATALOG_IMG) .
 
 .PHONY: catalog-push
 catalog-push: ## Push the OLM catalog image (for testing).

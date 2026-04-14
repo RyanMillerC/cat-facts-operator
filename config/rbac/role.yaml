@@ -2,7 +2,6 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  creationTimestamp: null
   name: manager-role
 rules:
 - apiGroups:
@@ -53,14 +52,13 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  creationTimestamp: null
   name: manager-role
   namespace: cat-facts-operator
 rules:
 - apiGroups:
-  - apps
+  - ""
   resources:
-  - deployments
+  - services
   verbs:
   - create
   - delete
@@ -70,9 +68,9 @@ rules:
   - update
   - watch
 - apiGroups:
-  - ""
+  - apps
   resources:
-  - services
+  - deployments
   verbs:
   - create
   - delete
