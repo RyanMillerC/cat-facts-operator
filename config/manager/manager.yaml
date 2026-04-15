@@ -78,6 +78,7 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         image: controller:latest
+        imagePullPolicy: Always
         name: manager
         securityContext:
           allowPrivilegeEscalation: false

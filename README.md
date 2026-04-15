@@ -62,7 +62,7 @@ metadata:
   namespace: openshift-marketplace
 spec:
   sourceType: grpc
-  image: quay.io/rymiller/cat-facts-catalog:latest
+  image: quay.io/ryanmillerc/cat-facts-catalog:latest
   displayName: Cat Facts Catalog
   publisher: Ryan Miller
   updateStrategy:
@@ -107,19 +107,13 @@ After uninstalling, run these commands to clean up resources the operator
 leaves behind:
 
 ```bash
-# Remove all CatFacts
-oc delete -n cat-facts-operator $(oc get -n cat-facts-operator catfacts -o name)
-
-# Remove the CatFacts CRD
+oc delete catfacts --all -A
 oc delete crd catfacts.taco.moe
-
-# Remove the OpenShift console plugin
+oc delete csv --all -n cat-facts-operator
 oc delete consoleplugin cat-facts-operator-console-plugin
-
-# Remove the cat-facts-operator namespace
 oc delete namespace cat-facts-operator
 
-# Optional: Remove the Cat Facts OLM CatalogSource
+# If using Test Cat Facts OLM CatalogSource
 oc delete -n openshift-marketplace catalogsource cat-facts-catalog
 ```
 

@@ -7,7 +7,7 @@ const (
 
 	// Container image path for the console plugin. DO NOT INCLUDE A TAG!
 	// config.Version will be used as the tag.
-	ConsolePluginImage string = "quay.io/rymiller/cat-facts-operator-console-plugin"
+	ConsolePluginImage string = "quay.io/ryanmillerc/cat-facts-operator-console-plugin"
 
 	// Name of operator. Console plugin resources will be prefixed with this.
 	OperatorName string = "cat-facts-operator"

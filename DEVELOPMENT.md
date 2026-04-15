@@ -49,7 +49,7 @@ running `make deploy`.
 
 ```bash
 # Set environment variables
-export USER=rymiller # Replace with your username
+export USER=ryanmillerc # Replace with your username
 export IMAGE_TAG_BASE="quay.io/${USER}/cat-facts-operator"
 
 # Build and push container image
