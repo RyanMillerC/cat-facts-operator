@@ -1,7 +1,4 @@
-<!--
-    This first chunk is HTML so it can be centered. I didn't have any luck
-    wrapping all the elements in a <p> element with align="center". 🤷
--->
+<!-- HTML hack to center content in a GitHub README -->
 <p align="center">
     <img src="docs/img/smiling_cat.svg" alt="Smiling Cat Icon" height="100" width="100" />
 </p>
@@ -15,35 +12,35 @@
     <img src="docs/img/catalog_view.png" alt="Cat Facts Operator catalog view" />
 </p>
 
-## Description
+## Cat Facts?
 
-This is a proof-of-concept, just for fun, operator. This operator integrates a
-custom UI into the OpenShift Console through a Dynamic Plugin.
+* Do you like to have fun? 🙋‍♂️
+* Do you like OpenShift? 🙋‍♂️
 
-Cat Facts Operator is a Go-based Operator built with the Operator SDK. I built
-this as a proof-of-concept to learn operator development and distribution
-through Operator Lifecycle Management (OLM). This operator includes an
-OpenShift Dynamic Console Plugin that serves a front-end to manage operator
-resources.
+If you answered either question, **install this operator!** (You don't even have to like cats... 🙀)
 
-### What Does It Do?
+## Seriously, what is it?
+
+Cat Facts Operator is a Go-based Operator built with Operator SDK. This
+operator bundles a React+PatternFly 6-based Dynamic Console Plugin that serves
+custom content in the OpenShift web console to manage operator resources.
 
 Cat Facts Operator provides a Custom Resource Definition (CRD) for *CatFact*. A
 CatFact is a Kubernetes resource that contains metadata along with a fact about
-cats. It uses https://catfact.ninja/fact to generate facts about cats.
+cats. This operator uses https://catfact.ninja/fact to generate facts about
+cats.
 
 ## Requirements
 
 * OKD/OpenShift 4.19 or later (Kubernetes 1.32.0+)
 
-**NOTE:** OCP 4.19+ is required because the Cat Facts console plugin uses
-PatternFly 6, which was introduced in the OpenShift web console in OCP 4.19.
+**NOTE:** OCP 4.19+ is required because the OpenShift dynamic console plugin
+uses PatternFly 6, which was introduced starting with OpenShift 4.19.
 
 ## Installing
 
-Cat Facts Operator is distributed through an OLM catalog. Cat Facts Operator is
-not included in any default OperatorHub catalog so you'll need to create a
-CatalogSource to install it.
+**I'm working on getting Cat Facts listed in OperatorHub. In the meantime,
+install it by adding a CatalogSource to your cluster.**
 
 Use the *Import YAML* feature of the OpenShift console or `oc` command line
 interface to create the CatalogSource object below.
@@ -52,7 +49,8 @@ interface to create the CatalogSource object below.
 
 ```yaml
 # Apply this object to your cluster to add the catalog to OperatorHub.
-# After ~1 minute, search for "Cat Facts" in OperatorHub.
+# Apply this object. After ~1 minute, search for "Cat Facts" under
+# Ecosystem > Software Catalog (OperatorHub).
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -61,26 +59,26 @@ metadata:
 spec:
   sourceType: grpc
   image: quay.io/ryanmillerc/cat-facts-catalog:latest
-  displayName: Cat Facts Catalog
+  displayName: Cat Facts
   publisher: Ryan Miller
   updateStrategy:
     registryPoll:
       interval: 10m
 ```
 
-After ~1 minute, navigate to OperatorHub and search for "Cat Facts".
+After ~1 minute, navigate to Ecosystem > Software Catalog (OperatorHub) and search for "A Cat Facts Operator".
 
 ![Search for Cat Facts](docs/img/operatorhub_search.png)
 
 Follow the prompts to install operator page. Accept the default options for
 everything **except for Console Plugin**. For security, OpenShift defaults
-*Console Plugin* to *Disabled* on operators that come from non-official
-catalogs. Select *Enable* for *Console plugin* and install the operator.
+*Console Plugin* to *Disabled* on operators that come from community
+catalogs. **Select *Enable* for *Console plugin* and install the operator.
 
 ![Install the operator](docs/img/install_operator.png)
 
-Within ~1 minute after the installation completes, you will be prompted to
-refresh your OpenShift console in the top-right corner.
+It will take a few moments for the operator controller and dynamic console
+plugin to load. When it's ready, OpenShift should prompt you to refresh.
 
 ![Refresh OpenShift web console](docs/img/refresh_web_console.png)
 
@@ -98,8 +96,8 @@ refresh your OpenShift console in the top-right corner.
 
 ## Uninstalling
 
-To uninstall, go to *Operators > Installed Operators* in the OpenShfit console.
-Select the Cat Facts Operator and uninstall.
+To uninstall, go to *Ecosystem > Installed Operators* in the OpenShift console.
+Select "A Cat Facts Operator" and uninstall.
 
 After uninstalling, run these commands to clean up resources the operator
 leaves behind:
@@ -123,8 +121,8 @@ It uses a [Controller] which provides a reconcile function responsible for
 synchronizing resources untile the desired state is reached on the cluster.
 
 Additionally, this project includes a React JS-based OpenShift Console Dynamic
-Plugin, under the *./console* directory. For details on developing the console
-plugin, view [./console/README.md](console/README.md).
+Plugin, under the *./console-plugin* directory. For details on developing the
+console plugin, view [./console-plugin/README.md](console-plugin/README.md).
 
 The remainder of this document is specifically for developing and validating
 the Go-based operator.

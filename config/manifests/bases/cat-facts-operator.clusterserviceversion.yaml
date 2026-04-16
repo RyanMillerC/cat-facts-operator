@@ -24,15 +24,22 @@ spec:
       name: catfacts.taco.moe
       version: v1alpha1
   description: |
-    ### Description
+    ### Cat Facts?
 
-    This is a proof-of-concept, just for fun, operator. This operator integrates a
-    custom UI into the OpenShift Console through a Dynamic Plugin.
+    * Do you like to have fun? 🙋‍♂️
+    * Do you like OpenShift? 🙋‍♂️
+
+    If you answered either question, **install this operator!** (You don't even have to like cats... 🙀)
+
+    ### What Is It?
+
+    Cat Facts Operator is a Go-based Operator built with Operator SDK. This
+    operator bundles a React+PatternFly 6-based Dynamic Console Plugin that serves
+    custom content in the OpenShift web console to manage operator resources.
 
     Cat Facts Operator provides a Custom Resource Definition (CRD) for *CatFact*. A
-    CatFact is a Kubernetes resource that contains metadata along with a random
-    fact about cats. It uses https://catfact.ninja/fact to generate facts about
-    cats.
+    CatFact is a Kubernetes resource that contains metadata along with a fact about
+    cats. This operator uses https://catfact.ninja/fact to generate facts about cats.
 
     More information and source code is [available here][cat-facts-operator-source].
 
@@ -40,15 +47,15 @@ spec:
 
     * OKD/OpenShift 4.19 or later (Kubernetes 1.32.0+)
 
-    **NOTE:** OCP 4.19+ is required because the Cat Facts console plugin uses
-    PatternFly 6, which was introduced in the OpenShift web console in OCP 4.19.
+    **NOTE:** OCP 4.19+ is required because the OpenShift dynamic console plugin
+    uses PatternFly 6, which was introduced starting with OpenShift 4.19.
 
     ### Installation
 
-    Follow the prompts to the install operator page. Accept the default options for
+    Follow the prompts on the install operator page. Accept the default options for
     everything **except for Console Plugin**. For security, OpenShift defaults
-    *Console Plugin* to *Disabled* on operators that come from the community
-    catalog. Select *Enable* for *Console plugin* and install the operator.
+    *Console Plugin* to *Disabled* on operators that come from community
+    catalogs. Select *Enable* for *Console plugin* and install the operator.
 
     ### Acknowledgments
 
