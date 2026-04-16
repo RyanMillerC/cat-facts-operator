@@ -8,7 +8,7 @@ metadata:
     certified: "false"
     console.openshift.io/plugins: '["cat-facts-operator-console-plugin"]'
     containerImage: quay.io/ryanmillerc/cat-facts-operator
-    createdAt: "2026-04-14T04:13:54Z"
+    createdAt: "2026-04-15T15:31:59Z"
     description: An operator for all you cool cats and kittens.
     operatorframework.io/suggested-namespace: cat-facts-operator
     operators.operatorframework.io/builder: operator-sdk-v1.42.2
@@ -206,6 +206,7 @@ spec:
                     fieldRef:
                       fieldPath: metadata.namespace
                 image: quay.io/ryanmillerc/cat-facts-operator:v1.0.0-rc1
+                imagePullPolicy: Always
                 livenessProbe:
                   httpGet:
                     path: /healthz
