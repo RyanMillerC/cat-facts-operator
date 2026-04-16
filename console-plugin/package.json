@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/RyanMillerC/cat-facts-4.21.git"
+    "url": "https://github.com/RyanMillerC/cat-facts-operator.git"
   },
   "scripts": {
     "clean": "rm -rf dist",
