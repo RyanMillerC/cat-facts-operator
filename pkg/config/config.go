@@ -3,7 +3,7 @@ package config
 const (
 	// Minimum version of OpenShift that supports dynamic console plugins.
 	// Console plugin should not be attempted on versions less than this.
-	MinConsolePluginOCPVer string = "4.10"
+	MinConsolePluginOCPVer string = "4.19"
 
 	// Container image path for the console plugin. DO NOT INCLUDE A TAG!
 	// config.Version will be used as the tag.

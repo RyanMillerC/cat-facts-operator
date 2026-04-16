@@ -2,7 +2,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: ClusterServiceVersion
 metadata:
   annotations:
-    alm-examples: '[]'
+    alm-examples: '[{"apiVersion":"taco.moe/v1alpha1","kind":"CatFact","metadata":{"name":"default-catfact"},"spec":{}},{"apiVersion":"taco.moe/v1alpha1","kind":"CatFact","metadata":{"name":"custom-catfact"},"spec":{"fact":"Cats sleep 12-16 hours per day.","iconName":"Smiling"}}]'
     capabilities: Basic Install
     categories: Fun
     certified: "false"
@@ -38,12 +38,10 @@ spec:
 
     ### Requirements
 
-    * OKD/OpenShift 4.11 or later
+    * OKD/OpenShift 4.19 or later (Kubernetes 1.32.0+)
 
-    **NOTE:** Cat Facts Operator should work on older versions of OpenShift and
-    on other Kubernetes distributions; **however, the console dynamic plugin UI
-    (the main feature of this operator) will not be installed.** The controller and
-    CatFact CRD will install and should work as expected.
+    **NOTE:** OCP 4.19+ is required because the Cat Facts console plugin uses
+    PatternFly 6, which was introduced in the OpenShift web console in OCP 4.19.
 
     ### Installation
 
@@ -90,6 +88,7 @@ spec:
   - email: RyanMillerC@outlook.com
     name: Ryan Miller
   maturity: stable
+  minKubeVersion: 1.32.0
   provider:
     name: Ryan Miller
     url: https://github.com/RyanMillerC/cat-facts-operator

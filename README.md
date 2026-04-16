@@ -34,12 +34,10 @@ cats. It uses https://catfact.ninja/fact to generate facts about cats.
 
 ## Requirements
 
-* OKD/OpenShift 4.11 or later
+* OKD/OpenShift 4.19 or later (Kubernetes 1.32.0+)
 
-**NOTE:** Cat Facts Operator should work on older versions of OpenShift and
-on other Kubernetes distributions; **however, the console dynamic plugin UI
-(the main feature of this operator) will not be installed.** The controller and
-CatFact CRD will install and should work as expected.
+**NOTE:** OCP 4.19+ is required because the Cat Facts console plugin uses
+PatternFly 6, which was introduced in the OpenShift web console in OCP 4.19.
 
 ## Installing
 
