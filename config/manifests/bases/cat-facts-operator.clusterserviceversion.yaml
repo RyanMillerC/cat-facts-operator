@@ -26,10 +26,10 @@ spec:
   description: |
     ### Cat Facts?
 
-    * Do you like to have fun? 🙋‍♂️
-    * Do you like OpenShift? 🙋‍♂️
+    * Do you like to have fun? &#x1F64B;&#x200D;&#x2642;&#xFE0F;
+    * Do you like OpenShift? &#x1F64B;&#x200D;&#x2642;&#xFE0F;
 
-    If you answered either question, **install this operator!** (You don't even have to like cats... 🙀)
+    If you answered either question, **install this operator!** (You don't even have to like cats... &#x1F640;)
 
     ### What Is It?
 
