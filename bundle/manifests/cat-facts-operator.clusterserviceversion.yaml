@@ -8,20 +8,20 @@ metadata:
           "apiVersion": "taco.moe/v1alpha1",
           "kind": "CatFact",
           "metadata": {
-            "name": "custom-catfact"
+            "name": "default-catfact"
           },
-          "spec": {
-            "fact": "Cats sleep 12-16 hours per day.",
-            "iconName": "Smiling"
-          }
+          "spec": {}
         },
         {
           "apiVersion": "taco.moe/v1alpha1",
           "kind": "CatFact",
           "metadata": {
-            "name": "default-catfact"
+            "name": "example-catfact"
           },
-          "spec": {}
+          "spec": {
+            "fact": "Cats sleep 12-16 hours per day.",
+            "iconName": "Smiling"
+          }
         }
       ]
     capabilities: Basic Install
@@ -29,7 +29,7 @@ metadata:
     certified: "false"
     console.openshift.io/plugins: '["cat-facts-operator-console-plugin"]'
     containerImage: quay.io/ryanmillerc/cat-facts-operator
-    createdAt: "2026-04-16T03:28:05Z"
+    createdAt: "2026-04-16T03:32:47Z"
     description: An operator for all you cool cats and kittens.
     operatorframework.io/suggested-namespace: cat-facts-operator
     operators.operatorframework.io/builder: operator-sdk-v1.42.2
