@@ -87,9 +87,9 @@ spec:
   - name: Cat Facts Operator Source Code
     url: https://github.com/RyanMillerC/cat-facts-operator
   maintainers:
-  - email: miller@redhat.com
+  - email: RyanMillerC@outlook.com
     name: Ryan Miller
-  maturity: alpha
+  maturity: stable
   provider:
     name: Ryan Miller
     url: https://github.com/RyanMillerC/cat-facts-operator
