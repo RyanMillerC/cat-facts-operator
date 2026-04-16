@@ -1,0 +1,7 @@
+apiVersion: taco.moe/v1alpha1
+kind: CatFact
+metadata:
+  name: custom-catfact
+spec:
+  fact: "Cats sleep 12-16 hours per day."
+  iconName: Smiling

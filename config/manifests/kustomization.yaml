@@ -3,6 +3,7 @@
 resources:
 - bases/cat-facts-operator.clusterserviceversion.yaml
 - ../default
+- ../samples
 # - ../samples
 # - ../scorecard
 

@@ -2,7 +2,6 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: ClusterServiceVersion
 metadata:
   annotations:
-    alm-examples: '[{"apiVersion":"taco.moe/v1alpha1","kind":"CatFact","metadata":{"name":"default-catfact"},"spec":{}},{"apiVersion":"taco.moe/v1alpha1","kind":"CatFact","metadata":{"name":"custom-catfact"},"spec":{"fact":"Cats sleep 12-16 hours per day.","iconName":"Smiling"}}]'
     capabilities: Basic Install
     categories: Fun
     certified: "false"

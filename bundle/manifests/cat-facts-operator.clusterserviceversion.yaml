@@ -2,13 +2,34 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: ClusterServiceVersion
 metadata:
   annotations:
-    alm-examples: '[{"apiVersion":"taco.moe/v1alpha1","kind":"CatFact","metadata":{"name":"default-catfact"},"spec":{}},{"apiVersion":"taco.moe/v1alpha1","kind":"CatFact","metadata":{"name":"custom-catfact"},"spec":{"fact":"Cats sleep 12-16 hours per day.","iconName":"Smiling"}}]'
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "taco.moe/v1alpha1",
+          "kind": "CatFact",
+          "metadata": {
+            "name": "custom-catfact"
+          },
+          "spec": {
+            "fact": "Cats sleep 12-16 hours per day.",
+            "iconName": "Smiling"
+          }
+        },
+        {
+          "apiVersion": "taco.moe/v1alpha1",
+          "kind": "CatFact",
+          "metadata": {
+            "name": "default-catfact"
+          },
+          "spec": {}
+        }
+      ]
     capabilities: Basic Install
     categories: Fun
     certified: "false"
     console.openshift.io/plugins: '["cat-facts-operator-console-plugin"]'
     containerImage: quay.io/ryanmillerc/cat-facts-operator
-    createdAt: "2026-04-15T15:31:59Z"
+    createdAt: "2026-04-16T03:28:05Z"
     description: An operator for all you cool cats and kittens.
     operatorframework.io/suggested-namespace: cat-facts-operator
     operators.operatorframework.io/builder: operator-sdk-v1.42.2
@@ -29,10 +50,10 @@ spec:
   description: |
     ### Cat Facts?
 
-    * Do you like to have fun? 🙋‍♂️
-    * Do you like OpenShift? 🙋‍♂️
+    * Do you like to have fun? &#x1F64B;&#x200D;&#x2642;&#xFE0F;
+    * Do you like OpenShift? &#x1F64B;&#x200D;&#x2642;&#xFE0F;
 
-    If you answered either question, **install this operator!** (You don't even have to like cats... 🙀)
+    If you answered either question, **install this operator!** (You don't even have to like cats... &#x1F640;)
 
     ### What Is It?
 

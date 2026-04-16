@@ -90,11 +90,12 @@ Common examples:
 - 🙀 → `&#x1F640;`
 - 🐱 → `&#x1F431;`
 
-### alm-examples must be a single-line JSON string
+### alm-examples live in config/samples/, not the base CSV
 
-The `alm-examples` annotation value is a JSON array stored as a YAML string. It
-**must stay on one line** in the base CSV. If it wraps to a second line, `make
-bundle` will silently reset it to `'[]'`.
+`alm-examples` is generated automatically from the sample CRs in `config/samples/`.
+Do not add `alm-examples` to the base CSV — `operator-sdk generate bundle` reads the
+sample files (included via `config/manifests/kustomization.yaml`) and builds the
+annotation from them. To add or change examples, edit the YAML files in `config/samples/`.
 
 ### CSV metadata reference
 
