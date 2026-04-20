@@ -11,7 +11,7 @@
     "type": "console.page/resource/list",
     "properties": {
       "model": {
-        "group": "taco.moe",
+        "group": "ryanmillerc.github.io",
         "version": "v1alpha1",
         "kind": "CatFact"
       },
@@ -39,7 +39,7 @@
     "properties": {
       "id": "cat-facts",
       "name": "%plugin__cat-facts-operator-console-plugin~Cat Facts%",
-      "href": "/k8s/all-namespaces/taco.moe~v1alpha1~CatFact",
+      "href": "/k8s/all-namespaces/ryanmillerc.github.io~v1alpha1~CatFact",
       "perspective": "admin",
       "section": "cat-facts-section"
     }

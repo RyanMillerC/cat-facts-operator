@@ -83,7 +83,7 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
     k8sCreate({
       model: CatFactModel,
       data: {
-        apiVersion: 'taco.moe/v1alpha1',
+        apiVersion: 'ryanmillerc.github.io/v1alpha1',
         kind: 'CatFact',
         metadata: { generateName: 'cat-fact-', namespace: ns ?? 'cat-facts-operator' },
         spec: {},

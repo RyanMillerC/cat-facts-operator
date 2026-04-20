@@ -1,4 +1,4 @@
-domain: taco.moe
+domain: ryanmillerc.github.io
 layout:
 - go.kubebuilder.io/v4
 plugins:
@@ -11,7 +11,7 @@ resources:
     crdVersion: v1
     namespaced: true
   controller: true
-  domain: taco.moe
+  domain: ryanmillerc.github.io
   kind: CatFact
   path: github.com/ryanmillerc/cat-facts-operator/api/v1alpha1
   version: v1alpha1

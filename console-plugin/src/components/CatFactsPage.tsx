@@ -265,7 +265,7 @@ export default function CatFactsPage({ namespace }: CatFactsPageProps) {
     k8sCreate({
       model: CatFactModel,
       data: {
-        apiVersion: 'taco.moe/v1alpha1',
+        apiVersion: 'ryanmillerc.github.io/v1alpha1',
         kind: 'CatFact',
         metadata: { generateName: 'cat-fact-', namespace: namespace ?? 'cat-facts-operator' },
         spec: {},

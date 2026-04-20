@@ -6,7 +6,7 @@ this codebase.
 ## Project Overview
 
 Cat Facts Operator is a Go-based Kubernetes operator built with Operator SDK. It
-provides a `CatFact` CRD (group `taco.moe`) and bundles a React+PatternFly 6
+provides a `CatFact` CRD (group `ryanmillerc.github.io`) and bundles a React+PatternFly 6
 OpenShift Dynamic Console Plugin. The operator namespace is `cat-facts-operator`.
 
 **Key Technologies:**
@@ -64,6 +64,15 @@ Image names are set in `pkg/config/config.go` (console plugin) and derived from
 | `make update-version VERSION=x.y.z` | Bump version in go and package.json |
 
 Default container runtime is `podman`. Override with `DOCKER=docker make ...`.
+
+## API Group
+
+The CatFact CRD uses group `ryanmillerc.github.io`. If the group ever needs to change,
+the `PROJECT` file (no extension, in repo root) must be updated manually — it has no
+file extension so it is not picked up by glob patterns like `*.yaml` and is easy to
+miss. It is the file `operator-sdk generate kustomize manifests` reads to locate Go
+types; a stale value there causes the warning
+"Skipping definitions parsing for API {}: Go type not found".
 
 ## OLM Bundle / CSV
 
@@ -153,7 +162,7 @@ make catalog-install
 
 # Clean up
 oc delete catfacts --all -A
-oc delete crd catfacts.taco.moe
+oc delete crd catfacts.ryanmillerc.github.io
 oc delete csv --all -n cat-facts-operator
 oc delete consoleplugin cat-facts-operator-console-plugin
 oc delete namespace cat-facts-operator

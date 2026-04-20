@@ -1,4 +1,4 @@
-apiVersion: taco.moe/v1alpha1
+apiVersion: ryanmillerc.github.io/v1alpha1
 kind: CatFact
 metadata:
   name: my-cat-fact

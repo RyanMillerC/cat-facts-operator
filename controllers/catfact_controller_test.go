@@ -30,7 +30,7 @@ var _ = Describe("CatFact controller", func() {
 			ctx := context.Background()
 			catFact := &tacomoev1alpha1.CatFact{
 				TypeMeta: metav1.TypeMeta{
-					APIVersion: "taco.moe/v1alpha1",
+					APIVersion: "ryanmillerc.github.io/v1alpha1",
 					Kind:       "CatFact",
 				},
 				ObjectMeta: metav1.ObjectMeta{
@@ -70,7 +70,7 @@ var _ = Describe("CatFact controller", func() {
 			ctx := context.Background()
 			catFact := &tacomoev1alpha1.CatFact{
 				TypeMeta: metav1.TypeMeta{
-					APIVersion: "taco.moe/v1alpha1",
+					APIVersion: "ryanmillerc.github.io/v1alpha1",
 					Kind:       "CatFact",
 				},
 				ObjectMeta: metav1.ObjectMeta{

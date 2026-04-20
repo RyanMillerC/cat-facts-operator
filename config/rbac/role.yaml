@@ -23,7 +23,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - taco.moe
+  - ryanmillerc.github.io
   resources:
   - catfacts
   verbs:
@@ -35,13 +35,13 @@ rules:
   - update
   - watch
 - apiGroups:
-  - taco.moe
+  - ryanmillerc.github.io
   resources:
   - catfacts/finalizers
   verbs:
   - update
 - apiGroups:
-  - taco.moe
+  - ryanmillerc.github.io
   resources:
   - catfacts/status
   verbs:

@@ -104,7 +104,7 @@ leaves behind:
 
 ```bash
 oc delete catfacts --all -A
-oc delete crd catfacts.taco.moe
+oc delete crd catfacts.ryanmillerc.github.io
 oc delete csv --all -n cat-facts-operator
 oc delete consoleplugin cat-facts-operator-console-plugin
 oc delete namespace cat-facts-operator

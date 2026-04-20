@@ -36,9 +36,9 @@ type CatFactReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=taco.moe,resources=catfacts,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=taco.moe,resources=catfacts/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=taco.moe,resources=catfacts/finalizers,verbs=update
+//+kubebuilder:rbac:groups=ryanmillerc.github.io,resources=catfacts,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=ryanmillerc.github.io,resources=catfacts/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=ryanmillerc.github.io,resources=catfacts/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.

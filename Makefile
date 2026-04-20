@@ -39,7 +39,7 @@ BUNDLE_METADATA_OPTS ?= $(BUNDLE_CHANNELS) $(BUNDLE_DEFAULT_CHANNEL)
 # This variable is used to construct full image tags for bundle and catalog images.
 #
 # For example, running 'make bundle-build bundle-push catalog-build catalog-push' will build and push both
-# taco.moe/cat-facts-operator-bundle:$VERSION and taco.moe/cat-facts-operator-catalog:$VERSION.
+# quay.io/ryanmillerc/cat-facts-operator-bundle:$VERSION and quay.io/ryanmillerc/cat-facts-operator-catalog:$VERSION.
 IMAGE_TAG_BASE ?= quay.io/ryanmillerc/cat-facts-operator
 
 # Container runtime (docker or podman)

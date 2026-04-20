@@ -5,7 +5,7 @@ metadata:
     alm-examples: |-
       [
         {
-          "apiVersion": "taco.moe/v1alpha1",
+          "apiVersion": "ryanmillerc.github.io/v1alpha1",
           "kind": "CatFact",
           "metadata": {
             "name": "default-catfact"
@@ -13,7 +13,7 @@ metadata:
           "spec": {}
         },
         {
-          "apiVersion": "taco.moe/v1alpha1",
+          "apiVersion": "ryanmillerc.github.io/v1alpha1",
           "kind": "CatFact",
           "metadata": {
             "name": "example-catfact"
@@ -29,7 +29,7 @@ metadata:
     certified: "false"
     console.openshift.io/plugins: '["cat-facts-operator-console-plugin"]'
     containerImage: quay.io/ryanmillerc/cat-facts-operator
-    createdAt: "2026-04-16T03:32:47Z"
+    createdAt: "2026-04-16T03:46:42Z"
     description: An operator for all you cool cats and kittens.
     operatorframework.io/suggested-namespace: cat-facts-operator
     operators.operatorframework.io/builder: operator-sdk-v1.42.2
@@ -45,7 +45,7 @@ spec:
     - description: "CatFact is a Kubernetes model of a fact about cats \U0001F431"
       displayName: Cat Fact
       kind: CatFact
-      name: catfacts.taco.moe
+      name: catfacts.ryanmillerc.github.io
       version: v1alpha1
   description: |
     ### Cat Facts?
@@ -119,7 +119,7 @@ spec:
           - update
           - watch
         - apiGroups:
-          - taco.moe
+          - ryanmillerc.github.io
           resources:
           - catfacts
           verbs:
@@ -131,13 +131,13 @@ spec:
           - update
           - watch
         - apiGroups:
-          - taco.moe
+          - ryanmillerc.github.io
           resources:
           - catfacts/finalizers
           verbs:
           - update
         - apiGroups:
-          - taco.moe
+          - ryanmillerc.github.io
           resources:
           - catfacts/status
           verbs:

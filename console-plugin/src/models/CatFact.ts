@@ -2,13 +2,13 @@ import { K8sGroupVersionKind, K8sResourceCommon } from '@openshift-console/dynam
 import { K8sModel } from '@openshift-console/dynamic-plugin-sdk/lib/api/common-types';
 
 export const CatFactGVK: K8sGroupVersionKind = {
-  group: 'taco.moe',
+  group: 'ryanmillerc.github.io',
   version: 'v1alpha1',
   kind: 'CatFact',
 };
 
 export const CatFactModel: K8sModel = {
-  apiGroup: 'taco.moe',
+  apiGroup: 'ryanmillerc.github.io',
   apiVersion: 'v1alpha1',
   kind: 'CatFact',
   label: 'CatFact',
