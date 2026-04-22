@@ -4,6 +4,7 @@ metadata:
   annotations:
     capabilities: Basic Install
     categories: OpenShift Optional
+    com.redhat.openshift.versions: ">=4.19"
     certified: "false"
     console.openshift.io/plugins: '["cat-facts-operator-console-plugin"]'
     containerImage: quay.io/ryanmillerc/cat-facts-operator:v1.0.0
