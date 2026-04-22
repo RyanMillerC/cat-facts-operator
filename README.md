@@ -52,7 +52,7 @@ uses PatternFly 6, which was introduced starting with OpenShift 4.19.
 
 ### OperatorHub
 
-**I'm working on getting Cat Facts listed in OperatorHub. In the meantime,
+> **I'm working on getting Cat Facts listed in OperatorHub. In the meantime,
 install it by adding the custom CatalogSource below.**
 
 ### Custom Catalog (Testing)
