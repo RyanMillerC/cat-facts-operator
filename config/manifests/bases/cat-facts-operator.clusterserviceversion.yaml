@@ -6,11 +6,11 @@ metadata:
     categories: OpenShift Optional
     certified: "false"
     console.openshift.io/plugins: '["cat-facts-operator-console-plugin"]'
-    containerImage: quay.io/ryanmillerc/cat-facts-operator:v1.0.0-rc1
+    containerImage: quay.io/ryanmillerc/cat-facts-operator:v1.0.0
     description: Combining Hybrid-Cloud Technology With Cats
     operatorframework.io/suggested-namespace: cat-facts-operator
     repository: https://github.com/RyanMillerC/cat-facts-operator
-    support: None
+    support: Ryan Miller
   name: cat-facts-operator.v0.0.1
   namespace: placeholder
 spec:

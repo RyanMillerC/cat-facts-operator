@@ -6,9 +6,7 @@
 
 # VERSION defines the project version for the bundle. Update this value when you
 # upgrade the version of your project.
-# --- IMPORTANT: At the moment you need to also update Version in ./pkg/config/config.go ---
-# TODO: Rig up something so you don't need to update Version in the above file every time you update the version
-VERSION ?= 1.0.0-rc1
+VERSION ?= 1.0.0
 
 # BUILD_OS and BUILD_ARCH defines what operating system and architecture to
 # build binaries and container images for. This should probably always be
@@ -331,3 +329,11 @@ catalog-install: ## Install the OLM catalog on a cluster (for testing).
 	sed -e "s@CATALOG_IMG@$(CATALOG_IMG)@g" catalog/catalog-source.yaml > catalog/_catalog-source.yaml
 	-oc delete -f catalog/_catalog-source.yaml
 	oc create -f catalog/_catalog-source.yaml
+
+##@ Release
+
+.PHONY: git-tag
+git-tag: ## Create and push a git tag for the current VERSION (e.g. make git-tag VERSION=1.0.0).
+	$(call print_header,tag)
+	git tag v$(VERSION)
+	git push origin v$(VERSION)
