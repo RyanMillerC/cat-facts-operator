@@ -6,7 +6,7 @@
     Cat Facts Operator
 </h1>
 <h4 align="center">
-    *Combining Hybrid-Cloud Technology With Cats*
+    <i>Combining Hybrid-Cloud Technology With Cats</i>
 </h4>
 <p align="center">
     <img src="docs/img/catalog_view.png" alt="Cat Facts Operator catalog view" />
