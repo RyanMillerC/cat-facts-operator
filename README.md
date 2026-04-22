@@ -39,18 +39,17 @@ uses PatternFly 6, which was introduced starting with OpenShift 4.19.
 
 ## Installing
 
+### OperatorHub
+
 **I'm working on getting Cat Facts listed in OperatorHub. In the meantime,
-install it by adding a CatalogSource to your cluster.**
+install it by adding the custom CatalogSource below.**
 
-Use the *Import YAML* feature of the OpenShift console or `oc` command line
-interface to create the CatalogSource object below.
+### Custom Catalog (Testing)
 
-![Import YAML feature of OpenShift console](docs/img/import_yaml.png)
+Apply this object. After ~1 minute, search for "Cat Facts" under *Ecosystem >
+Software Catalog* (previously labeled OperatorHub).
 
 ```yaml
-# Apply this object to your cluster to add the catalog to OperatorHub.
-# Apply this object. After ~1 minute, search for "Cat Facts" under
-# Ecosystem > Software Catalog (OperatorHub).
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
@@ -66,10 +65,6 @@ spec:
       interval: 10m
 ```
 
-After ~1 minute, navigate to Ecosystem > Software Catalog (OperatorHub) and search for "A Cat Facts Operator".
-
-![Search for Cat Facts](docs/img/operatorhub_search.png)
-
 Follow the prompts to install operator page. Accept the default options for
 everything **except for Console Plugin**. For security, OpenShift defaults
 *Console Plugin* to *Disabled* on operators that come from community
@@ -78,9 +73,8 @@ catalogs. **Select *Enable* for *Console plugin* and install the operator.
 ![Install the operator](docs/img/install_operator.png)
 
 It will take a few moments for the operator controller and dynamic console
-plugin to load. When it's ready, OpenShift should prompt you to refresh.
-
-![Refresh OpenShift web console](docs/img/refresh_web_console.png)
+plugin containers to download and launch. Within a few moments, you'll be able
+to refresh and enjoy Cat Facts Operator.
 
 ## How to Use Cat Facts
 
@@ -89,15 +83,15 @@ plugin to load. When it's ready, OpenShift should prompt you to refresh.
 2. Select *Create CatFact*
 3. Select the new CatFact card to view it
 4. Select *Create CatFact* again
-5. Select *Create CatFact* 20 more times!!
+5. Select *Create CatFact* 20 more times!!!
 6. If you get bored and want to delete all your CatFacts, select
-   *Delete All CatFacts*
-7. 🎉
+   *Delete All*
+7. 😻
 
 ## Uninstalling
 
 To uninstall, go to *Ecosystem > Installed Operators* in the OpenShift console.
-Select "A Cat Facts Operator" and uninstall.
+Select "Cat Facts Operator" and uninstall.
 
 After uninstalling, run these commands to clean up resources the operator
 leaves behind:
