@@ -23,17 +23,18 @@ have to like cats...)
 ## Seriously, what is it? 🤔
 
 Red Hat allows applications to extend OpenShift's web UI with [OpenShift
-Console Dynamic Plugins]. Red Hat provides docs for building plugins and
-[deploying through Helm]. They don't provide a good operator-based deployment
-reference.
+Console Dynamic Plugins][dynamic-plugins]. Red Hat provides docs for building
+plugins and [deploying through Helm]. They don't provide a good operator-based
+deployment reference.
 
 Cat Facts Operator is the **community reference for operator-based OpenShift
 console dynamic plugin deployment,** combining hybrid-cloud technology with
 cats.
 
 The operator is Go-based and built with [Operator SDK]. The operator also bundles
-a React+PatternFly 6-based [OpenShift Console Dynamic Plugin] that serves
-custom content in the OpenShift web console to manage operator resources.
+a React+PatternFly 6-based [OpenShift Console Dynamic Plugin][dynamic-plugins]
+that serves custom content in the OpenShift web console to manage operator
+resources.
 
 Cat Facts Operator provides a Custom Resource Definition (CRD) for *CatFact*. A
 CatFact is a Kubernetes resource that contains metadata along with a fact about
@@ -75,14 +76,14 @@ spec:
       interval: 10m
 ```
 
-Follow the prompts to install operator page. Accept the default options for
-everything **except for Console Plugin**. For security, OpenShift defaults
-*Console Plugin* to *Disabled* on operators that come from community
-catalogs. **Select *Enable* for *Console plugin* and install the operator.
+When installing, accept the default options for everything **except for Console
+Plugin**. For security, OpenShift defaults *Console Plugin* to *Disabled* on
+operators that come from community catalogs. **Select *Enable* for *Console
+plugin* before installing the operator.
 
 ![Install the operator](docs/img/install_operator.png)
 
-It will take a few moments for the operator controller and dynamic console
+It will take a few moments for the operator controller and console dynamic
 plugin containers to download and launch. Within a few moments, you'll be able
 to refresh and enjoy Cat Facts Operator.
 
@@ -124,7 +125,7 @@ Cat icons/emojis used in this project were created by Emily Jäger, licensed und
 [CC BY-SA 4.0], and are [available here][cat-icons].
 
 [CC BY-SA 4.0]: https://creativecommons.org/licenses/by-sa/4.0
-[OpenShift Console Dynamic Plugins]: https://docs.redhat.com/en/documentation/openshift_container_platform/latest/html/web_console/dynamic-plugins
+[dynamic-plugins]: https://docs.redhat.com/en/documentation/openshift_container_platform/latest/html/web_console/dynamic-plugins
 [Operator SDK]: https://sdk.operatorframework.io/
 [cat-facts-api]: https://catfact.ninja
 [cat-icons]: https://openmoji.org/library/#group=smileys-emotion%2Fcat-face
