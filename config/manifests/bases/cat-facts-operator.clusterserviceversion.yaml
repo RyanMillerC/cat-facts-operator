@@ -3,10 +3,10 @@ kind: ClusterServiceVersion
 metadata:
   annotations:
     capabilities: Basic Install
-    categories: Fun
+    categories: OpenShift Optional
     certified: "false"
     console.openshift.io/plugins: '["cat-facts-operator-console-plugin"]'
-    containerImage: quay.io/ryanmillerc/cat-facts-operator
+    containerImage: quay.io/ryanmillerc/cat-facts-operator:v1.0.0-rc1
     description: An operator for all you cool cats and kittens.
     operatorframework.io/suggested-namespace: cat-facts-operator
     repository: https://github.com/RyanMillerC/cat-facts-operator

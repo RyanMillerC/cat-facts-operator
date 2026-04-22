@@ -35,9 +35,11 @@ Version is defined in **two places** that must stay in sync:
 - `Makefile` → `VERSION ?= 1.0.0-rc1`
 - `pkg/config/config.go` → `Version string = "v1.0.0-rc1"`
 
-Running `make update-version VERSION=x.y.z` updates both `pkg/config/config.go`
-and `console-plugin/package.json` automatically. Still need to update `Makefile`
-manually. When bumping versions, update all three.
+Running `make update-version VERSION=x.y.z` updates `pkg/config/config.go`,
+`console-plugin/package.json`, and the `containerImage` annotation in
+`config/manifests/bases/cat-facts-operator.clusterserviceversion.yaml`
+automatically. Still need to update `Makefile` manually. When bumping versions,
+update all three.
 
 ## Container Images
 
@@ -113,14 +115,64 @@ annotation from them. To add or change examples, edit the YAML files in `config/
 | `displayName` | `A Cat Facts Operator` (leading "A " puts it 4th alphabetically in OperatorHub) |
 | `maturity` | `stable` |
 | `minKubeVersion` | `1.32.0` |
-| `categories` | `Fun` |
+| `categories` | `OpenShift Optional` |
 | `spec.version` in base | `0.0.1` (placeholder; overridden by `make bundle VERSION=x.y.z`) |
 
 ### OLM channels
 
 - `test` — all versions including release candidates
-- `release` — stable releases only (planned; not yet set up)
-- `defaultChannel` will be `release` once v1.0.0 ships
+- `stable` — stable releases only
+
+### Upgrade graph and release process
+
+Operator upgrades in OLM are defined by `spec.replaces` in the CSV. Each new version
+must explicitly replace the previous one. The `ci.yaml` in community-operators-prod
+uses `updateGraph: replaces-mode` which enforces this.
+
+OLM only traverses the upgrade chain within a user's subscribed channel, so `stable`
+subscribers never see RCs even though the `spec.replaces` chain passes through them.
+
+**Channel membership by version type:**
+
+| Version type | `CHANNELS` for `make bundle` | `spec.replaces` |
+|---|---|---|
+| First ever RC | `test` | _(omit — no predecessor)_ |
+| Subsequent RC | `test` | previous version (e.g., `cat-facts-operator.v1.0.0`) |
+| Stable release | `test,stable` | previous RC (e.g., `cat-facts-operator.v1.0.0-rc1`) |
+
+**Steps for a new RC release (e.g., 1.1.0-rc1):**
+1. Update `VERSION` in `Makefile` to `1.1.0-rc1`
+2. `make update-version VERSION=1.1.0-rc1`
+3. Set `spec.replaces: cat-facts-operator.v1.0.0` in the base CSV
+4. `make all CHANNELS=test DEFAULT_CHANNEL=test`
+5. PR to community-operators-prod: add `operators/cat-facts-operator/1.1.0-rc1/`
+   with `metadata/annotations.yaml` listing channel `test` only
+
+**Steps for a stable release (e.g., 1.0.0):**
+1. Update `VERSION` in `Makefile` to `1.0.0`
+2. `make update-version VERSION=1.0.0`
+3. Set `spec.replaces: cat-facts-operator.v1.0.0-rc1` in the base CSV
+4. `make all CHANNELS=test,stable DEFAULT_CHANNEL=stable`
+5. PR to community-operators-prod: add `operators/cat-facts-operator/1.0.0/`
+   with `metadata/annotations.yaml` listing channels `test,stable`
+
+**`spec.replaces` lives in the base CSV** at:
+`config/manifests/bases/cat-facts-operator.clusterserviceversion.yaml`
+
+Update it manually each release — it is always the full CSV name of the previous
+version: `cat-facts-operator.v<previous-version>`.
+
+### OperatorHub submission
+
+Target repo: `redhat-openshift-ecosystem/community-operators-prod` (OpenShift-specific
+operator; requires OCP 4.19+). Do NOT submit to `k8s-operatorhub/community-operators`.
+
+The `community-operators/ci.yaml` file in this repo is the `ci.yaml` to place at
+`operators/cat-facts-operator/ci.yaml` in community-operators-prod.
+
+Each version submission copies `bundle/manifests/` and `bundle/metadata/` into a new
+`operators/cat-facts-operator/<version>/` directory. Never edit existing version
+directories after they are merged.
 
 ## Console Plugin
 

@@ -262,6 +262,7 @@ update-version: ## Update version number throughout the project to match VERSION
 	$(call print_header,update-version)
 	sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" ./console-plugin/package.json
 	sed -i "s/Version string = \"v.*\"/Version string = \"v${VERSION}\"/g" ./pkg/config/config.go
+	sed -i "s|containerImage: $(IMAGE_TAG_BASE).*|containerImage: $(IMAGE_TAG_BASE):v$(VERSION)|g" ./config/manifests/bases/cat-facts-operator.clusterserviceversion.yaml
 
 .PHONY: bundle
 bundle: manifests kustomize ## Generate bundle manifests and metadata, then validate generated files.
