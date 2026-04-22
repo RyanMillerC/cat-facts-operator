@@ -6,29 +6,30 @@
     Cat Facts Operator
 </h1>
 <h4 align="center">
-    A Kubernetes operator for all you cool cats and kittens.
+    *Combining Hybrid-Cloud Technology With Cats*
 </h4>
 <p align="center">
     <img src="docs/img/catalog_view.png" alt="Cat Facts Operator catalog view" />
 </p>
 
-## Cat Facts?
+## Cat Facts? 🙀
 
-* **Do you like to have fun?** 🙋‍♂️
-* **Do you like OpenShift?** 🙋‍♂️
+* ***Do you like to have fun?***
+* ***Do you like OpenShift?***
 
 If you answered either question, **install this operator!** (You don't even
-have to like cats... 🙀)
+have to like cats...)
 
-## Seriously, what is it?
+## Seriously, what is it? 🤔
 
-Red Hat allows applications to extend the OpenShift web UI with [OpenShift
+Red Hat allows applications to extend OpenShift's web UI with [OpenShift
 Console Dynamic Plugins]. Red Hat provides docs for building plugins and
 [deploying through Helm]. They don't provide a good operator-based deployment
 reference.
 
-Cat Facts is the **community reference for operator-based OpenShift console
-dynamic plugin deployment,** combining hybrid-cloud technology with cats.
+Cat Facts Operator is the **community reference for operator-based OpenShift
+console dynamic plugin deployment,** combining hybrid-cloud technology with
+cats.
 
 The operator is Go-based and built with [Operator SDK]. The operator also bundles
 a React+PatternFly 6-based [OpenShift Console Dynamic Plugin] that serves
@@ -39,14 +40,14 @@ CatFact is a Kubernetes resource that contains metadata along with a fact about
 cats. Facts are queried from https://catfact.ninja/fact, a free API that
 generates cat facts.
 
-## Requirements
+## Requirements 📋
 
 * OKD/OpenShift 4.19 or later (Kubernetes 1.32.0+)
 
 **NOTE:** OCP 4.19+ is required because the OpenShift dynamic console plugin
 uses PatternFly 6, which was introduced starting with OpenShift 4.19.
 
-## Installing
+## Installing 🚀
 
 ### OperatorHub
 
@@ -85,7 +86,7 @@ It will take a few moments for the operator controller and dynamic console
 plugin containers to download and launch. Within a few moments, you'll be able
 to refresh and enjoy Cat Facts Operator.
 
-## How to Use Cat Facts
+## How to Use Cat Facts 😻
 
 1. Navigate to *Cat Facts > Cat Fact Catalog* on the left-side navigation pane
    of the OpenShift console
@@ -95,9 +96,8 @@ to refresh and enjoy Cat Facts Operator.
 5. Select *Create CatFact* 20 more times!!!
 6. If you get bored and want to delete all your CatFacts, select
    *Delete All*
-7. 😻
 
-## Uninstalling
+## Uninstalling 😿 
 
 To uninstall, go to *Ecosystem > Installed Operators* in the OpenShift console.
 Select "Cat Facts Operator" and uninstall.
@@ -124,8 +124,8 @@ Cat icons/emojis used in this project were created by Emily Jäger, licensed und
 [CC BY-SA 4.0], and are [available here][cat-icons].
 
 [CC BY-SA 4.0]: https://creativecommons.org/licenses/by-sa/4.0
-[OpenShift Console Dynamic Plugin]: https://docs.redhat.com/en/documentation/openshift_container_platform/latest/html/web_console/dynamic-plugins
+[OpenShift Console Dynamic Plugins]: https://docs.redhat.com/en/documentation/openshift_container_platform/latest/html/web_console/dynamic-plugins
 [Operator SDK]: https://sdk.operatorframework.io/
 [cat-facts-api]: https://catfact.ninja
 [cat-icons]: https://openmoji.org/library/#group=smileys-emotion%2Fcat-face
-[deploying with Helm]: https://docs.redhat.com/en/documentation/openshift_container_platform/4.21/html/web_console/dynamic-plugins#deploy-on-cluster_deploy-plugin-cluster
+[deploying through Helm]: https://docs.redhat.com/en/documentation/openshift_container_platform/4.21/html/web_console/dynamic-plugins#deploy-on-cluster_deploy-plugin-cluster
