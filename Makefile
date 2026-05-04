@@ -269,7 +269,7 @@ bundle: manifests kustomize ## Generate bundle manifests and metadata, then vali
 	operator-sdk generate kustomize manifests -q
 	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
 	$(KUSTOMIZE) build config/manifests | operator-sdk generate bundle $(BUNDLE_GEN_FLAGS)
-	operator-sdk bundle validate ./bundle
+	operator-sdk bundle validate ./bundle --select-optional name=operatorhub/v2 --select-optional name=standardcapabilities --select-optional name=standardcategories
 
 .PHONY: bundle-build
 bundle-build: ## Build the bundle image.
