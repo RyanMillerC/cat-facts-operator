@@ -12,6 +12,8 @@ import {
   Alert,
   AlertActionCloseButton,
   Card,
+  EmptyState,
+  EmptyStateBody,
   CardBody,
   CardHeader,
   Content,
@@ -230,6 +232,11 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
               {loaded && !loadError && (
                 <>
                 <div style={{ height: 'var(--pf-t--global--spacer--gutter--default)' }} />
+                {sortedFacts.length === 0 && (
+                  <EmptyState>
+                    <EmptyStateBody>No Cat Facts found.</EmptyStateBody>
+                  </EmptyState>
+                )}
                 <Gallery hasGutter minWidths={{ default: '260px' }}>
                   {sortedFacts.map((cf) => (
                     <GalleryItem key={`${cf.metadata?.namespace}/${cf.metadata?.name}`}>

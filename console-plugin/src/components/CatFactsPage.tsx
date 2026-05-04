@@ -12,6 +12,8 @@ import {
   Alert,
   AlertActionCloseButton,
   Button,
+  EmptyState,
+  EmptyStateBody,
   Checkbox,
   Label,
   LabelGroup,
@@ -312,13 +314,19 @@ export default function CatFactsPage({ namespace }: CatFactsPageProps) {
                 </>
               }
             />
-            <DataViewTable
-              key={tableKey}
-              isResizable
-              columns={columns}
-              rows={rows}
-              aria-label="Cat Facts"
-            />
+            {filteredData.length === 0 ? (
+              <EmptyState>
+                <EmptyStateBody>No Cat Facts found.</EmptyStateBody>
+              </EmptyState>
+            ) : (
+              <DataViewTable
+                key={tableKey}
+                isResizable
+                columns={columns}
+                rows={rows}
+                aria-label="Cat Facts"
+              />
+            )}
             <DataViewToolbar
               pagination={
                 <Pagination
