@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
   DocumentTitle,
   ListPageBody,
+  ListPageCreateButton,
   ListPageHeader,
   ResourceLink,
   Timestamp,
@@ -50,9 +51,9 @@ const COL_KEYS: ColKey[] = ['name', 'icon', 'fact', 'age'];
 const COL_LABELS: Record<ColKey, string> = { name: 'Name', icon: 'Icon', fact: 'Fact', age: 'Age' };
 const ICON_OPTIONS = ['Crying', 'Evil', 'Grinning', 'Hearts', 'Joy', 'Kissing', 'Pouting', 'Smiling', 'Weary'];
 
-type CatFactsPageProps = { namespace?: string };
+type CatFactsPageProps = { namespace?: string; showTitle?: boolean };
 
-export default function CatFactsPage({ namespace }: CatFactsPageProps) {
+export default function CatFactsPage({ namespace, showTitle = true }: CatFactsPageProps) {
   const [catFacts, loaded, loadError] = useK8sWatchResource<CatFact[]>({
     groupVersionKind: CatFactGVK,
     isList: true,
@@ -283,8 +284,8 @@ export default function CatFactsPage({ namespace }: CatFactsPageProps) {
   return (
     <>
       <DocumentTitle>Cat Facts</DocumentTitle>
-      <ListPageHeader title="Cat Facts">
-        <Button variant="primary" onClick={createCatFact}>Create CatFact</Button>
+      <ListPageHeader title={showTitle ? 'Cat Facts' : ''} hideFavoriteButton={!showTitle}>
+        <ListPageCreateButton variant="primary" onClick={createCatFact}>Create CatFact</ListPageCreateButton>
       </ListPageHeader>
       {createError && (
         <Alert

@@ -27,6 +27,22 @@
     }
   },
   {
+    "type": "console.tab/horizontalNav",
+    "properties": {
+      "model": { "group": "", "version": "v1", "kind": "Namespace" },
+      "page": { "name": "Cat Facts", "href": "cat-facts" },
+      "component": { "$codeRef": "CatFactsNamespaceTab" }
+    }
+  },
+  {
+    "type": "console.tab/horizontalNav",
+    "properties": {
+      "model": { "group": "project.openshift.io", "version": "v1", "kind": "Project" },
+      "page": { "name": "Cat Facts", "href": "cat-facts" },
+      "component": { "$codeRef": "CatFactsNamespaceTab" }
+    }
+  },
+  {
     "type": "console.navigation/section",
     "properties": {
       "id": "cat-facts-section",

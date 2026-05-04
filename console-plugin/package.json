@@ -81,7 +81,8 @@
     "exposedModules": {
       "CatFactsPage": "./components/CatFactsPage",
       "CatFactsCatalogPage": "./components/CatFactsCatalogPage",
-      "CatFactsInventoryItem": "./components/CatFactsInventoryItem"
+      "CatFactsInventoryItem": "./components/CatFactsInventoryItem",
+      "CatFactsNamespaceTab": "./components/CatFactsNamespaceTab"
     },
     "dependencies": {
       "@console/pluginAPI": "^4.21.0"
