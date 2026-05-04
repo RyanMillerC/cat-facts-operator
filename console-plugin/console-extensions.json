@@ -45,6 +45,12 @@
     }
   },
   {
+    "type": "console.cluster-overview/inventory-item",
+    "properties": {
+      "component": { "$codeRef": "CatFactsInventoryItem" }
+    }
+  },
+  {
     "type": "console.navigation/href",
     "properties": {
       "id": "cat-facts-catalog",

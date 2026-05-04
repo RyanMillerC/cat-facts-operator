@@ -29,6 +29,18 @@ console-plugin/               # React console plugin (see console-plugin/AGENTS.
 hack/                         # Helper scripts and example CatFact manifests
 ```
 
+## Local Development
+
+Requires a logged-in cluster (`oc login ...`) before starting. Run each in a separate terminal:
+
+| Terminal | Directory | Command | What it does |
+|---|---|---|---|
+| 1 | `console-plugin/` | `yarn start` | Plugin webpack dev server on port 9001 |
+| 2 | `console-plugin/` | `yarn start-console` | OpenShift console container on port 9000 |
+| 3 | repo root | `make run` | Go controller against the cluster |
+
+Then open http://localhost:9000 in your browser.
+
 ## Versioning
 
 Version is defined in **two places** that must stay in sync:

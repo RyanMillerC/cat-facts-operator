@@ -80,7 +80,8 @@
     "description": "An operator for all you cool cats and kittens.",
     "exposedModules": {
       "CatFactsPage": "./components/CatFactsPage",
-      "CatFactsCatalogPage": "./components/CatFactsCatalogPage"
+      "CatFactsCatalogPage": "./components/CatFactsCatalogPage",
+      "CatFactsInventoryItem": "./components/CatFactsInventoryItem"
     },
     "dependencies": {
       "@console/pluginAPI": "^4.21.0"

@@ -82,10 +82,19 @@ integration-tests/     # Cypress e2e tests
 ## Development Workflow
 
 ### Local Development
-1. `yarn install` - install dependencies
-2. `yarn start` - starts webpack dev server on port 9001 with CORS
-3. `yarn start-console` - runs OpenShift console in container (requires cluster login)
-4. Navigate to http://localhost:9000/example
+
+Requires a logged-in cluster (`oc login ...`) before starting. Run each in a separate terminal:
+
+| Terminal | Directory | Command | What it does |
+|---|---|---|---|
+| 1 | `console-plugin/` | `yarn start` | Plugin webpack dev server on port 9001 |
+| 2 | `console-plugin/` | `yarn start-console` | OpenShift console container on port 9000 |
+| 3 | repo root | `make run` | Go controller against the cluster |
+
+Then open http://localhost:9000 in your browser.
+
+Other setup:
+- `yarn install` - install dependencies (first time / after changes to package.json)
 
 ### Code Quality
 - `yarn lint` - runs eslint, prettier, and stylelint (with --fix)
