@@ -4,10 +4,10 @@ metadata:
   annotations:
     capabilities: Basic Install
     categories: OpenShift Optional
-    com.redhat.openshift.versions: ">=4.19"
     certified: "false"
+    com.redhat.openshift.versions: '>=4.19'
     console.openshift.io/plugins: '["cat-facts-operator-console-plugin"]'
-    containerImage: quay.io/ryanmillerc/cat-facts-operator:v1.0.0
+    containerImage: quay.io/ryanmillerc/cat-facts-operator:v1.1.0
     description: Combining Hybrid-Cloud Technology With Cats
     operatorframework.io/suggested-namespace: cat-facts-operator
     repository: https://github.com/RyanMillerC/cat-facts-operator

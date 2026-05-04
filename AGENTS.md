@@ -165,7 +165,8 @@ subscribers never see RCs even though the `spec.replaces` chain passes through t
 2. `make update-version VERSION=1.0.0`
 3. Set `spec.replaces: cat-facts-operator.v1.0.0-rc1` in the base CSV
 4. `make all CHANNELS=test,stable DEFAULT_CHANNEL=stable`
-5. PR to community-operators-prod: add `operators/cat-facts-operator/1.0.0/`
+5. `make catalog-build catalog-push catalog-install` — deploy test catalog and validate on a real cluster
+6. PR to community-operators-prod: add `operators/cat-facts-operator/1.0.0/`
    with `metadata/annotations.yaml` listing channels `test,stable`
 
 **`spec.replaces` lives in the base CSV** at:
@@ -220,9 +221,9 @@ fixed by moving `DeployConsolePlugin()` into the reconcile loop.
 ## Testing on a Cluster
 
 ```bash
-# Build and push everything, install test catalog
+# Build and push everything, then deploy test catalog and validate
 make all
-make catalog-install
+make catalog-build catalog-push catalog-install
 
 # Clean up
 oc delete catfacts --all -A

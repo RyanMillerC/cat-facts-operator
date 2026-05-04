@@ -1,6 +1,6 @@
 {
   "name": "cat-facts-operator-console-plugin",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "An operator for all you cool cats and kittens.",
   "private": true,
   "license": "Apache-2.0",
@@ -75,7 +75,7 @@
   },
   "consolePlugin": {
     "name": "cat-facts-operator-console-plugin",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "displayName": "Cat Facts Operator",
     "description": "An operator for all you cool cats and kittens.",
     "exposedModules": {

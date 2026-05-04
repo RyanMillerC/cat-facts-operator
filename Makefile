@@ -6,7 +6,7 @@
 
 # VERSION defines the project version for the bundle. Update this value when you
 # upgrade the version of your project.
-VERSION ?= 1.0.0
+VERSION ?= 1.1.0
 
 # BUILD_OS and BUILD_ARCH defines what operating system and architecture to
 # build binaries and container images for. This should probably always be
@@ -269,7 +269,7 @@ bundle: manifests kustomize ## Generate bundle manifests and metadata, then vali
 	operator-sdk generate kustomize manifests -q
 	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
 	$(KUSTOMIZE) build config/manifests | operator-sdk generate bundle $(BUNDLE_GEN_FLAGS)
-	operator-sdk bundle validate ./bundle --select-optional name=operatorhub/v2 --select-optional name=standardcapabilities --select-optional name=standardcategories
+	operator-sdk bundle validate ./bundle --select-optional name=operatorhubv2 --select-optional name=capabilities --select-optional name=categories
 
 .PHONY: bundle-build
 bundle-build: ## Build the bundle image.

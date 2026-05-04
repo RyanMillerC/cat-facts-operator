@@ -1,92 +1,164 @@
-# Development
+# Development Guide
 
-## How it works
+## Prerequisites
 
-This project follows the Kubernetes [Operator Pattern].
+- Go 1.21+
+- Node.js + Yarn 4
+- `oc` CLI logged into an OpenShift 4.19+ cluster
+- `podman` (or `docker` — pass `DOCKER=docker` to make targets)
+- `operator-sdk`
+- `opm` (for catalog builds)
 
-It uses a [Controller] which provides a reconcile function responsible for
-synchronizing resources untile the desired state is reached on the cluster.
+## Local Development
 
-Additionally, this project includes a React JS-based OpenShift Console Dynamic
-Plugin, under the *./console* directory. For details on developing the console
-plugin, view [./console/README.md](console/README.md).
+You need three terminals running simultaneously:
 
-The remainder of this document is specifically for developing and validating
-the Go-based operator.
+| Terminal | Directory | Command | What it does |
+|---|---|---|---|
+| 1 | `console-plugin/` | `yarn start` | Plugin webpack dev server on port 9001 |
+| 2 | `console-plugin/` | `yarn start-console` | OpenShift console container on port 9000 |
+| 3 | repo root | `make run` | Go controller running against your cluster |
 
-## Running in development mode
+Then open http://localhost:9000.
 
-For actual releases, always install through OLM (OperatorHub). To run against a
-cluster while developing, one of two methods can be used:
+> **First time setup:** run `yarn install` in `console-plugin/` before starting.
 
-* [Run operator locally against a remote cluster](#run-operator-locally-against-a-remote-cluster)
-* [Run operator in a Pod on a cluster](#run-operator-in-a-pod-on-a-cluster)
+> **Note:** Changes to `console-extensions.json` require restarting terminal 1. Component file changes hot-reload automatically.
 
-### Run operator locally against a remote cluster
-
-Run the operator on your machine from your local directory against a cluster's
-API.
-
-```bash
-oc login
-oc apply -f ./config/crd/bases
-
-# If running Linux/amd64
-make run
-
-# If running MacOS/arm64 (M series processor)
-GOOS=darwin GOARCH=arm64 make run
-```
-
-### Run operator in a Pod on a cluster
-
-This will run the operator in a Pod on an OpenShift cluster. It will create a
-container image under your user account in Quay.
-
-**NOTE:** If you're doing this for the first time, the repo in Quay will be set
-to private. You will need to change the permission on the repo to public before
-running `make deploy`.
+The Go controller installs the CRD on startup. To install it manually without running the controller:
 
 ```bash
-# Set environment variables
-export USER=ryanmillerc # Replace with your username
-export IMAGE_TAG_BASE="quay.io/${USER}/cat-facts-operator"
-
-# Build and push container image
-make docker-build docker-push bundle
-
-# Deploy to OpenShift
 make install
-make deploy
 ```
 
-**NOTE:** If the operator Pod is already running on the cluster, you may need
-to manually kill the controller Pod to force a redeploy using the latest
-container image in Quay.
+## Project Structure
 
-## Undeploy controller
-
-UnDeploy the controller to the cluster:
-
-```sh
-make undeploy
+```
+pkg/                  # Go controller source
+config/manifests/     # OLM CSV source of truth
+bundle/               # Generated OLM bundle (output of make bundle — do not edit)
+catalog/              # OLM catalog for cluster testing
+console-plugin/       # React + PatternFly 6 OpenShift console plugin
+hack/                 # Helper scripts and example CatFact manifests
 ```
 
-## Modifying the API definitions
+## Making Changes
 
-If you are editing the API definitions, generate the manifests such as CRs or
-CRDs using:
+### Go controller
 
-```sh
+Edit files under `pkg/` and `internal/`. After changing API types, regenerate manifests:
+
+```bash
 make manifests
 ```
 
-**NOTE:** Run `make --help` for more information on all potential `make` targets
+Run tests:
 
-More information can be found via the [Kubebuilder Documentation]
+```bash
+make test
+```
 
-[CC BY-SA 4.0]: https://creativecommons.org/licenses/by-sa/4.0
-[cat-icons]: https://openmoji.org/library/#group=smileys-emotion%2Fcat-face
-[Controllers]: https://kubernetes.io/docs/concepts/architecture/controller/
-[Kubebuilder Documentation]: https://book.kubebuilder.io/introduction.html
-[Operator Pattern]: https://kubernetes.io/docs/concepts/extend-kubernetes/operator/
+### Console plugin
+
+The plugin is a React app under `console-plugin/src/components/`.
+
+Lint (auto-fix):
+```bash
+cd console-plugin && yarn lint
+```
+
+Run Cypress e2e tests:
+```bash
+cd console-plugin && yarn test-cypress          # interactive
+cd console-plugin && yarn test-cypress-headless # CI mode
+```
+
+#### Adding a new page
+
+1. Create `console-plugin/src/components/MyPage.tsx`
+2. Add to `exposedModules` in `console-plugin/package.json`:
+   ```json
+   "MyPage": "./components/MyPage"
+   ```
+3. Add a route in `console-plugin/console-extensions.json`:
+   ```json
+   {
+     "type": "console.page/route",
+     "properties": {
+       "path": "/my-page",
+       "component": { "$codeRef": "MyPage" }
+     }
+   }
+   ```
+
+#### Styling rules
+
+- Use PatternFly CSS variables — no hex colors (breaks dark mode)
+- No naked element selectors (`div`, `table`, etc.) — prevents overriding console styles
+- Prefix all custom CSS classes with `cat-facts__`
+
+## Releasing
+
+### 1. Bump the version
+
+Update `VERSION` in `Makefile`, then propagate it:
+
+```bash
+make update-version
+```
+
+Also update `spec.replaces` in `config/manifests/bases/cat-facts-operator.clusterserviceversion.yaml` to point to the previous version's full CSV name (e.g. `cat-facts-operator.v1.0.0`).
+
+### 2. Build and push everything
+
+```bash
+make all
+```
+
+Builds and pushes the operator, console plugin, and OLM bundle images.
+
+### 3. Test on a cluster
+
+```bash
+make catalog-build catalog-push catalog-install
+```
+
+Builds a test catalog image, pushes it, and installs a `CatalogSource` on your cluster. Install the operator from OperatorHub and verify everything works end-to-end.
+
+### 4. Tag and publish
+
+```bash
+make git-tag
+```
+
+Create a GitHub release for the tag, then submit the bundle to OperatorHub by copying `bundle/manifests/` and `bundle/metadata/` into a new `operators/cat-facts-operator/<version>/` directory in [community-operators-prod](https://github.com/redhat-openshift-ecosystem/community-operators-prod).
+
+### Channel conventions
+
+| Version type | Channels |
+|---|---|
+| Release candidate (e.g. `1.1.0-rc1`) | `test` only |
+| Stable release (e.g. `1.1.0`) | `test,stable` |
+
+Pass channels to make: `make all CHANNELS=test,stable DEFAULT_CHANNEL=stable`
+
+## Useful Make Targets
+
+| Target | Description |
+|---|---|
+| `make run` | Run controller locally against cluster |
+| `make test` | Run Go unit tests |
+| `make install` | Install CRDs on cluster |
+| `make manifests` | Regenerate CRD manifests from Go types |
+| `make bundle` | Regenerate `bundle/` from config sources |
+| `make all` | Full build + push + bundle |
+| `make catalog-build catalog-push catalog-install` | Deploy test catalog to cluster |
+| `make git-tag` | Tag and push the current VERSION |
+
+Default container runtime is `podman`. Override with `DOCKER=docker make ...`.
+
+## References
+
+- [Kubebuilder Documentation](https://book.kubebuilder.io/introduction.html)
+- [Console Plugin SDK](https://github.com/openshift/console/tree/master/frontend/packages/console-dynamic-plugin-sdk)
+- [PatternFly React](https://www.patternfly.org/get-started/develop)
