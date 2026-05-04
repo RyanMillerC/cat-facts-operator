@@ -9,6 +9,8 @@ import {
   useK8sWatchResource,
 } from '@openshift-console/dynamic-plugin-sdk';
 import {
+  Alert,
+  AlertActionCloseButton,
   Button,
   Checkbox,
   Label,
@@ -261,7 +263,10 @@ export default function CatFactsPage({ namespace }: CatFactsPageProps) {
     />
   );
 
-  const createCatFact = () =>
+  const [createError, setCreateError] = React.useState<string | null>(null);
+
+  const createCatFact = () => {
+    setCreateError(null);
     k8sCreate({
       model: CatFactModel,
       data: {
@@ -270,7 +275,8 @@ export default function CatFactsPage({ namespace }: CatFactsPageProps) {
         metadata: { generateName: 'cat-fact-', namespace: namespace ?? 'cat-facts-operator' },
         spec: {},
       },
-    });
+    }).catch((err) => setCreateError(err?.message ?? 'Failed to create CatFact'));
+  };
 
   return (
     <>
@@ -278,9 +284,17 @@ export default function CatFactsPage({ namespace }: CatFactsPageProps) {
       <ListPageHeader title="Cat Facts">
         <Button variant="primary" onClick={createCatFact}>Create CatFact</Button>
       </ListPageHeader>
+      {createError && (
+        <Alert
+          variant="danger"
+          isInline
+          title={createError}
+          actionClose={<AlertActionCloseButton onClose={() => setCreateError(null)} />}
+        />
+      )}
       <ListPageBody>
         {!loaded && <Spinner />}
-        {loadError && <p>Error loading CatFacts: {String(loadError)}</p>}
+        {loadError && <Alert variant="danger" isInline title={String(loadError)} />}
         {loaded && !loadError && (
           <DataView>
             <DataViewToolbar

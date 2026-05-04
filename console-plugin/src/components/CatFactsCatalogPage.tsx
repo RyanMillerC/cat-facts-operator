@@ -9,6 +9,8 @@ import {
   useK8sWatchResource,
 } from '@openshift-console/dynamic-plugin-sdk';
 import {
+  Alert,
+  AlertActionCloseButton,
   Card,
   CardBody,
   CardHeader,
@@ -79,7 +81,10 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
     }
   }, [catFacts, loaded]);
 
-  const createCatFact = () =>
+  const [createError, setCreateError] = React.useState<string | null>(null);
+
+  const createCatFact = () => {
+    setCreateError(null);
     k8sCreate({
       model: CatFactModel,
       data: {
@@ -88,7 +93,8 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
         metadata: { generateName: 'cat-fact-', namespace: ns ?? 'cat-facts-operator' },
         spec: {},
       },
-    });
+    }).catch(() => setCreateError('Default project "cat-facts-operator" not found. Select a project to create Cat Facts.'));
+  };
 
   const deleteAllCatFacts = () => {
     if (!catFacts?.length) return;
@@ -209,8 +215,18 @@ export default function CatFactsCatalogPage({ namespace }: CatFactsCatalogPagePr
                   </Flex>
                 </FlexItem>
               </Flex>
+              {createError && (
+                <div style={{ marginTop: 'var(--pf-t--global--spacer--md)' }}>
+                  <Alert
+                    variant="danger"
+                    isInline
+                    title={createError}
+                    actionClose={<AlertActionCloseButton onClose={() => setCreateError(null)} />}
+                  />
+                </div>
+              )}
               {!loaded && <Spinner />}
-              {loadError && <p>Error loading Cat Facts: {String(loadError)}</p>}
+              {loadError && <Alert variant="danger" isInline title={String(loadError)} />}
               {loaded && !loadError && (
                 <>
                 <div style={{ height: 'var(--pf-t--global--spacer--gutter--default)' }} />
