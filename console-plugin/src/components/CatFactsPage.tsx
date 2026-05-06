@@ -160,7 +160,7 @@ export default function CatFactsPage({ namespace, showTitle = true }: CatFactsPa
       ),
       icon: <CatIcon iconName={catFact.spec.iconName} />,
       fact: catFact.spec.fact ?? '',
-      age: <Timestamp timestamp={catFact.metadata?.creationTimestamp} />,
+      age: <Timestamp timestamp={catFact.metadata?.creationTimestamp ?? ''} />,
     };
     return visibleColKeys.map((k) => allCells[k]);
   });

@@ -1858,49 +1858,49 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openshift-console/dynamic-plugin-sdk-webpack@npm:4.21-latest":
-  version: 4.21.0
-  resolution: "@openshift-console/dynamic-plugin-sdk-webpack@npm:4.21.0"
+"@openshift-console/dynamic-plugin-sdk-webpack@npm:4.19-latest":
+  version: 4.19.0
+  resolution: "@openshift-console/dynamic-plugin-sdk-webpack@npm:4.19.0"
   dependencies:
-    "@openshift/dynamic-plugin-sdk-webpack": "npm:^4.1.0"
+    "@openshift/dynamic-plugin-sdk-webpack": "npm:^4.0.2"
     ajv: "npm:^6.12.3"
     chalk: "npm:2.4.x"
     comment-json: "npm:4.x"
     find-up: "npm:4.x"
     glob: "npm:7.x"
-    lodash: "npm:^4.17.23"
+    lodash: "npm:^4.17.21"
     read-pkg: "npm:5.x"
     semver: "npm:6.x"
     webpack: "npm:^5.75.0"
   peerDependencies:
     typescript: ">=5.7.2"
-  checksum: 10c0/af3777ef11b15ec934469756bfdd4f248c9bac3556bdbf3fdab0ed68dcd23ee9f3a894e79bf70381c4519bcde96d078aec36c7d8dc32069f9c0bc1b6df36b43e
+  checksum: 10c0/88a7b4e4c370579fe47997ea0f02f8d8403fa258fbd893d3e36ba5faf8d758a43237ded3eb77ac451ccb37c7fb0096f3f730aab5abc1a0c00bf748c4ffece777
   languageName: node
   linkType: hard
 
-"@openshift-console/dynamic-plugin-sdk@npm:4.21-latest":
-  version: 4.21.0
-  resolution: "@openshift-console/dynamic-plugin-sdk@npm:4.21.0"
+"@openshift-console/dynamic-plugin-sdk@npm:4.19-latest":
+  version: 4.19.1
+  resolution: "@openshift-console/dynamic-plugin-sdk@npm:4.19.1"
   dependencies:
-    "@openshift/dynamic-plugin-sdk": "npm:^5.0.1"
     "@patternfly/react-topology": "npm:^6.2.0"
+    classnames: "npm:2.x"
     immutable: "npm:3.x"
-    lodash: "npm:^4.17.23"
+    lodash: "npm:^4.17.21"
     react: "npm:^17.0.1"
     react-i18next: "npm:^11.12.0"
     react-redux: "npm:7.2.9"
     react-router: "npm:5.3.x"
     react-router-dom: "npm:5.3.x"
     react-router-dom-v5-compat: "npm:^6.11.2"
-    redux: "npm:^4.0.4"
+    redux: "npm:4.0.1"
     redux-thunk: "npm:2.4.0"
     reselect: "npm:4.x"
     typesafe-actions: "npm:^4.2.1"
-  checksum: 10c0/8ed4bb197560842d4ccf8ef182d5e10093f34a090cab41cbf268286fb9a04569447b2e1ed109ccf41204a61320bd19bda42c5f4401b73f90114a70fc3df0885a
+  checksum: 10c0/64e7ae20c9aecdbee17da64f7dd24be4cdb5a2c26b172bad3a3c82e517f391ba927efc5bcb329cc7f5c2b91c948df6401c97c28b5cce90b67e4548251e85152e
   languageName: node
   linkType: hard
 
-"@openshift/dynamic-plugin-sdk-webpack@npm:^4.1.0":
+"@openshift/dynamic-plugin-sdk-webpack@npm:^4.0.2":
   version: 4.1.0
   resolution: "@openshift/dynamic-plugin-sdk-webpack@npm:4.1.0"
   dependencies:
@@ -1910,20 +1910,6 @@ __metadata:
   peerDependencies:
     webpack: ^5.75.0
   checksum: 10c0/c917918fee5848cafbc5172195aa76b9651aa371e0e7413e919328f1d43acbee45d73672cdba629a393b8b2784c1323e7766ea2cb61a2308aa767859252dd86b
-  languageName: node
-  linkType: hard
-
-"@openshift/dynamic-plugin-sdk@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "@openshift/dynamic-plugin-sdk@npm:5.0.1"
-  dependencies:
-    lodash: "npm:^4.17.21"
-    semver: "npm:^7.3.7"
-    uuid: "npm:^8.3.2"
-    yup: "npm:^0.32.11"
-  peerDependencies:
-    react: ^17 || ^18
-  checksum: 10c0/2793e27abd90b47daabb0a6c97c76d6acfe0f5a102d394e6eeb1c140e38609b1185dc774ce4816e4fe4ed76656b0f2e5d0295ee4529dc921a544a7d81c263c9c
   languageName: node
   linkType: hard
 
@@ -4326,8 +4312,8 @@ __metadata:
     "@babel/core": "npm:^7.29.0"
     "@babel/preset-env": "npm:^7.29.0"
     "@cypress/webpack-preprocessor": "npm:^7.0.2"
-    "@openshift-console/dynamic-plugin-sdk": "npm:4.21-latest"
-    "@openshift-console/dynamic-plugin-sdk-webpack": "npm:4.21-latest"
+    "@openshift-console/dynamic-plugin-sdk": "npm:4.19-latest"
+    "@openshift-console/dynamic-plugin-sdk-webpack": "npm:4.19-latest"
     "@patternfly/react-core": "npm:^6.2.2"
     "@patternfly/react-data-view": "npm:6.4.0"
     "@patternfly/react-icons": "npm:^6.2.2"
@@ -4544,6 +4530,13 @@ __metadata:
   version: 0.3.3
   resolution: "circular-json@npm:0.3.3"
   checksum: 10c0/573d1c62f2b1254aac68b58c90764f3d6638eb1451d5d8baab3008e6624d12a5ee4b4ef1ad7aae170655dd476e0ccbb984a439319581e5fcbe37afb4c632b513
+  languageName: node
+  linkType: hard
+
+"classnames@npm:2.x":
+  version: 2.5.1
+  resolution: "classnames@npm:2.5.1"
+  checksum: 10c0/afff4f77e62cea2d79c39962980bf316bacb0d7c49e13a21adaadb9221e1c6b9d3cdb829d8bb1b23c406f4e740507f37e1dcf506f7e3b7113d17c5bab787aa69
   languageName: node
   linkType: hard
 
@@ -11974,7 +11967,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redux@npm:^4.0.0, redux@npm:^4.0.4":
+"redux@npm:4.0.1":
+  version: 4.0.1
+  resolution: "redux@npm:4.0.1"
+  dependencies:
+    loose-envify: "npm:^1.4.0"
+    symbol-observable: "npm:^1.2.0"
+  checksum: 10c0/40515233ca564c96890b3559945c0938d42af2ce41ad30541a3d64409dafcb61394dcacf8eabd957c7f1f44393f5e9ef74417607a441a08618c629d8d90bc2d1
+  languageName: node
+  linkType: hard
+
+"redux@npm:^4.0.0":
   version: 4.2.1
   resolution: "redux@npm:4.2.1"
   dependencies:

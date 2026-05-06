@@ -27,8 +27,8 @@
     "@babel/core": "^7.29.0",
     "@babel/preset-env": "^7.29.0",
     "@cypress/webpack-preprocessor": "^7.0.2",
-    "@openshift-console/dynamic-plugin-sdk": "4.21-latest",
-    "@openshift-console/dynamic-plugin-sdk-webpack": "4.21-latest",
+    "@openshift-console/dynamic-plugin-sdk": "4.19-latest",
+    "@openshift-console/dynamic-plugin-sdk-webpack": "4.19-latest",
     "@patternfly/react-core": "^6.2.2",
     "@patternfly/react-icons": "^6.2.2",
     "@patternfly/react-table": "^6.2.2",
@@ -85,7 +85,7 @@
       "CatFactsNamespaceTab": "./components/CatFactsNamespaceTab"
     },
     "dependencies": {
-      "@console/pluginAPI": "^4.21.0"
+      "@console/pluginAPI": "^4.19.0"
     }
   },
   "packageManager": "yarn@4.13.0",
