@@ -6,7 +6,7 @@
 
 # VERSION defines the project version for the bundle. Update this value when you
 # upgrade the version of your project.
-VERSION ?= 1.1.0
+VERSION ?= 1.1.1
 
 # BUILD_OS and BUILD_ARCH defines what operating system and architecture to
 # build binaries and container images for. This should probably always be
