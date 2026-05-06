@@ -52,31 +52,10 @@ uses PatternFly 6, which was introduced starting with OpenShift 4.19.
 
 ### OperatorHub
 
-> **I'm working on getting Cat Facts listed in OperatorHub. In the meantime,
-install it by adding the custom CatalogSource below.**
+Install through OperatorHub directly in OpenShift under *Ecosystem > Software
+Catalog*. Search for "Cat Facts Operator". Select "Install".
 
-### Custom Catalog (Testing)
-
-Apply this object. After ~1 minute, search for "Cat Facts" under *Ecosystem >
-Software Catalog* (previously labeled OperatorHub).
-
-```yaml
-apiVersion: operators.coreos.com/v1alpha1
-kind: CatalogSource
-metadata:
-  name: cat-facts-catalog
-  namespace: openshift-marketplace
-spec:
-  sourceType: grpc
-  image: quay.io/ryanmillerc/cat-facts-catalog:latest
-  displayName: Cat Facts
-  publisher: Ryan Miller
-  updateStrategy:
-    registryPoll:
-      interval: 10m
-```
-
-When installing, accept the default options for everything **except for Console
+Accept the default options for everything **except for Console
 Plugin**. For security, OpenShift defaults *Console Plugin* to *Disabled* on
 operators that come from community catalogs. **Select *Enable* for *Console
 plugin* before installing the operator.
@@ -86,6 +65,12 @@ plugin* before installing the operator.
 It will take a few moments for the operator controller and console dynamic
 plugin containers to download and launch. Within a few moments, you'll be able
 to refresh and enjoy Cat Facts Operator.
+
+### Custom Catalog (Testing)
+
+```bash
+make catalog-build catalog-push catalog-install
+```
 
 ## How to Use Cat Facts 😻
 
